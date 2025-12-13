@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Calculator - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Opessocius</h1>
+                </a>
+            </div>
+            <nav class="navigation">
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Solutions</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/InvestmentCalculator.png" alt="Investment Calculator" class="preview-image active" data-item="item-0" />
+                            <img src="images/CrudeOilStrategy.png" alt="Crude Oil Strategy" class="preview-image" data-item="item-1" />
+                            <img src="images/PortfolioModels.png" alt="Portfolio Models" class="preview-image" data-item="item-2" />
+                            <img src="images/RiskManagement.png" alt="Risk Management" class="preview-image" data-item="item-3" />
+                            <img src="images/Technology&Execution.png" alt="Technology & Execution" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="investment-calculator.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Investment Calculator</span>
+                            </a>
+                            <a href="crude-oil-strategy.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Strategy</span>
+                            </a>
+                            <a href="portfolio-models.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Portfolio Models</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Risk Management</span>
+                            </a>
+                            <a href="technology-execution.html" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Technology & Execution</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Resources</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/Trading101.png" alt="Trading 101" class="preview-image active" data-item="item-0" />
+                            <img src="images/OilMarketfundamentals.png" alt="Oil Market Fundamentals" class="preview-image" data-item="item-1" />
+                            <img src="images/Macro&GeopoliticalInsights.png" alt="Macro & Geopolitical Insights" class="preview-image" data-item="item-2" />
+                            <img src="images/TechnicalAnalysisLibrary.png" alt="Technical Analysis Library" class="preview-image" data-item="item-3" />
+                            <img src="images/Risk&ExpectationsGuide.png" alt="Risk & Expectations Guide" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="learn.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Learn</span>
+                            </a>
+                            <a href="crude-oil-fundamentals.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Fundamentals</span>
+                            </a>
+                            <a href="macro-geopolitical-insights.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Macro & Geopolitical Insights</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Technical Analysis Library</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Risk & Expectations Guide</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Consultations</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/AboutUs.png" alt="About Us" class="preview-image active" data-item="item-0" />
+                            <img src="images/Pricing&Plans.png" alt="Pricing & Plans" class="preview-image" data-item="item-1" />
+                            <img src="images/BookaCall.png" alt="Book a Call" class="preview-image" data-item="item-2" />
+                            <img src="images/Compliance&Disclaimers.png" alt="Compliance & Disclaimers" class="preview-image" data-item="item-3" />
+                            <img src="images/OnboardingProcess.png" alt="Onboarding Process" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="#" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">About Us</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Pricing & Plans</span>
+                            </a>
+                            <a href="book-a-call.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Book a Call</span>
+                            </a>
+                            <a href="compliance-disclaimers.html" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Compliance & Disclaimers</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Onboarding Process</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="nav-link">Log in</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="learn-hero-section">
+            <div class="learn-hero-image" style="background-image: url('images/charts.jpeg');">
+                <div class="learn-hero-overlay"></div>
+                <div class="learn-hero-content">
+                    <h2 class="learn-hero-title">Investment Calculator</h2>
+                    <p class="learn-hero-subtitle">Quantify Your Capital Trajectory</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-intro-section fade-in-section">
+            <div class="section-container">
+                <div class="tech-intro-content">
+                    <p class="tech-intro-text">Opessocius has been developing investment management solutions for more than 8 years and now has the only integrated solution that automates complex manual processes and provides complete transparency from investor to asset. Our technology platform combines advanced algorithmic trading systems with rigorous human oversight, delivering institutional-grade execution and comprehensive risk management.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="calculator-section fade-in-section">
+            <div class="section-container">
+                <div class="calculator-container">
+                    <div class="calculator-wrapper">
+                        <!-- Left Panel: Investment Details -->
+                        <div class="calculator-input-panel">
+                            <h2 class="panel-title">Investment details</h2>
+                            <form id="calculator-form" class="calculator-form">
+                                <div class="form-group">
+                                    <label for="initial-investment">Initial investment</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="initial-investment" name="initialInvestment" value="5000" min="5000" max="100000" step="500" class="slider-input">
+                                        <div class="slider-value-display">
+                                            <span id="initial-investment-display">€5,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="years">Years of investment growth</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="years" name="years" value="10" min="1" max="30" step="1" class="slider-input">
+                                        <div class="slider-value-display">
+                                            <span id="years-display">10</span> Years
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="rate-of-return">Estimated rate of return</label>
+                                    <div class="radio-group radio-group--horizontal">
+                                        <label class="radio-option">
+                                            <input type="radio" name="rateOfReturn" value="2" id="rate-2" checked>
+                                            <span class="radio-label">
+                                                <span class="radio-title">2%</span>
+                                                <span class="radio-subtitle">Without Risk</span>
+                                            </span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="rateOfReturn" value="4" id="rate-4">
+                                            <span class="radio-label">
+                                                <span class="radio-title">4%</span>
+                                                <span class="radio-subtitle">With Risk</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <p class="helper-text" style="margin-top: 0; padding: 0.75rem; background: #f3f4f6; border-radius: 8px; color: #374151;">
+                                        Past performance does not guarantee future results. All investments carry some level of risk, and returns may vary with market conditions. Monthly compounding is applied in all performance calculations.
+                                    </p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="recurring-amount">Amount of recurring investments</label>
+                                    <div class="slider-container">
+                                        <input type="range" id="recurring-amount" name="recurringAmount" value="100" min="0" max="5000" step="10" class="slider-input">
+                                        <div class="slider-value-display">
+                                            <span id="recurring-amount-display">€100</span>
+                                        </div>
+                                    </div>
+                                    <p class="helper-text">Enter the amount you plan to invest regularly. This will be added at each interval that you select.</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="recurring-frequency">Recurring investment frequency</label>
+                                    <div class="radio-group radio-group--horizontal">
+                                        <label class="radio-option">
+                                            <input type="radio" name="recurringFrequency" value="12" id="freq-monthly-recurring" checked>
+                                            <span class="radio-label">
+                                                <span class="radio-title">Monthly</span>
+                                            </span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="recurringFrequency" value="4" id="freq-quarterly-recurring">
+                                            <span class="radio-label">
+                                                <span class="radio-title">Quarterly</span>
+                                            </span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="recurringFrequency" value="1" id="freq-yearly-recurring">
+                                            <span class="radio-label">
+                                                <span class="radio-title">Yearly</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="divider-line"></div>
+
+                                <div class="action-buttons">
+                                    <button class="action-btn action-btn--share" id="share-btn" aria-label="Share investment plan">
+                                        <svg class="action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="18" cy="5" r="3"></circle>
+                                            <circle cx="6" cy="12" r="3"></circle>
+                                            <circle cx="18" cy="19" r="3"></circle>
+                                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                        </svg>
+                                        <span>Share</span>
+                                    </button>
+                                    <button class="action-btn action-btn--download" id="download-btn" aria-label="Download PDF">
+                                        <svg class="action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        <span>Download PDF</span>
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <!-- Right Panel: Results -->
+                        <div class="calculator-results-panel">
+                            <div class="final-balance-banner">
+                                <span class="final-balance-label">Final Balance</span>
+                                <span class="final-balance-amount" id="final-balance">$0</span>
+                            </div>
+
+                            <div class="summary-boxes">
+                                <div class="summary-box">
+                                    <div class="summary-label">Total Contributions</div>
+                                    <div class="summary-value" id="total-contributions">$0</div>
+                                </div>
+                                <div class="summary-box">
+                                    <div class="summary-label">Interest Earned</div>
+                                    <div class="summary-value summary-value--interest" id="interest-earned">$0</div>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <div class="section-header">
+                                    <h3 class="chart-title">Investment Graph</h3>
+                                    <button class="expand-full-btn" id="chart-expand-btn" aria-label="Expand chart to full page">
+                                        <span class="expand-icon">⛶</span>
+                                    </button>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-line legend-line--compound"></span>
+                                        <span class="legend-label">With Compound Growth</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-line legend-line--simple"></span>
+                                        <span class="legend-label">Without Compound Growth</span>
+                                    </div>
+                                </div>
+                                <canvas id="growth-chart" width="600" height="300"></canvas>
+                            </div>
+
+                            <div class="yearly-balance-table">
+                                <div class="section-header">
+                                    <h3 class="table-title">Yearly Balance Overview</h3>
+                                    <button class="expand-full-btn" id="table-expand-btn" aria-label="Expand table to full page">
+                                        <span class="expand-icon">⛶</span>
+                                    </button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="balance-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Year</th>
+                                                <th>Ending Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="balance-table-body">
+                                            <!-- Table rows will be generated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Full page overlay for chart -->
+                            <div class="fullpage-overlay" id="chart-overlay" style="display: none;">
+                                <div class="fullpage-content">
+                                    <div class="fullpage-header">
+                                        <h3 class="fullpage-title">Investment Graph</h3>
+                                        <button class="close-full-btn" id="chart-close-btn" aria-label="Close full page view">
+                                            <span>✕</span>
+                                        </button>
+                                    </div>
+                                    <div class="fullpage-body">
+                                        <div class="chart-legend">
+                                            <div class="legend-item">
+                                                <span class="legend-line legend-line--compound"></span>
+                                                <span class="legend-label">With Compound Growth</span>
+                                            </div>
+                                            <div class="legend-item">
+                                                <span class="legend-line legend-line--simple"></span>
+                                                <span class="legend-label">Without Compound Growth</span>
+                                            </div>
+                                        </div>
+                                        <canvas id="growth-chart-full" width="1200" height="600"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Full page overlay for table -->
+                            <div class="fullpage-overlay" id="table-overlay" style="display: none;">
+                                <div class="fullpage-content">
+                                    <div class="fullpage-header">
+                                        <h3 class="fullpage-title">Yearly Balance Overview</h3>
+                                        <button class="close-full-btn" id="table-close-btn" aria-label="Close full page view">
+                                            <span>✕</span>
+                                        </button>
+                                    </div>
+                                    <div class="fullpage-body">
+                                        <div class="fullpage-table-container">
+                                            <table id="balance-table-full">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Year</th>
+                                                        <th>Ending Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="balance-table-body-full">
+                                                    <!-- Table rows will be generated by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Collapsible Information Sections - Outside the calculator widget -->
+                <div class="info-sections">
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">Important information about investing</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>The value of investments, and any income generated, can fall as well as rise. You may lose some or all of the amount you invest. This risk may be affected by currency movements when investments have exposure to foreign markets. Investing should be viewed as a medium- to long-term commitment, typically five years or more. Eligibility requirements and fees may apply. Nothing in this material constitutes an offer, solicitation, recommendation, or advice regarding any financial product. Do not act on this information without seeking independent professional advice. You should assess whether any product or strategy is suitable for your circumstances, including your financial position, investment objectives, risk tolerance, experience, and preferred investment horizon.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">What do we mean by 'risk level'?</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>Risk levels refer to the expected balance between potential returns and potential losses:</p>
+                            <ul>
+                                <li><strong>Very Low</strong> – very limited expected return with minimal risk of loss.</li>
+                                <li><strong>Low</strong> – modest expected return with relatively low risk of loss.</li>
+                                <li><strong>Balanced</strong> – moderate expected return with moderate risk of loss.</li>
+                                <li><strong>High</strong> – higher expected return with a correspondingly higher risk of loss.</li>
+                                <li><strong>Very High</strong> – the potential for significant returns alongside a substantial risk of loss.</li>
+                            </ul>
+                            <p>No guarantee is given regarding the accuracy, completeness, or timeliness of the information presented. Any reliance on this information is at your own discretion and risk.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- You might also be interested in Section -->
+                <div class="interested-section">
+                    <h2 class="interested-section-title">You might also be interested in</h2>
+                    <div class="interested-cards">
+                        <a href="#" class="interested-card">
+                            <div class="interested-card-header">
+                                <h3 class="interested-card-title">Ready-made portfolios</h3>
+                                <span class="interested-card-arrow">›</span>
+                            </div>
+                            <p class="interested-card-description">The HSBC Global Strategy Portfolios contain a mix of investments that are managed on your behalf.</p>
+                        </a>
+                        <a href="#" class="interested-card">
+                            <div class="interested-card-header">
+                                <h3 class="interested-card-title">New to investing?</h3>
+                                <span class="interested-card-arrow">›</span>
+                            </div>
+                            <p class="interested-card-description">We're here to help you start investing from £50.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Our Offices</h3>
+                    <p><strong>Germany</strong><br>Neue Schönhauser Straße 13<br>10178 Berlin</p>
+                    <p><strong>United Kingdom</strong><br>136 High Holborn<br>London, WC1V 6PX</p>
+                    <p><strong>Netherlands</strong><br>'s-Gravenhekje 1A<br>1011 TG Amsterdam</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <a href="#">For Venture Capital</a>
+                    <a href="#">For Private Equity</a>
+                    <h3>Resources</h3>
+                    <a href="#">Case Studies</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Glossary</a>
+                    <a href="#">Newsletter</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <a href="#">About</a>
+                    <a href="#">Join us</a>
+                    <a href="#">LinkedIn</a>
+                    <h3>Legal</h3>
+                    <a href="#">Terms &amp; Conditions</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Legal Notice</a>
+                    <a href="#">Cookie Settings</a>
+                </div>
+                <div class="footer-column footer-certificates">
+                    <h3>Accreditations</h3>
+                    <div class="certificate-row">
+                        <div class="certificate-item">
+                            <img src="images/iso.png" alt="ISO Certification" />
+                        </div>
+                        <div class="certificate-item">
+                            <img src="images/ias.png" alt="IAS Certification" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-disclaimer">
+                <p>© 2025 bunch technology</p>
+                <p><strong>Disclaimer:</strong> The information presented on bunch's website is for your information only. None of the information provided constitutes investment brokerage (Anlagevermittlung) or investment advice (Anlageberatung). It is not intended to serve as legal, tax or financial advice or as an endorsement of any investment strategy. bunch does not provide legal, tax or financial advice. It does not contain any offer, recommendation or incitement to make investment decisions of any kind, e.g. to invest in shares of companies or to conclude any kind of contract, nor does it take into account any particular investment objectives, financial conditions or needs of specific investors. In particular, this information should not be used as a substitute for suitable investment and product-related advice. The content contained herein is subject to change without notice. While we aim to present accurate and up-to-date information as part of bunch's content, we undertake no obligation to update our content from time to time.</p>
+            </div>
+        </footer>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+

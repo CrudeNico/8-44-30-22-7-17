@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Models - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Opessocius</h1>
+                </a>
+            </div>
+            <nav class="navigation">
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Solutions</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/InvestmentCalculator.png" alt="Investment Calculator" class="preview-image active" data-item="item-0" />
+                            <img src="images/CrudeOilStrategy.png" alt="Crude Oil Strategy" class="preview-image" data-item="item-1" />
+                            <img src="images/PortfolioModels.png" alt="Portfolio Models" class="preview-image" data-item="item-2" />
+                            <img src="images/RiskManagement.png" alt="Risk Management" class="preview-image" data-item="item-3" />
+                            <img src="images/Technology&Execution.png" alt="Technology & Execution" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="investment-calculator.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Investment Calculator</span>
+                            </a>
+                            <a href="crude-oil-strategy.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Strategy</span>
+                            </a>
+                            <a href="portfolio-models.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Portfolio Models</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Risk Management</span>
+                            </a>
+                            <a href="technology-execution.html" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Technology & Execution</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Resources</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/Trading101.png" alt="Learn" class="preview-image active" data-item="item-0" />
+                            <img src="images/OilMarketfundamentals.png" alt="Oil Market Fundamentals" class="preview-image" data-item="item-1" />
+                            <img src="images/Macro&GeopoliticalInsights.png" alt="Macro & Geopolitical Insights" class="preview-image" data-item="item-2" />
+                            <img src="images/TechnicalAnalysisLibrary.png" alt="Technical Analysis Library" class="preview-image" data-item="item-3" />
+                            <img src="images/Risk&ExpectationsGuide.png" alt="Risk & Expectations Guide" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="learn.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Learn</span>
+                            </a>
+                            <a href="crude-oil-fundamentals.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Fundamentals</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Macro & Geopolitical Insights</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Technical Analysis Library</span>
+                            </a>
+                            <a href="risk-expectations-guide.html" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Risk & Expectations Guide</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Consultations</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/AboutUs.png" alt="About Us" class="preview-image active" data-item="item-0" />
+                            <img src="images/Pricing&Plans.png" alt="Pricing & Plans" class="preview-image" data-item="item-1" />
+                            <img src="images/BookaCall.png" alt="Book a Call" class="preview-image" data-item="item-2" />
+                            <img src="images/Compliance&Disclaimers.png" alt="Compliance & Disclaimers" class="preview-image" data-item="item-3" />
+                            <img src="images/OnboardingProcess.png" alt="Onboarding Process" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="#" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">About Us</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Pricing & Plans</span>
+                            </a>
+                            <a href="book-a-call.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Book a Call</span>
+                            </a>
+                            <a href="compliance-disclaimers.html" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Compliance & Disclaimers</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Onboarding Process</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="nav-link">Log in</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="learn-hero-section">
+            <div class="learn-hero-image" style="background-image: url('images/212.jpg');">
+                <div class="learn-hero-overlay"></div>
+                <div class="learn-hero-content">
+                    <h2 class="learn-hero-title">Portfolio Models</h2>
+                    <p class="learn-hero-subtitle">Optimize your investment strategy with data-driven portfolio models designed for energy markets. Our adaptive models dynamically adjust to market conditions, providing you with institutional-grade portfolio construction and risk-adjusted returns.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="portfolio-selection-section">
+            <div class="section-container">
+                <div class="portfolio-selection-content">
+                    <h2 class="portfolio-selection-title">What are you looking for in the upcoming year?</h2>
+                    <p class="portfolio-selection-subtitle">Select your investment preference to discover the ideal portfolio model for your strategy</p>
+                    
+                    <div class="portfolio-option-selector">
+                        <div class="portfolio-option-card" data-option="risk">
+                            <div class="portfolio-option-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 36L16 24L24 28L32 16L40 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                    <path d="M8 36L16 24L24 28L32 16L40 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.3"/>
+                                    <circle cx="8" cy="36" r="3" fill="currentColor"/>
+                                    <circle cx="16" cy="24" r="2.5" fill="currentColor"/>
+                                    <circle cx="24" cy="28" r="2.5" fill="currentColor"/>
+                                    <circle cx="32" cy="16" r="2.5" fill="currentColor"/>
+                                    <circle cx="40" cy="20" r="3" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <h3 class="portfolio-option-title">Risk-Oriented</h3>
+                            <p class="portfolio-option-description">Higher potential returns with increased volatility</p>
+                        </div>
+                        
+                        <div class="portfolio-option-card" data-option="non-risk">
+                            <div class="portfolio-option-icon">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M24 8L12 14V22C12 30 18 36 24 40C30 36 36 30 36 22V14L24 8Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <path d="M24 20V28M24 20H20M24 20H28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="24" cy="32" r="2" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <h3 class="portfolio-option-title">Non-Risk</h3>
+                            <p class="portfolio-option-description">Stable returns with capital preservation focus</p>
+                        </div>
+                    </div>
+
+                    <div class="portfolio-selection-result" id="portfolio-result">
+                        <div class="result-content risk-content" style="display: none;">
+                            <div class="result-header">
+                                <h3 class="result-title">Risk-Oriented Portfolio Model</h3>
+                                <div class="result-badge risk-badge">High Growth Potential</div>
+                            </div>
+                            <div class="result-body">
+                                <p class="result-description">Our risk-oriented portfolio model is engineered for investors who are comfortable with market volatility and seek to maximize returns through strategic positioning in energy markets. This model employs dynamic asset allocation, leveraging market opportunities while maintaining sophisticated risk management protocols.</p>
+                                
+                                <div class="result-features">
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 18L9 12L13 16L21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Dynamic Allocation</h4>
+                                            <p>Real-time portfolio rebalancing based on market conditions and volatility indicators</p>
+                                        </div>
+                                    </div>
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Aggressive Positioning</h4>
+                                            <p>Strategic exposure to high-growth energy sectors with calculated risk management</p>
+                                        </div>
+                                    </div>
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Performance Tracking</h4>
+                                            <p>Advanced analytics and performance metrics to monitor portfolio health and opportunities</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="portfolio-growth-chart" data-type="risk">
+                                    <div class="chart-header">
+                                        <h4 class="chart-title">5-Year Growth Projection</h4>
+                                        <div class="chart-info">
+                                            <span class="chart-initial">Initial: €230,000</span>
+                                            <span class="chart-growth">4% Monthly Growth</span>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="risk-chart" class="growth-chart-canvas"></canvas>
+                                        <div class="chart-value-display" id="risk-chart-value">€230,000</div>
+                                    </div>
+                                </div>
+
+                                <div class="result-stats">
+                                    <div class="stat-box">
+                                        <div class="stat-value">15-25%</div>
+                                        <div class="stat-label">Expected Annual Return</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-value">High</div>
+                                        <div class="stat-label">Volatility Level</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-value">Active</div>
+                                        <div class="stat-label">Management Style</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="result-content non-risk-content" style="display: none;">
+                            <div class="result-header">
+                                <h3 class="result-title">Non-Risk Portfolio Model</h3>
+                                <div class="result-badge non-risk-badge">Capital Preservation</div>
+                            </div>
+                            <div class="result-body">
+                                <p class="result-description">Our non-risk portfolio model prioritizes capital preservation and steady, predictable returns. Designed for conservative investors, this model focuses on defensive positioning, diversification, and risk mitigation strategies that protect your capital while generating consistent income from energy market opportunities.</p>
+                                
+                                <div class="result-features">
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 22C12 22 4 16 4 10V4L12 2L20 4V10C20 16 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Defensive Strategy</h4>
+                                            <p>Capital preservation through diversified holdings and conservative risk management</p>
+                                        </div>
+                                    </div>
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 3V21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M7 16L12 11L16 15L21 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M21 10H16V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Stable Returns</h4>
+                                            <p>Consistent income generation with minimal exposure to market volatility</p>
+                                        </div>
+                                    </div>
+                                    <div class="result-feature-item">
+                                        <div class="feature-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M7 11V7C7 4.79086 8.79086 3 11 3H13C15.2091 3 17 4.79086 17 7V11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <div class="feature-text">
+                                            <h4>Risk Mitigation</h4>
+                                            <p>Comprehensive hedging strategies and position limits to protect your investment</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="portfolio-growth-chart" data-type="non-risk">
+                                    <div class="chart-header">
+                                        <h4 class="chart-title">5-Year Growth Projection</h4>
+                                        <div class="chart-info">
+                                            <span class="chart-initial">Initial: €230,000</span>
+                                            <span class="chart-growth">2% Monthly Growth</span>
+                                        </div>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="non-risk-chart" class="growth-chart-canvas"></canvas>
+                                        <div class="chart-value-display" id="non-risk-chart-value">€230,000</div>
+                                    </div>
+                                </div>
+
+                                <div class="result-stats">
+                                    <div class="stat-box">
+                                        <div class="stat-value">5-8%</div>
+                                        <div class="stat-label">Expected Annual Return</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-value">Low</div>
+                                        <div class="stat-label">Volatility Level</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-value">Conservative</div>
+                                        <div class="stat-label">Management Style</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Calculator CTA Section -->
+        <section class="calculator-cta-section">
+            <div class="section-container">
+                <div class="calculator-cta-content">
+                    <div class="calculator-cta-left">
+                        <a href="investment-calculator.html" class="calculator-cta-card">
+                            <h2 class="cta-title">Calculate Your Personalised Investment Now</h2>
+                            <p class="cta-description">Discover how your investment could grow over time with our interactive calculator. Input your details and see personalized projections.</p>
+                            <div class="cta-button">
+                                <span>Get Started</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="calculator-cta-right">
+                        <div class="chart-container">
+                            <div class="section-header">
+                                <h3 class="chart-title">Investment Graph</h3>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-line legend-line--compound"></span>
+                                    <span class="legend-label">With Compound Growth</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-line legend-line--simple"></span>
+                                    <span class="legend-label">Without Compound Growth</span>
+                                </div>
+                            </div>
+                            <canvas id="cta-growth-chart" width="600" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="portfolio-faq-section">
+            <div class="section-container">
+                <h2 class="portfolio-faq-heading">What Model to Choose FAQ</h2>
+                <div class="accordion-container">
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>What's the difference between Risk-Oriented and Non-Risk portfolio models?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>The Risk-Oriented model targets higher returns (15-25% annually) through aggressive positioning in high-growth energy sectors, suitable for investors comfortable with volatility. The Non-Risk model prioritizes capital preservation with stable returns (5-8% annually) through defensive strategies and conservative risk management, ideal for investors seeking steady, predictable growth.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>How do I know which portfolio model is right for me?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Consider your investment goals, risk tolerance, time horizon, and financial situation. If you're seeking maximum growth and can handle market volatility, the Risk-Oriented model may suit you. If capital preservation and steady returns are priorities, the Non-Risk model is more appropriate. Use our interactive calculator to see personalized projections for each approach.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>Can I switch between portfolio models after starting?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Yes, portfolio rebalancing and model adjustments are possible, though we recommend maintaining consistency with your chosen strategy for optimal results. Our dynamic allocation system allows for strategic shifts based on changing market conditions and your evolving investment objectives. Consult with our team to discuss transition strategies.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>What is the minimum investment required for each model?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Both portfolio models are designed to be accessible, with flexible minimum investment requirements. The Risk-Oriented model typically requires a higher initial investment due to its active management approach, while the Non-Risk model can accommodate smaller starting amounts. Contact us for specific minimum investment details based on your situation.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>How often is the portfolio rebalanced in each model?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>The Risk-Oriented model employs real-time portfolio rebalancing based on market conditions and volatility indicators, allowing for frequent adjustments to capture opportunities. The Non-Risk model uses a more conservative rebalancing schedule, typically quarterly or semi-annually, to maintain stability while minimizing transaction costs.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>What sectors does each portfolio model focus on?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Both models focus on energy markets, but with different approaches. The Risk-Oriented model targets high-growth energy sectors including emerging technologies, volatile commodities, and growth opportunities. The Non-Risk model emphasizes diversified holdings across stable energy sectors, defensive positions, and established market segments with lower volatility.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>Are there any fees associated with these portfolio models?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Both models have transparent fee structures. The Risk-Oriented model may have slightly higher management fees due to its active management style and frequent rebalancing. The Non-Risk model typically has lower fees reflecting its conservative, lower-maintenance approach. All fees are clearly disclosed before you commit to any model.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span>How do I track the performance of my chosen portfolio model?</span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p>Both models include advanced analytics and performance tracking tools. You'll have access to real-time portfolio health monitoring, performance metrics, and detailed reporting. The Risk-Oriented model provides more frequent updates and detailed analytics, while the Non-Risk model offers comprehensive quarterly reports with key performance indicators.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financial Advice CTA Section -->
+        <section class="financial-advice-section">
+            <div class="section-container">
+                <div class="financial-advice-content">
+                    <div class="financial-advice-text">
+                        <h2 class="financial-advice-title">Need Financial Advice?</h2>
+                        <p class="financial-advice-description">Our experienced financial advisors are here to help you make informed investment decisions. Consult with a professional to discuss your investment goals, risk tolerance, and find the portfolio model that best suits your needs.</p>
+                        <a href="index.html#consultation-section" class="financial-advice-button">
+                            <span>Schedule Your Consultation</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Initiate Investment CTA Section -->
+        <section class="initiate-investment-section">
+            <div class="section-container">
+                <div class="initiate-investment-content">
+                    <div class="initiate-investment-text">
+                        <h2 class="initiate-investment-title">Ready to Initiate Your Investment?</h2>
+                        <p class="initiate-investment-description">Take the next step in your investment journey. Get started with your chosen portfolio model and begin building your financial future today.</p>
+                        <button class="initiate-investment-button" id="initiate-investment-btn">
+                            <span>Initiate Investment</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- We Invest in Our People Section -->
+        <section class="invest-people-section">
+            <div class="section-container">
+                <h2 class="invest-people-heading">We Invest in Our People</h2>
+                <div class="invest-people-grid">
+                    <div class="invest-people-column">
+                        <h3 class="invest-people-title">Learning</h3>
+                        <p class="invest-people-text">We built Opessocius Academy to support continuous professional growth — from initial onboarding and integration into our ecosystem to advanced learning throughout every stage of a team member's career.</p>
+                    </div>
+                    <div class="invest-people-column">
+                        <h3 class="invest-people-title">Development</h3>
+                        <p class="invest-people-text">Through structured feedback, capability-building programs, and cross-disciplinary exposure, we enable our people to shape their own development and broaden their skill sets.</p>
+                    </div>
+                    <div class="invest-people-column">
+                        <h3 class="invest-people-title">Apprenticeship</h3>
+                        <p class="invest-people-text">We foster an apprenticeship culture where junior professionals work directly alongside experienced operators. This hands-on model is essential to developing the next generation of Opessocius leadership.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="blog-highlights-section">
+            <div class="section-container">
+                <div class="blog-grid">
+                    <div class="blog-card">
+                        <div class="blog-image">
+                            <img src="images/stock.png" alt="Blog Post 1" />
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">OUR PEOPLE</span>
+                            <h3 class="blog-title">Congratulations to the Vice President and Executive Director Class of 2025</h3>
+                            <span class="blog-date">Nov 20, 2025</span>
+                        </div>
+                    </div>
+                    <div class="blog-card">
+                        <div class="blog-image">
+                            <img src="images/bull.png" alt="Blog Post 2" />
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">MARKET INSIGHTS</span>
+                            <h3 class="blog-title">Energy Market Trends and Investment Opportunities in 2025</h3>
+                            <span class="blog-date">Nov 15, 2025</span>
+                        </div>
+                    </div>
+                    <div class="blog-card">
+                        <div class="blog-image">
+                            <img src="images/stockexchange4.jpeg" alt="Blog Post 3" />
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">STRATEGY</span>
+                            <h3 class="blog-title">Portfolio Diversification Strategies for Energy Markets</h3>
+                            <span class="blog-date">Nov 10, 2025</span>
+                        </div>
+                    </div>
+                    <div class="blog-card">
+                        <div class="blog-image">
+                            <img src="images/opec1.png" alt="Blog Post 4" />
+                        </div>
+                        <div class="blog-content">
+                            <span class="blog-category">ANALYSIS</span>
+                            <h3 class="blog-title">Understanding OPEC+ Decisions and Their Market Impact</h3>
+                            <span class="blog-date">Nov 5, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Our Offices</h3>
+                    <p><strong>Germany</strong><br>Neue Schönhauser Straße 13<br>10178 Berlin</p>
+                    <p><strong>United Kingdom</strong><br>136 High Holborn<br>London, WC1V 6PX</p>
+                    <p><strong>Netherlands</strong><br>'s-Gravenhekje 1A<br>1011 TG Amsterdam</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <a href="#">For Venture Capital</a>
+                    <a href="#">For Private Equity</a>
+                    <h3>Resources</h3>
+                    <a href="#">Case Studies</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Glossary</a>
+                    <a href="#">Newsletter</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <a href="#">About</a>
+                    <a href="#">Join us</a>
+                    <a href="#">LinkedIn</a>
+                    <h3>Legal</h3>
+                    <a href="#">Terms &amp; Conditions</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Legal Notice</a>
+                    <a href="#">Cookie Settings</a>
+                </div>
+                <div class="footer-column footer-certificates">
+                    <h3>Accreditations</h3>
+                    <div class="certificate-row">
+                        <div class="certificate-item">
+                            <img src="images/iso.png" alt="ISO Certification" />
+                        </div>
+                        <div class="certificate-item">
+                            <img src="images/ias.png" alt="IAS Certification" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-disclaimer">
+                <p>© 2025 bunch technology</p>
+                <p><strong>Disclaimer:</strong> The information presented on bunch's website is for your information only. None of the information provided constitutes investment brokerage (Anlagevermittlung) or investment advice (Anlageberatung). It is not intended to serve as legal, tax or financial advice or as an endorsement of any investment strategy. bunch does not provide legal, tax or financial advice. It does not contain any offer, recommendation or incitement to make investment decisions of any kind, e.g. to invest in shares of companies or to conclude any kind of contract, nor does it take into account any particular investment objectives, financial conditions or needs of specific investors. In particular, this information should not be used as a substitute for suitable investment and product-related advice. The content contained herein is subject to change without notice. While we aim to present accurate and up-to-date information as part of bunch's content, we undertake no obligation to update our content from time to time.</p>
+            </div>
+        </footer>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+

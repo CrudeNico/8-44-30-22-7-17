@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Call - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Opessocius</h1>
+                </a>
+            </div>
+            <nav class="navigation">
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Solutions</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/InvestmentCalculator.png" alt="Investment Calculator" class="preview-image active" data-item="item-0" />
+                            <img src="images/CrudeOilStrategy.png" alt="Crude Oil Strategy" class="preview-image" data-item="item-1" />
+                            <img src="images/PortfolioModels.png" alt="Portfolio Models" class="preview-image" data-item="item-2" />
+                            <img src="images/RiskManagement.png" alt="Risk Management" class="preview-image" data-item="item-3" />
+                            <img src="images/Technology&Execution.png" alt="Technology & Execution" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="investment-calculator.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Investment Calculator</span>
+                            </a>
+                            <a href="crude-oil-strategy.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Strategy</span>
+                            </a>
+                            <a href="portfolio-models.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Portfolio Models</span>
+                            </a>
+                            <a href="risk-management.html" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Risk Management</span>
+                            </a>
+                            <a href="technology-execution.html" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Technology & Execution</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Resources</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/Trading101.png" alt="Trading 101" class="preview-image active" data-item="item-0" />
+                            <img src="images/OilMarketfundamentals.png" alt="Oil Market Fundamentals" class="preview-image" data-item="item-1" />
+                            <img src="images/Macro&GeopoliticalInsights.png" alt="Macro & Geopolitical Insights" class="preview-image" data-item="item-2" />
+                            <img src="images/TechnicalAnalysisLibrary.png" alt="Technical Analysis Library" class="preview-image" data-item="item-3" />
+                            <img src="images/Risk&ExpectationsGuide.png" alt="Risk & Expectations Guide" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="learn.html" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">Learn</span>
+                            </a>
+                            <a href="crude-oil-fundamentals.html" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Crude Oil Fundamentals</span>
+                            </a>
+                            <a href="macro-geopolitical-insights.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Macro & Geopolitical Insights</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Technical Analysis Library</span>
+                            </a>
+                            <a href="risk-expectations-guide.html" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Risk & Expectations Guide</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link">Consultations</a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-preview">
+                            <img src="images/AboutUs.png" alt="About Us" class="preview-image active" data-item="item-0" />
+                            <img src="images/Pricing&Plans.png" alt="Pricing & Plans" class="preview-image" data-item="item-1" />
+                            <img src="images/BookaCall.png" alt="Book a Call" class="preview-image" data-item="item-2" />
+                            <img src="images/Compliance&Disclaimers.png" alt="Compliance & Disclaimers" class="preview-image" data-item="item-3" />
+                            <img src="images/OnboardingProcess.png" alt="Onboarding Process" class="preview-image" data-item="item-4" />
+                        </div>
+                        <div class="dropdown-items">
+                            <a href="#" class="dropdown-item" data-preview="item-0">
+                                <span class="dropdown-text">About Us</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-1">
+                                <span class="dropdown-text">Pricing & Plans</span>
+                            </a>
+                            <a href="book-a-call.html" class="dropdown-item" data-preview="item-2">
+                                <span class="dropdown-text">Book a Call</span>
+                            </a>
+                            <a href="compliance-disclaimers.html" class="dropdown-item" data-preview="item-3">
+                                <span class="dropdown-text">Compliance & Disclaimers</span>
+                            </a>
+                            <a href="#" class="dropdown-item" data-preview="item-4">
+                                <span class="dropdown-text">Onboarding Process</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="nav-link">Log in</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main-content">
+        <section class="learn-hero-section">
+            <div class="learn-hero-image" style="background-image: url('images/callcenter.jpeg');">
+                <div class="learn-hero-overlay"></div>
+                <div class="learn-hero-content">
+                    <h2 class="learn-hero-title">Book a Call</h2>
+                    <p class="learn-hero-subtitle">Schedule a personalized consultation with our team to discuss your investment objectives, explore our strategies, and understand how we can help you achieve your financial goals. Our experts are ready to provide tailored guidance based on your unique needs and market opportunities.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-intro-section fade-in-section">
+            <div class="section-container">
+                <div class="tech-intro-content">
+                    <p class="tech-intro-text">Opessocius has been developing investment management solutions for more than 8 years and now has the only integrated solution that automates complex manual processes and provides complete transparency from investor to asset. Our technology platform combines advanced algorithmic trading systems with rigorous human oversight, delivering institutional-grade execution and comprehensive risk management.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="consultation-section" class="content-section consultation-section fade-in-section" style="margin-top: -4rem;">
+            <div class="section-container">
+                <div class="consultation-widget">
+                    <div class="consultation-header">
+                        <p class="consultation-subtitle">Schedule Your <span class="highlight-blue">Appointment Now</span></p>
+                        <p class="consultation-note">Reserve your slot and receive an email confirmation shortly</p>
+                    </div>
+                    <div class="consultation-content">
+                        <div class="consultation-left" id="consultation-left">
+                            <div class="advisor-info">
+                                <div class="advisor-profile">
+                                    <img src="images/diegorequena.JPG" alt="Diego Requena" class="advisor-avatar" />
+                                    <div class="advisor-details">
+                                        <div class="advisor-title-row">
+                                            <span class="advisor-title">Diego Requena</span>
+                                        </div>
+                                        <div class="live-indicator-row">
+                                            <div class="live-indicator">
+                                                <span class="live-dot"></span>
+                                                Live
+                                            </div>
+                                            <span class="crd-number">CRD#5281904</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h4 class="advisor-heading">Speak to a financial advisor</h4>
+                                <div class="advisor-services">
+                                    <div class="service-item">
+                                        <h5 class="service-title"><span class="service-number">1.</span> Investment Consultation</h5>
+                                        <p class="service-description">Discuss objectives, risk limits, and expected liquidity needs with an advisor. Review strategy behavior, historical performance ranges, and operational requirements before committing capital.</p>
+                                    </div>
+                                    <div class="service-item">
+                                        <h5 class="service-title"><span class="service-number">2.</span> Onboarding & Account Setup</h5>
+                                        <p class="service-description">Complete onboarding verification, provide required documentation, and receive guidance on creating your investor profile. All account configurations, access credentials, and reporting preferences are set during this stage.</p>
+                                    </div>
+                                    <div class="service-item">
+                                        <h5 class="service-title"><span class="service-number">3.</span> Contract Review & Execution</h5>
+                                        <p class="service-description">Examine the investment mandate, fee structure, risk disclosures, and operational terms. Finalize the agreement through a formal review and digital or in-person signature.</p>
+                                    </div>
+                                    <div class="service-item">
+                                        <h5 class="service-title"><span class="service-number">4.</span> Capital Funding & Performance Tracking</h5>
+                                        <p class="service-description">Transfer initial capital to the designated account. Begin monitored participation in the strategy with transparent monthly reporting, performance updates, and the option to schedule ongoing reviews as needed.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="consultation-right">
+                            <!-- Date Selection View -->
+                            <div class="booking-view" id="date-selection-view">
+                                <h4 class="calendar-heading">Select a Date & Time</h4>
+                                <div class="calendar-widget">
+                                    <div class="calendar-header">
+                                        <button class="calendar-nav" id="prev-month">‹</button>
+                                        <h5 class="calendar-month" id="current-month">November 2025</h5>
+                                        <button class="calendar-nav" id="next-month">›</button>
+                                    </div>
+                                    <div class="calendar-weekdays">
+                                        <div class="weekday">SUN</div>
+                                        <div class="weekday">MON</div>
+                                        <div class="weekday">TUE</div>
+                                        <div class="weekday">WED</div>
+                                        <div class="weekday">THU</div>
+                                        <div class="weekday">FRI</div>
+                                        <div class="weekday">SAT</div>
+                                    </div>
+                                    <div class="calendar-days" id="calendar-days">
+                                        <!-- Calendar days will be generated by JavaScript -->
+                                    </div>
+                                    <div class="timezone-info">
+                                        <span class="globe-icon">◉</span>
+                                        <span>Central European Summer Time (CEST)</span>
+                                        <span class="duration-info-inline">
+                                            <span class="clock-icon">◷</span>
+                                            <span>30 min</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Time Selection & Booking Form View -->
+                            <div class="booking-view" id="booking-form-view" style="display: none;">
+                                <button class="back-arrow-btn" id="back-to-calendar-arrow" aria-label="Back to calendar">‹</button>
+                                <div class="booking-form-content">
+                                    <div class="time-slots-section">
+                                        <h4 class="form-section-heading">Select a Time</h4>
+                                        <p class="selected-date-display" id="selected-date-display"></p>
+                                        <div class="time-slots-grid" id="time-slots-grid">
+                                            <!-- Time slots will be generated by JavaScript -->
+                                        </div>
+                                        <div class="consultation-topic-section">
+                                            <h5 class="topic-heading">Consultation Topic</h5>
+                                            <div class="topic-options">
+                                                <label class="topic-option">
+                                                    <input type="radio" name="consultationTopic" value="general" required>
+                                                    <span>General Consultation</span>
+                                                </label>
+                                                <label class="topic-option">
+                                                    <input type="radio" name="consultationTopic" value="strategies" required>
+                                                    <span>Investment Strategies</span>
+                                                </label>
+                                                <label class="topic-option">
+                                                    <input type="radio" name="consultationTopic" value="review" required>
+                                                    <span>Portfolio Review</span>
+                                                </label>
+                                                <label class="topic-option">
+                                                    <input type="radio" name="consultationTopic" value="planning" required>
+                                                    <span>Investment Planning</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="booking-form-section">
+                                        <h4 class="form-section-heading">Your Information</h4>
+                                        <form class="booking-form" id="booking-form">
+                                            <div class="form-group">
+                                                <label for="full-name">Full Name *</label>
+                                                <input type="text" id="full-name" name="fullName" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="email">Email Address *</label>
+                                                <input type="email" id="email" name="email" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="phone">Phone Number *</label>
+                                                <input type="tel" id="phone" name="phone" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="country">Country of Residence *</label>
+                                                <input type="text" id="country" name="country" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="company">Company (Optional)</label>
+                                                <input type="text" id="company" name="company">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="notes">Additional Notes (Optional)</label>
+                                                <textarea id="notes" name="notes" rows="3"></textarea>
+                                            </div>
+                                        </form>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn-submit" form="booking-form">Confirm Booking</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section fade-in-section" style="margin-top: -6rem; padding-top: 2rem;">
+            <div class="section-container">
+                <!-- Collapsible Information Sections -->
+                <div class="info-sections">
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">Important information about investing</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>The value of investments, and any income generated, can fall as well as rise. You may lose some or all of the amount you invest. This risk may be affected by currency movements when investments have exposure to foreign markets. Investing should be viewed as a medium- to long-term commitment, typically five years or more. Eligibility requirements and fees may apply. Nothing in this material constitutes an offer, solicitation, recommendation, or advice regarding any financial product. Do not act on this information without seeking independent professional advice. You should assess whether any product or strategy is suitable for your circumstances, including your financial position, investment objectives, risk tolerance, experience, and preferred investment horizon.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">What do we mean by 'risk level'?</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>Risk levels refer to the expected balance between potential returns and potential losses:</p>
+                            <ul>
+                                <li><strong>Very Low</strong> – very limited expected return with minimal risk of loss.</li>
+                                <li><strong>Low</strong> – modest expected return with relatively low risk of loss.</li>
+                                <li><strong>Balanced</strong> – moderate expected return with moderate risk of loss.</li>
+                                <li><strong>High</strong> – higher expected return with a correspondingly higher risk of loss.</li>
+                                <li><strong>Very High</strong> – the potential for significant returns alongside a substantial risk of loss.</li>
+                            </ul>
+                            <p>No guarantee is given regarding the accuracy, completeness, or timeliness of the information presented. Any reliance on this information is at your own discretion and risk.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">Consultation Process & Expectations</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>Our consultation sessions are designed to provide you with personalized guidance and insights into our investment strategies. During your appointment, you will have the opportunity to:</p>
+                            <ul>
+                                <li>Discuss your investment objectives and financial goals with a qualified advisor</li>
+                                <li>Review our available strategies and how they align with your risk tolerance</li>
+                                <li>Understand the operational requirements and account setup process</li>
+                                <li>Receive transparent information about fees, performance expectations, and risk factors</li>
+                                <li>Ask questions about our approach, methodology, and regulatory compliance</li>
+                            </ul>
+                            <p>Consultations typically last 30 minutes and can be conducted via video call or phone. After your appointment, you will receive a follow-up summary and next steps if you decide to proceed with opening an account.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <button class="info-section-toggle" type="button" aria-expanded="false">
+                            <span class="info-section-title">Eligibility & Regulatory Information</span>
+                            <span class="info-section-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="info-section-content" style="display: none;">
+                            <p>Investment services are subject to eligibility requirements and regulatory restrictions that vary by jurisdiction. Before booking a consultation, please be aware of the following:</p>
+                            <ul>
+                                <li><strong>Geographic Restrictions:</strong> Our services may not be available in all jurisdictions. Please confirm your country of residence during the consultation to determine eligibility.</li>
+                                <li><strong>Investor Classification:</strong> We serve qualified investors, professional clients, and eligible counterparties as defined by applicable regulations. Your classification will be determined during the onboarding process.</li>
+                                <li><strong>Minimum Investment Requirements:</strong> Different strategies may have varying minimum investment thresholds. These will be discussed during your consultation based on your objectives.</li>
+                                <li><strong>Regulatory Framework:</strong> We operate under strict regulatory oversight and comply with all applicable financial services regulations in the jurisdictions where we provide services.</li>
+                            </ul>
+                            <p>Please note that booking a consultation does not create a client relationship or constitute investment advice. All investment decisions should be made after careful consideration and, where appropriate, independent professional advice.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- You might also be interested in Section -->
+                <div class="interested-section">
+                    <h2 class="interested-section-title">You might also be interested in</h2>
+                    <div class="interested-cards">
+                        <a href="#" class="interested-card">
+                            <div class="interested-card-header">
+                                <h3 class="interested-card-title">Ready-made portfolios</h3>
+                                <span class="interested-card-arrow">›</span>
+                            </div>
+                            <p class="interested-card-description">The HSBC Global Strategy Portfolios contain a mix of investments that are managed on your behalf.</p>
+                        </a>
+                        <a href="#" class="interested-card">
+                            <div class="interested-card-header">
+                                <h3 class="interested-card-title">New to investing?</h3>
+                                <span class="interested-card-arrow">›</span>
+                            </div>
+                            <p class="interested-card-description">We're here to help you start investing from £50.</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Our Offices</h3>
+                    <p><strong>Germany</strong><br>Neue Schönhauser Straße 13<br>10178 Berlin</p>
+                    <p><strong>United Kingdom</strong><br>136 High Holborn<br>London, WC1V 6PX</p>
+                    <p><strong>Netherlands</strong><br>'s-Gravenhekje 1A<br>1011 TG Amsterdam</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <a href="#">For Venture Capital</a>
+                    <a href="#">For Private Equity</a>
+                    <h3>Resources</h3>
+                    <a href="#">Case Studies</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Glossary</a>
+                    <a href="#">Newsletter</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <a href="#">About</a>
+                    <a href="#">Join us</a>
+                    <a href="#">LinkedIn</a>
+                    <h3>Legal</h3>
+                    <a href="#">Terms &amp; Conditions</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Legal Notice</a>
+                    <a href="#">Cookie Settings</a>
+                </div>
+                <div class="footer-column footer-certificates">
+                    <h3>Accreditations</h3>
+                    <div class="certificate-row">
+                        <div class="certificate-item">
+                            <img src="images/iso.png" alt="ISO Certification" />
+                        </div>
+                        <div class="certificate-item">
+                            <img src="images/ias.png" alt="IAS Certification" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-disclaimer">
+                <p>© 2025 bunch technology</p>
+                <p><strong>Disclaimer:</strong> The information presented on bunch's website is for your information only. None of the information provided constitutes investment brokerage (Anlagevermittlung) or investment advice (Anlageberatung). It is not intended to serve as legal, tax or financial advice or as an endorsement of any investment strategy. bunch does not provide legal, tax or financial advice. It does not contain any offer, recommendation or incitement to make investment decisions of any kind, e.g. to invest in shares of companies or to conclude any kind of contract, nor does it take into account any particular investment objectives, financial conditions or needs of specific investors. In particular, this information should not be used as a substitute for suitable investment and product-related advice. The content contained herein is subject to change without notice. While we aim to present accurate and up-to-date information as part of bunch's content, we undertake no obligation to update our content from time to time.</p>
+            </div>
+        </footer>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+
