@@ -1559,12 +1559,21 @@ body {
 
 .job-card--listing {
     background: #fffdfa;
+    cursor: pointer;
 }
 
 .job-card--listing:hover {
     transform: translateY(-4px);
     box-shadow: 0 18px 35px rgba(15, 23, 42, 0.15);
     background: #f4f2ee;
+}
+
+.job-card__actions {
+    pointer-events: auto;
+}
+
+.job-card__actions button {
+    pointer-events: auto;
 }
 
 .job-card__top {
@@ -7054,14 +7063,20 @@ table tbody tr:last-child td {
 
 /* Macro Insights Image Text Section */
 .macro-insights-image-text-section {
-    padding: 6rem 0;
+    padding: 4rem 0;
     width: 100%;
     background: linear-gradient(to right, 
         rgba(13, 28, 57, 0.95) 0%,
         rgb(13, 28, 57) 20%,
         rgb(13, 28, 57) 80%,
         rgba(13, 28, 57, 0.95) 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mission-text-content {
+    max-width: 100%;
+    margin: 0;
+    text-align: center;
+    padding: 0 2rem;
 }
 
 .macro-insights-image-text-content {
@@ -7092,7 +7107,7 @@ table tbody tr:last-child td {
     font-size: 3rem;
     font-weight: 500;
     color: #ffffff;
-    margin: 0;
+    margin: 0 0 2.5rem 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     letter-spacing: 0.01em;
     line-height: 1.2;
@@ -7135,6 +7150,335 @@ table tbody tr:last-child td {
     }
     
     .macro-insights-section-text {
+        font-size: 1.05rem;
+    }
+}
+
+/* Team Leadership Section */
+.team-leadership-section {
+    padding: 4rem 0;
+    width: 100%;
+    background: linear-gradient(to right, 
+        rgba(13, 28, 57, 0.95) 0%,
+        rgb(13, 28, 57) 20%,
+        rgb(13, 28, 57) 80%,
+        rgba(13, 28, 57, 0.95) 100%);
+}
+
+.team-leadership-title {
+    font-size: 3rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0 0 4rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.team-leadership-text {
+    margin-top: 2rem;
+    padding-top: 2rem;
+}
+
+.team-leadership-text .text-content-wrapper {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+}
+
+.team-leadership-text .text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.team-leadership-text .text-content p {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .team-leadership-text .text-content p {
+        font-size: 1.05rem;
+    }
+}
+
+.team-leadership-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.team-member-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.team-member-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.team-member-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.team-member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.team-member-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.01em;
+}
+
+.team-member-description {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.5;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@media (max-width: 1200px) {
+    .team-leadership-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .team-leadership-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .team-leadership-title {
+        font-size: 2.25rem;
+        margin-bottom: 3rem;
+    }
+    
+    .team-member-image {
+        height: 250px;
+    }
+}
+
+/* Our Offices Section */
+.offices-section {
+    padding: 4rem 0;
+    width: 100%;
+    background: linear-gradient(to right, 
+        rgba(13, 28, 57, 0.95) 0%,
+        rgb(13, 28, 57) 20%,
+        rgb(13, 28, 57) 80%,
+        rgba(13, 28, 57, 0.95) 100%);
+}
+
+.offices-title {
+    font-size: 3rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin: 0 0 4rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.offices-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.office-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.office-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.office-image-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+}
+
+.office-image-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.office-image-slide.active {
+    opacity: 1;
+}
+
+.office-image-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.office-info {
+    padding: 2rem;
+    text-align: center;
+}
+
+.office-location {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.01em;
+}
+
+.office-country {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.offices-text {
+    margin-top: 2rem;
+    padding-top: 2rem;
+}
+
+.offices-text .text-content-wrapper {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+}
+
+.offices-text .text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.offices-text .text-content p {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+@media (max-width: 968px) {
+    .offices-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+    
+    .offices-title {
+        font-size: 2.25rem;
+        margin-bottom: 3rem;
+    }
+    
+    .office-image-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .offices-text .text-content p {
+        font-size: 1.05rem;
+    }
+}
+
+/* Text Content Section */
+.text-content-section {
+    padding: 4rem 0;
+    width: 100%;
+    background: linear-gradient(to right, 
+        rgba(13, 28, 57, 0.95) 0%,
+        rgb(13, 28, 57) 20%,
+        rgb(13, 28, 57) 80%,
+        rgba(13, 28, 57, 0.95) 100%);
+}
+
+.text-content-section .text-content-wrapper {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+}
+
+.text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.text-content p {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.8;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .text-content-section {
+        padding: 4rem 0;
+    }
+    
+    .text-content p {
         font-size: 1.05rem;
     }
 }
@@ -8366,6 +8710,476 @@ table tbody tr:last-child td {
 
     .consultation-select-text {
         font-size: 1rem;
+    }
+}
+
+/* Job Application Modal */
+.job-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+}
+
+.job-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.job-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+.job-modal-container {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 10001;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    margin: 2rem;
+}
+
+.job-modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 10002;
+}
+
+.job-modal-close:hover {
+    background: #f0f0f0;
+    color: #000;
+}
+
+.job-modal-content {
+    padding: 3rem;
+}
+
+.job-modal-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.job-modal-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1f2933;
+    margin: 0 0 0.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-modal-location {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.job-details-section h3,
+.job-application-section h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2933;
+    margin: 0 0 1rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-full-description {
+    margin-bottom: 2rem;
+}
+
+.job-full-description p {
+    font-size: 1rem;
+    color: #4b5563;
+    line-height: 1.7;
+    margin: 0 0 1rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-requirements h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1f2933;
+    margin: 0 0 1rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-requirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-requirements li {
+    font-size: 1rem;
+    color: #4b5563;
+    line-height: 1.7;
+    margin: 0 0 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-requirements li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #0d1c39;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.job-application-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1f2933;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0d1c39;
+    box-shadow: 0 0 0 3px rgba(13, 28, 57, 0.1);
+}
+
+.form-group input[type="file"] {
+    padding: 0.5rem;
+}
+
+.file-hint {
+    font-size: 0.85rem;
+    color: #666;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-actions {
+    margin-top: 1rem;
+}
+
+.job-submit-btn {
+    background: #0d1c39;
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.job-submit-btn:hover {
+    background: #1a2d4a;
+}
+
+@media (max-width: 768px) {
+    .job-modal-container {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .job-modal-content {
+        padding: 2rem;
+    }
+    
+    .job-modal-title {
+        font-size: 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Login Page Styles - Split Screen Design */
+.login-main {
+    min-height: calc(100vh - 80px);
+    background: #ffffff;
+    padding-top: 80px;
+}
+
+.login-section {
+    width: 100%;
+    height: calc(100vh - 80px);
+}
+
+.login-split-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.login-welcome-section {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4rem;
+}
+
+.login-welcome-content {
+    max-width: 500px;
+}
+
+.login-welcome-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+
+.login-welcome-description {
+    font-size: 1.15rem;
+    color: #4b5563;
+    line-height: 1.7;
+    margin: 0 0 2.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-learn-more-btn {
+    background: transparent;
+    border: 2px solid #1f2937;
+    color: #1f2937;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.login-learn-more-btn:hover {
+    background: #1f2937;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.2);
+}
+
+.login-support-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+.login-support-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+
+.login-form-section {
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+}
+
+.login-form-container {
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-form-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 3rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.login-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.login-form label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1f2937;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-form input {
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #1f2937;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.login-form input::placeholder {
+    color: #9ca3af;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.login-submit-btn {
+    background: #e5e7eb;
+    color: #6b7280;
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 0.0rem;
+}
+
+.login-submit-btn:not(:disabled) {
+    background: #2563eb;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.login-submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.forgot-password-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left;
+    margin-top: 0.0rem;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+@media (max-width: 968px) {
+    .login-split-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .login-welcome-section {
+        padding: 3rem 2rem;
+        min-height: 400px;
+    }
+    
+    .login-welcome-title {
+        font-size: 2.25rem;
+    }
+    
+    .login-form-section {
+        padding: 3rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-welcome-title {
+        font-size: 1.75rem;
+    }
+    
+    .login-welcome-description {
+        font-size: 1rem;
+    }
+    
+    .login-form-title {
+        font-size: 2rem;
     }
 }
 
