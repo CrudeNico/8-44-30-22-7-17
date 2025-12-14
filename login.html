@@ -108,7 +108,8 @@
     </header>
 
     <main class="main-content login-main">
-        <section class="login-section">
+        <!-- Login Section -->
+        <section class="login-section" id="login-section">
             <div class="login-split-container">
                 <div class="login-welcome-section">
                     <div class="login-welcome-content">
@@ -129,6 +130,7 @@
                                 <label for="login-password">Password</label>
                                 <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
                             </div>
+                            <div id="login-error" class="login-error" style="display: none;">Invalid username or password</div>
                             <button type="submit" class="login-submit-btn" id="login-submit-btn" disabled>Login</button>
                             <a href="#" class="forgot-password-link">Forgot Password?</a>
                         </form>
@@ -136,6 +138,7 @@
                 </div>
             </div>
         </section>
+
     </main>
 
     <footer class="footer">
@@ -213,11 +216,23 @@
 
             // Form submission
             const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    // Here you would normally handle login
-                    alert('Login functionality would be connected to your authentication system.');
+                    const username = usernameInput.value.trim();
+                    const password = passwordInput.value.trim();
+                    
+                    // Check credentials (username: 1, password: 1)
+                    if (username === '1' && password === '1') {
+                        // Redirect to investor portal
+                        window.location.href = 'investorsportal.html';
+                    } else {
+                        // Show error
+                        if (loginError) loginError.style.display = 'block';
+                        passwordInput.value = '';
+                    }
                 });
             }
         });

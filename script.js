@@ -99,41 +99,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Feature tabs functionality
     const featureTabs = document.querySelectorAll('.feature-tab');
     const featurePanels = document.querySelectorAll('.feature-panel');
-    let currentTabIndex = 0;
-    let autoRotateInterval;
     
-    function switchTab(index) {
-        // Remove active class from all tabs and panels
-        featureTabs.forEach(tab => tab.classList.remove('active'));
-        featurePanels.forEach(panel => panel.classList.remove('active'));
+    // Only run feature tab code if elements exist (e.g., on index.html)
+    if (featureTabs.length > 0 && featurePanels.length > 0) {
+        let currentTabIndex = 0;
+        let autoRotateInterval;
         
-        // Add active class to selected tab and panel
-        featureTabs[index].classList.add('active');
-        featurePanels[index].classList.add('active');
+        function switchTab(index) {
+            // Remove active class from all tabs and panels
+            featureTabs.forEach(tab => tab.classList.remove('active'));
+            featurePanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to selected tab and panel
+            if (featureTabs[index] && featurePanels[index]) {
+                featureTabs[index].classList.add('active');
+                featurePanels[index].classList.add('active');
+                currentTabIndex = index;
+            }
+        }
         
-        currentTabIndex = index;
-    }
-    
-    // Tab click handlers
-    featureTabs.forEach((tab, index) => {
-        tab.addEventListener('click', function() {
-            switchTab(index);
-            // Reset auto-rotate timer
-            clearInterval(autoRotateInterval);
-            startAutoRotate();
+        // Tab click handlers
+        featureTabs.forEach((tab, index) => {
+            tab.addEventListener('click', function() {
+                switchTab(index);
+                // Reset auto-rotate timer
+                clearInterval(autoRotateInterval);
+                startAutoRotate();
+            });
         });
-    });
-    
-    // Auto-rotate function
-    function startAutoRotate() {
-        autoRotateInterval = setInterval(function() {
-            currentTabIndex = (currentTabIndex + 1) % featureTabs.length;
-            switchTab(currentTabIndex);
-        }, 5000); // 5 seconds
+        
+        // Auto-rotate function
+        function startAutoRotate() {
+            autoRotateInterval = setInterval(function() {
+                if (featureTabs.length > 0) {
+                    currentTabIndex = (currentTabIndex + 1) % featureTabs.length;
+                    switchTab(currentTabIndex);
+                }
+            }, 5000); // 5 seconds
+        }
+        
+        // Start auto-rotate
+        startAutoRotate();
     }
-    
-    // Start auto-rotate
-    startAutoRotate();
 
     // Services slider controls - continuous smooth scrolling
     const servicesSlider = document.querySelector('.services-slider');
@@ -2548,13 +2555,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Close panel when clicking overlay
-    const overlay = sidePanel.querySelector('.feature-side-panel-overlay');
-    if (overlay) {
-        overlay.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            closePanel();
-        });
+    if (sidePanel) {
+        const overlay = sidePanel.querySelector('.feature-side-panel-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closePanel();
+            });
+        }
     }
     
     // Close panel on Escape key

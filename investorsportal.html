@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Portal - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-active">
+    <section class="user-dashboard" id="user-dashboard">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-profile">
+                <img src="images/diegorequena.JPG" alt="Investor Profile" class="sidebar-profile-image" />
+                <div class="sidebar-profile-name">John Investor</div>
+            </div>
+            <nav class="sidebar-navigation">
+                <a href="#" class="sidebar-nav-item active">
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Portfolio</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Transactions</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Performance</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Market News</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Account Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Reports</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="sidebar-footer-item">
+                    <span>Return to Home</span>
+                </a>
+                <a href="login.html" class="sidebar-footer-item" id="logout-btn">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <!-- Dashboard View -->
+            <div class="dashboard-view" id="dashboard-view" style="display: block;">
+                <div class="dashboard-widgets-grid">
+                    <!-- Main Metrics -->
+                    <div class="dashboard-widget dashboard-widget-compact">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Current Balance</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-main-metric" id="dashboard-current-balance">€287,450</div>
+                            <div class="dashboard-sub-metric">Capital Invested: €230,000</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-widget dashboard-widget-compact">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Total Gain</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-main-metric dashboard-metric-positive" id="dashboard-total-gain">+24.98%</div>
+                            <div class="dashboard-sub-metric">€57,450 profit</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 12 Month Projection -->
+                    <div class="dashboard-widget dashboard-widget-compact">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">12 Month Projection</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-projection-value" id="dashboard-projection-value">€364,892</div>
+                            <div class="dashboard-sub-metric">Projected ending capital</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latest News -->
+                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Latest News</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">OPEC+ Maintains Production Cuts</div>
+                            </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">Crude Oil Prices Rally on Middle East Tensions</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latest Report -->
+                    <div class="dashboard-widget dashboard-widget-compact">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Latest Report</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">October 2024</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+15.22%</span>
+                                    <span class="dashboard-report-balance">€265,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2024-10">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">November 2024</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+17.39%</span>
+                                    <span class="dashboard-report-balance">€270,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2024-11">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">December 2024</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+19.57%</span>
+                                    <span class="dashboard-report-balance">€275,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2024-12">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">January 2025</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+21.74%</span>
+                                    <span class="dashboard-report-balance">€280,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2025-01">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Deposit Widget -->
+                    <div class="dashboard-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Deposit Funds</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <form class="dashboard-transaction-form" id="deposit-form">
+                                <div class="dashboard-form-group">
+                                    <label for="deposit-amount" class="dashboard-form-label">Amount (€)</label>
+                                    <input type="number" id="deposit-amount" class="dashboard-form-input" placeholder="Enter amount" min="1" step="0.01" required>
+                                </div>
+                                <button type="submit" class="dashboard-form-button dashboard-form-button-deposit">
+                                    Send to Advisor
+                                </button>
+                                <div class="dashboard-form-note">Your advisor will receive the request and respond within 24 hours.</div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Withdrawal Widget -->
+                    <div class="dashboard-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Withdraw Funds</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <form class="dashboard-transaction-form" id="withdrawal-form">
+                                <div class="dashboard-form-group">
+                                    <label for="withdrawal-amount" class="dashboard-form-label">Amount (€)</label>
+                                    <input type="number" id="withdrawal-amount" class="dashboard-form-input" placeholder="Enter amount" min="1" step="0.01" required>
+                                </div>
+                                <button type="submit" class="dashboard-form-button dashboard-form-button-withdrawal">
+                                    Send to Advisor
+                                </button>
+                                <div class="dashboard-form-note">Your advisor will receive the request and respond within 24 hours.</div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Crude Oil Mini Chart -->
+                    <div class="dashboard-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Crude Oil Price</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                                {
+                                    "symbol": "USOIL",
+                                    "width": "100%",
+                                    "height": "160",
+                                    "locale": "en",
+                                    "dateRange": "1D",
+                                    "colorTheme": "light",
+                                    "trendLineColor": "rgba(37, 99, 235, 1)",
+                                    "underLineColor": "rgba(37, 99, 235, 0.3)",
+                                    "isTransparent": false,
+                                    "autosize": true,
+                                    "largeChartUrl": ""
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Stories -->
+                    <div class="dashboard-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Top Stories</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                                {
+                                    "feedMode": "all_symbols",
+                                    "colorTheme": "light",
+                                    "isTransparent": false,
+                                    "displayMode": "regular",
+                                    "width": "100%",
+                                    "height": "300",
+                                    "locale": "en"
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Economic Calendar -->
+                    <div class="dashboard-widget dashboard-widget-wide">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Economic Calendar</h3>
+                            <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                                {
+                                    "colorTheme": "light",
+                                    "isTransparent": false,
+                                    "width": "100%",
+                                    "height": "400",
+                                    "locale": "en",
+                                    "importanceFilter": "-1,0,1"
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio View -->
+            <div class="portfolio-view" id="portfolio-view" style="display: none;">
+                <div class="portfolio-balance-cards">
+                    <div class="balance-card">
+                        <div class="balance-label">Capital Invested</div>
+                        <div class="balance-amount" id="capital-invested">€230,000</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Current Account Balance</div>
+                        <div class="balance-amount" id="current-balance">€287,450</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Total Gain</div>
+                        <div class="balance-amount balance-amount-gain" id="total-gain">+24.98%</div>
+                    </div>
+                </div>
+                <div class="portfolio-chart-container">
+                    <div class="portfolio-chart-card">
+                        <h3 class="portfolio-chart-title">Investment Performance & Projection</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="portfolio-chart" width="800" height="400"></canvas>
+                            <div id="chart-tooltip" class="chart-tooltip" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions View -->
+            <div class="transactions-view" id="transactions-view" style="display: none;">
+                <div class="transactions-table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Starting Balance</th>
+                                <th>Ending Balance</th>
+                                <th>Growth %</th>
+                                <th>Deposits</th>
+                                <th>Withdrawals</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Performance View -->
+            <div class="performance-view" id="performance-view" style="display: none;">
+                <div class="performance-header">
+                    <p class="performance-subtitle">Investment Performance Overview</p>
+                </div>
+                <div class="performance-chart-container">
+                    <div class="portfolio-chart-card">
+                        <h3 class="portfolio-chart-title">Investment Performance</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="performance-chart" width="800" height="700"></canvas>
+                            <div id="performance-tooltip" class="chart-tooltip" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Settings View -->
+            <div class="account-settings-view" id="account-settings-view" style="display: none;">
+                <div class="account-settings-content">
+                    <h2 class="account-settings-title">Account Information</h2>
+                    <div class="account-info-card">
+                        <div class="account-info-row">
+                            <div class="account-info-label">Full Name</div>
+                            <div class="account-info-value">John Investor</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Email Address</div>
+                            <div class="account-info-value">john.investor@example.com</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Phone Number</div>
+                            <div class="account-info-value">+34 123 456 789</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Account Number</div>
+                            <div class="account-info-value">ACC-2024-001234</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Account Status</div>
+                            <div class="account-info-value account-status-active">Active</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Member Since</div>
+                            <div class="account-info-value">January 2024</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Country</div>
+                            <div class="account-info-value">Spain</div>
+                        </div>
+                    </div>
+
+                    <h2 class="account-settings-title" style="margin-top: 3rem;">Investment Details</h2>
+                    <div class="account-info-card">
+                        <div class="account-info-row">
+                            <div class="account-info-label">Initial Investment</div>
+                            <div class="account-info-value">€230,000</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Current Balance</div>
+                            <div class="account-info-value">€287,450</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Total Return</div>
+                            <div class="account-info-value account-value-positive">+24.98%</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Investment Strategy</div>
+                            <div class="account-info-value">Crude Oil Futures</div>
+                        </div>
+                        <div class="account-info-row">
+                            <div class="account-info-label">Assigned Operator Email</div>
+                            <div class="account-info-value">operator@opessocius.com</div>
+                        </div>
+                    </div>
+
+                    <div class="account-settings-note">
+                        <p>Want to make changes? Contact support via your assigned operator.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div class="reports-view" id="reports-view" style="display: none;">
+                <div class="reports-content">
+                    <div class="reports-widgets-container" id="reports-widgets-container">
+                        <!-- Widgets will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market News View -->
+            <div class="market-news-view" id="market-news-view" style="display: none;">
+                <div class="market-news-content">
+                    <div class="market-news-chart-section">
+                        <div class="tradingview-widget-container market-news-chart">
+                            <div id="market_news_chart"></div>
+                            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                            <script type="text/javascript">
+                                new TradingView.widget({
+                                    "width": "100%",
+                                    "height": 500,
+                                    "symbol": "USOIL",
+                                    "interval": "60",
+                                    "theme": "light",
+                                    "style": "1",
+                                    "timezone": "Europe/Amsterdam",
+                                    "locale": "en",
+                                    "allow_symbol_change": true,
+                                    "withdateranges": true,
+                                    "container_id": "market_news_chart",
+                                    "hide_volume": true,
+                                    "studies": [
+                                        {
+                                            "id": "MASimple@tv-basicstudies",
+                                            "inputs": {
+                                                "length": 200,
+                                                "source": "close",
+                                                "maType": "EMA"
+                                            },
+                                            "overrides": {
+                                                "plot.color": "#FFFF00",
+                                                "plot.linewidth": 3
+                                            }
+                                        }
+                                    ]
+                                });
+                            </script>
+                        </div>
+                    </div>
+                    <div class="market-news-articles-section">
+                        <div class="news-grid">
+                            <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
+                                <div class="news-image-container">
+                                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
+                                    <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
+                                </div>
+                            </a>
+                            <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
+                                <div class="news-image-container">
+                                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
+                                    <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
+                                </div>
+                            </a>
+                            <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
+                                <div class="news-image-container">
+                                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
+                                    <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
+                                </div>
+                            </a>
+                            <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
+                                <div class="news-image-container">
+                                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
+                                    <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation handling
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+            const dashboardView = document.getElementById('dashboard-view');
+            const portfolioView = document.getElementById('portfolio-view');
+            const transactionsView = document.getElementById('transactions-view');
+            const performanceView = document.getElementById('performance-view');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get text from span element
+                    const span = this.querySelector('span');
+                    const navText = span ? span.textContent.trim() : this.textContent.trim();
+                    
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get all views
+                    const marketNewsView = document.getElementById('market-news-view');
+                    const accountSettingsView = document.getElementById('account-settings-view');
+                    const reportsView = document.getElementById('reports-view');
+                    
+                    // Hide all views
+                    if (dashboardView) dashboardView.style.display = 'none';
+                    if (portfolioView) portfolioView.style.display = 'none';
+                    if (transactionsView) transactionsView.style.display = 'none';
+                    if (performanceView) performanceView.style.display = 'none';
+                    if (marketNewsView) marketNewsView.style.display = 'none';
+                    if (accountSettingsView) accountSettingsView.style.display = 'none';
+                    if (reportsView) reportsView.style.display = 'none';
+                    
+                    // Show selected view
+                    if (navText === 'Dashboard' && dashboardView) {
+                        dashboardView.style.display = 'block';
+                    } else if (navText === 'Portfolio' && portfolioView) {
+                        portfolioView.style.display = 'block';
+                        setTimeout(drawPortfolioChart, 100);
+                    } else if (navText === 'Transactions' && transactionsView) {
+                        transactionsView.style.display = 'block';
+                        populateTransactionsTable();
+                    } else if (navText === 'Performance' && performanceView) {
+                        performanceView.style.display = 'block';
+                        setTimeout(function() {
+                            drawPerformanceChart();
+                            setTimeout(setupPerformanceChartHover, 150);
+                        }, 100);
+                    } else if (navText === 'Market News' && marketNewsView) {
+                        marketNewsView.style.display = 'block';
+                    } else if (navText === 'Account Settings' && accountSettingsView) {
+                        accountSettingsView.style.display = 'block';
+                    } else if (navText === 'Reports' && reportsView) {
+                        reportsView.style.display = 'block';
+                        setTimeout(function() {
+                            generateReportWidgets();
+                        }, 100);
+                    }
+                });
+            });
+
+            // Portfolio Chart Function
+            let chartDataPoints = [];
+            
+            function drawPortfolioChart() {
+                const canvas = document.getElementById('portfolio-chart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const container = canvas.parentElement;
+                const width = container ? container.clientWidth - 64 : 800;
+                const height = 480;
+                
+                // Set canvas size
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Chart configuration
+                const padding = { top: 40, right: 40, bottom: 60, left: 80 };
+                const chartWidth = width - padding.left - padding.right;
+                const chartHeight = height - padding.top - padding.bottom;
+                
+                // Sample data: Historical (12 months) + Projection (12 months) = 24 months total
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                // Historical data (past 12 months) - starting from initial investment
+                const initialInvestment = 230000;
+                const historicalData = [
+                    230000, 235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000
+                ];
+                
+                // Projection data continues seamlessly from last historical value
+                const lastHistoricalValue = historicalData[historicalData.length - 1];
+                const projectionData = [
+                    280000, 285000, 290000, 295000, 300000, 305000, 310000, 315000, 320000, 325000, 330000, 335000
+                ];
+                
+                // Combine data
+                const allData = [...historicalData, ...projectionData];
+                const maxValue = Math.max(...allData) * 1.1;
+                const minValue = Math.min(...allData) * 0.9;
+                const valueRange = maxValue - minValue;
+                
+                // Store data points for hover interaction
+                chartDataPoints = [];
+                
+                // Calculate x and y positions for all points
+                allData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    chartDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        growthPercent: growthPercent,
+                        isHistorical: index < 12
+                    });
+                });
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                // Draw area fill below the line (only historical section with gradient)
+                const gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / 24) * 12, 
+                    padding.top + chartHeight
+                );
+                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                
+                ctx.beginPath();
+                const firstX = padding.left + (chartWidth / 24) / 2;
+                const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(firstX, height - padding.bottom);
+                ctx.lineTo(firstX, firstY);
+                
+                // Historical area only
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                // Close at the last historical point
+                const lastHistoricalX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
+                ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw historical line
+                ctx.beginPath();
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 2.5;
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw projection line (dashed, green, continuing from historical)
+                ctx.beginPath();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * (12 + index) + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
+                        const lastHistY = padding.top + chartHeight - ((historicalData[11] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw smaller, more formal data points (blue for historical, green for projection)
+                allData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 12;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+                
+                // Draw Y-axis labels
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i <= 5; i++) {
+                    const value = minValue + (valueRange / 5) * (5 - i);
+                    const y = padding.top + (chartHeight / 5) * i;
+                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
+                    ctx.fillText(formattedValue, padding.left - 10, y);
+                }
+                
+                // Draw X-axis labels
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                for (let i = 0; i < 24; i += 2) {
+                    const x = padding.left + (chartWidth / 24) * i + (chartWidth / 24) / 2;
+                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                }
+            }
+            
+            // Add hover tooltip functionality
+            function setupChartHover() {
+                const canvas = document.getElementById('portfolio-chart');
+                const tooltip = document.getElementById('chart-tooltip');
+                if (!canvas || !tooltip) return;
+                
+                canvas.addEventListener('mousemove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find nearest data point
+                    let nearestPoint = null;
+                    let minDistance = Infinity;
+                    
+                    chartDataPoints.forEach(point => {
+                        const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+                        if (distance < 30 && distance < minDistance) {
+                            minDistance = distance;
+                            nearestPoint = point;
+                        }
+                    });
+                    
+                    if (nearestPoint) {
+                        const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
+                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        tooltip.innerHTML = `
+                            <div class="tooltip-balance">${formattedValue}</div>
+                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                        `;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (nearestPoint.x + 10) + 'px';
+                        tooltip.style.top = (nearestPoint.y - 40) + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                });
+                
+                canvas.addEventListener('mouseleave', function() {
+                    if (tooltip) tooltip.style.display = 'none';
+                });
+            }
+            
+            // Setup hover after chart is drawn
+            setTimeout(setupChartHover, 150);
+
+            // Transactions Table Population
+            function populateTransactionsTable() {
+                const tableBody = document.getElementById('transactions-table-body');
+                if (!tableBody) return;
+
+                // Historical data matching the chart
+                const initialInvestment = 230000;
+                // Data starts from January 2024
+                const startYear = 2024;
+                const monthlyData = [
+                    { ending: 230000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 235000, deposits: 5000, withdrawals: 0, depositDate: '2024-01-15', withdrawalDate: null },
+                    { ending: 238000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 242000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 245000, deposits: 3000, withdrawals: 0, depositDate: '2024-04-10', withdrawalDate: null },
+                    { ending: 248000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 252000, deposits: 4000, withdrawals: 0, depositDate: '2024-06-20', withdrawalDate: null },
+                    { ending: 255000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 260000, deposits: 5000, withdrawals: 0, depositDate: '2024-08-05', withdrawalDate: null },
+                    { ending: 265000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 270000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                    { ending: 275000, deposits: 0, withdrawals: 5000, depositDate: null, withdrawalDate: '2024-11-18' }
+                ];
+
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+
+                tableBody.innerHTML = '';
+
+                monthlyData.forEach((data, index) => {
+                    const startingBalance = index === 0 ? initialInvestment : monthlyData[index - 1].ending;
+                    const endingBalance = data.ending;
+                    // Calculate growth excluding deposits and including withdrawals
+                    const netGrowth = endingBalance - startingBalance - (data.deposits || 0) + (data.withdrawals || 0);
+                    const growth = startingBalance > 0 ? (netGrowth / startingBalance * 100).toFixed(2) : '0.00';
+                    const growthValue = parseFloat(growth);
+                    
+                    // Calculate year (assuming data starts in January 2024)
+                    const monthIndex = index;
+                    const year = startYear + Math.floor(monthIndex / 12);
+                    const monthName = months[monthIndex % 12];
+                    const monthYear = `${monthName} ${year}`;
+                    
+                    const row = document.createElement('tr');
+                    
+                    // Format dates
+                    const depositDisplay = data.depositDate 
+                        ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
+                        : '-';
+                    
+                    const withdrawalDisplay = data.withdrawalDate 
+                        ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
+                        : '-';
+
+                    row.innerHTML = `
+                        <td>${monthYear}</td>
+                        <td>€${startingBalance.toLocaleString('en-US')}</td>
+                        <td>€${endingBalance.toLocaleString('en-US')}</td>
+                        <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth}%</td>
+                        <td class="transaction-cell">${depositDisplay}</td>
+                        <td class="transaction-cell">${withdrawalDisplay}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+
+            // Performance Chart Function
+            let performanceDataPoints = [];
+            
+            function drawPerformanceChart() {
+                const canvas = document.getElementById('performance-chart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const container = canvas.parentElement;
+                const width = container ? container.clientWidth - 64 : 800;
+                const height = 700;
+                
+                // Set canvas size
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Chart configuration
+                const padding = { top: 80, right: 40, bottom: 60, left: 80 };
+                const chartWidth = width - padding.left - padding.right;
+                const chartHeight = height - padding.top - padding.bottom;
+                
+                const months = ['Start', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+                              'Jan', 'Feb', 'Mar', 'Apr'];
+                
+                // Use actual account balance values (not normalized)
+                const initialInvestment = 230000;
+                
+                // Historical data (12 months) - actual account balances - with Month 0
+                // All lines start from the exact same initial investment
+                const opessociusHistorical = [
+                    initialInvestment,  // Month 0 - exact same starting balance as S&P 500 and Banks
+                    235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000, 280000
+                ];
+                
+                // Projection data (4 months) - fixed values (2% compound growth per month for Opessocius)
+                const lastHistoricalValue = opessociusHistorical[12];
+                const projectionData = [
+                    lastHistoricalValue * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02 * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02 * 1.02 * 1.02
+                ];
+                
+                // S&P 500 monthly returns (%): +2.3%, −1.4%, +3.1%, +0.6%, −2.8%, +4.5%, +1.2%, −3.6%, +2.9%, +0.4%, +5.1%, −1.9%, +1.7%, +3.8%, −0.7%, +2.5%
+                const sp500MonthlyReturns = [
+                    2.3, -1.4, 3.1, 0.6, -2.8, 4.5, 1.2, -3.6, 2.9, 0.4, 5.1, -1.9,  // 12 historical
+                    1.7, 3.8, -0.7, 2.5  // 4 projection
+                ];
+                
+                // Calculate S&P 500 values - SIMPLE INTEREST (no compound, each return based on initial investment)
+                const sp500DataRaw = [initialInvestment]; // Month 0
+                let cumulativeReturn = 0;
+                sp500MonthlyReturns.forEach((returnPercent) => {
+                    cumulativeReturn += returnPercent;
+                    const monthValue = initialInvestment * (1 + cumulativeReturn / 100);
+                    sp500DataRaw.push(monthValue);
+                });
+                
+                // Light smoothing for S&P 500 (2-point average) to reduce sharp peaks but keep volatility visible
+                function lightSmooth(data) {
+                    const smoothed = [data[0]]; // Keep month 0 unchanged
+                    for (let i = 1; i < data.length; i++) {
+                        if (i === data.length - 1) {
+                            smoothed.push(data[i]);
+                        } else {
+                            // Average with adjacent points (60% current, 20% each adjacent)
+                            smoothed.push(data[i] * 0.6 + data[i - 1] * 0.2 + data[i + 1] * 0.2);
+                        }
+                    }
+                    return smoothed;
+                }
+                
+                const sp500Data = lightSmooth(sp500DataRaw);
+                
+                // Split S&P 500 data into historical and projection (Month 0 + 12 historical, 4 projection)
+                const sp500Historical = sp500Data.slice(0, 13); // Month 0 + 12 months
+                const sp500Projection = sp500Data.slice(13, 17); // 4 months
+                
+                // Banks: constant 0.20% monthly growth - SIMPLE INTEREST (no compound)
+                // Ensure it starts from exact same initial investment
+                const banksMonthlyGrowth = 0.20; // 0.20% per month
+                const banksData = [initialInvestment]; // Month 0 - exact same starting balance
+                for (let i = 1; i <= 16; i++) {
+                    // Simple interest: add 0.20% of initial investment each month
+                    const monthValue = initialInvestment * (1 + (banksMonthlyGrowth * i) / 100);
+                    banksData.push(monthValue);
+                }
+                
+                // Split Banks data into historical and projection
+                const banksHistorical = banksData.slice(0, 13); // Month 0 + 12 months
+                const banksProjection = banksData.slice(13, 17); // 4 months
+                
+                
+                // Combine all data for max/min calculation
+                const allData = [...opessociusHistorical, ...projectionData, ...sp500Data, ...banksData];
+                const maxValue = Math.max(...allData) * 1.1;
+                const minValue = Math.min(...allData) * 0.9;
+                const valueRange = maxValue - minValue;
+                
+                // Store data points for hover
+                performanceDataPoints = [];
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                // Total months: 17 (Month 0 + 12 historical + 4 projection)
+                const totalMonths = 17;
+                
+                // Draw area fill for user investment historical section only (Month 0 + 12 months)
+                const gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                
+                ctx.beginPath();
+                const firstX = padding.left + (chartWidth / totalMonths) / 2;
+                const firstY = padding.top + chartHeight - ((opessociusHistorical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(firstX, height - padding.bottom);
+                ctx.lineTo(firstX, firstY);
+                
+                opessociusHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const lastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw area fill for S&P 500 historical section only - orange shade (Month 0 + 12 months)
+                const sp500Gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                sp500Gradient.addColorStop(0, 'rgba(249, 115, 22, 0.25)');
+                sp500Gradient.addColorStop(1, 'rgba(249, 115, 22, 0.05)');
+                
+                ctx.beginPath();
+                const sp500FirstX = padding.left + (chartWidth / totalMonths) / 2;
+                const sp500FirstY = padding.top + chartHeight - ((sp500Historical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(sp500FirstX, height - padding.bottom);
+                ctx.lineTo(sp500FirstX, sp500FirstY);
+                
+                sp500Historical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const sp500LastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(sp500LastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = sp500Gradient;
+                ctx.fill();
+                
+                // Draw area fill for Banks historical section only - grey shade (Month 0 + 12 months)
+                const banksGradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                banksGradient.addColorStop(0, 'rgba(107, 114, 128, 0.25)');
+                banksGradient.addColorStop(1, 'rgba(107, 114, 128, 0.05)');
+                
+                ctx.beginPath();
+                const banksFirstX = padding.left + (chartWidth / totalMonths) / 2;
+                const banksFirstY = padding.top + chartHeight - ((banksHistorical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(banksFirstX, height - padding.bottom);
+                ctx.lineTo(banksFirstX, banksFirstY);
+                
+                banksHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const banksLastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(banksLastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = banksGradient;
+                ctx.fill();
+                
+                // Draw Opessocius historical line
+                ctx.beginPath();
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 2.5;
+                opessociusHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw Opessocius projection line (dashed, green)
+                ctx.beginPath();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((opessociusHistorical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw S&P 500 historical line (orange) - straight lines to show ups and downs
+                ctx.beginPath();
+                ctx.strokeStyle = '#f97316';
+                ctx.lineWidth = 2.5;
+                sp500Historical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw S&P 500 projection line (dashed, orange)
+                ctx.beginPath();
+                ctx.strokeStyle = '#f97316';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                sp500Projection.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((sp500Historical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw Banks historical line (grey) - constant growth
+                ctx.beginPath();
+                ctx.strokeStyle = '#6b7280';
+                ctx.lineWidth = 2.5;
+                banksHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw Banks projection line (dashed, grey)
+                ctx.beginPath();
+                ctx.strokeStyle = '#6b7280';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                banksProjection.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((banksHistorical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw data points for Opessocius investment
+                [...opessociusHistorical, ...projectionData].forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'Investment',
+                        color: isHistorical ? '#2563eb' : '#10b981',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw data points for S&P 500
+                sp500Data.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#f97316';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'S&P 500',
+                        color: '#f97316',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw data points for Banks
+                banksData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#6b7280';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'Banks',
+                        color: '#6b7280',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw Y-axis labels (in euros)
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i <= 5; i++) {
+                    const value = minValue + (valueRange / 5) * (5 - i);
+                    const y = padding.top + (chartHeight / 5) * i;
+                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
+                    ctx.fillText(formattedValue, padding.left - 10, y);
+                }
+                
+                // Draw X-axis labels (17 months total: Month 0 + 12 historical + 4 projection)
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                for (let i = 0; i < totalMonths; i += 2) {
+                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
+                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                }
+                
+                // Draw legend at the top
+                const legendY = padding.top - 50;
+                const legendX = padding.left;
+                const legendItems = [
+                    { name: 'Opessocius', color: '#2563eb', risk: '0%' },
+                    { name: 'Savings Account', color: '#6b7280', risk: '0%' },
+                    { name: 'S&P 500', color: '#f97316', risk: '100%' }
+                ];
+                
+                let currentX = legendX;
+                const legendSpacing = 180;
+                
+                legendItems.forEach((item) => {
+                    // Draw colored line
+                    ctx.strokeStyle = item.color;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, legendY);
+                    ctx.lineTo(currentX + 30, legendY);
+                    ctx.stroke();
+                    
+                    // Draw name
+                    ctx.fillStyle = '#1f2937';
+                    ctx.font = 'bold 13px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(item.name, currentX + 35, legendY + 5);
+                    
+                    // Draw risk percentage below
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '11px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.fillText(`Risk: ${item.risk}`, currentX + 35, legendY + 20);
+                    
+                    // Move to next position
+                    currentX += legendSpacing;
+                });
+            }
+            
+            // Setup performance chart hover
+            function setupPerformanceChartHover() {
+                const canvas = document.getElementById('performance-chart');
+                const tooltip = document.getElementById('performance-tooltip');
+                if (!canvas || !tooltip) return;
+                
+                canvas.addEventListener('mousemove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find nearest data point
+                    let nearestPoint = null;
+                    let minDistance = Infinity;
+                    
+                    performanceDataPoints.forEach(point => {
+                        const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+                        if (distance < 30 && distance < minDistance) {
+                            minDistance = distance;
+                            nearestPoint = point;
+                        }
+                    });
+                    
+                    if (nearestPoint) {
+                        const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
+                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        tooltip.innerHTML = `
+                            <div class="tooltip-name" style="color: ${nearestPoint.color}; font-weight: 600;">${nearestPoint.name}</div>
+                            <div class="tooltip-balance">${formattedValue}</div>
+                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                        `;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (nearestPoint.x + 10) + 'px';
+                        tooltip.style.top = (nearestPoint.y - 40) + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                });
+                
+                canvas.addEventListener('mouseleave', function() {
+                    if (tooltip) tooltip.style.display = 'none';
+                });
+            }
+            
+            // Setup performance hover after chart is drawn
+            setTimeout(setupPerformanceChartHover, 150);
+
+            // Reports Section - Generate widgets
+            function generateReportWidgets() {
+                const container = document.getElementById('reports-widgets-container');
+                if (!container) return;
+                
+                // Investment data (same as portfolio chart)
+                const initialInvestment = 230000;
+                const opessociusHistorical = [
+                    initialInvestment,  // Month 0
+                    235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000, 280000
+                ];
+                
+                // Projection (2% compound growth per month)
+                const projection = [];
+                let lastValue = opessociusHistorical[opessociusHistorical.length - 1];
+                for (let i = 0; i < 12; i++) {
+                    lastValue = lastValue * 1.02;
+                    projection.push(Math.round(lastValue));
+                }
+                
+                const allData = [...opessociusHistorical.slice(1), ...projection]; // Skip Month 0 for display
+                
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                   'July', 'August', 'September', 'October', 'November', 'December'];
+                
+                // Generate widgets for each month
+                container.innerHTML = '';
+                
+                // 2024 months (12 months, starting from January)
+                for (let i = 0; i < 12; i++) {
+                    const balance = allData[i];
+                    const gainPercent = ((balance - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    const monthName = monthNames[i];
+                    const monthValue = `2024-${String(i + 1).padStart(2, '0')}`;
+                    
+                    const widget = createReportWidget(monthName, 2024, balance, gainPercent, monthValue, 'monthly');
+                    container.appendChild(widget);
+                }
+                
+                // 2025 months (6 months shown)
+                for (let i = 0; i < 6; i++) {
+                    const balance = allData[12 + i];
+                    const gainPercent = ((balance - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    const monthName = monthNames[i];
+                    const monthValue = `2025-${String(i + 1).padStart(2, '0')}`;
+                    
+                    const widget = createReportWidget(monthName, 2025, balance, gainPercent, monthValue, 'monthly');
+                    container.appendChild(widget);
+                }
+                
+                // Add yearly widget (2025 only, no 2024 yearly)
+                const year2025EndBalance = allData[17]; // June 2025 (projected)
+                const year2025Gain = ((year2025EndBalance - initialInvestment) / initialInvestment * 100).toFixed(2);
+                const year2025Widget = createReportWidget('Full Year', 2025, year2025EndBalance, year2025Gain, '2025', 'yearly');
+                container.appendChild(year2025Widget); // Add at the end
+            }
+            
+            function createReportWidget(periodName, year, balance, gainPercent, value, type) {
+                const widget = document.createElement('div');
+                widget.className = 'report-widget';
+                
+                const periodText = type === 'yearly' ? `${year}` : `${periodName} ${year}`;
+                const fileName = type === 'yearly' 
+                    ? `Yearly_Report_${year}.pdf`
+                    : `Monthly_Report_${periodName}_${year}.pdf`;
+                
+                widget.innerHTML = `
+                    <div class="report-widget-header">
+                        <div class="report-widget-period">${periodText}</div>
+                        <button class="report-widget-download" data-period="${value}" data-type="${type}" data-filename="${fileName}">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="report-widget-body">
+                        <div class="report-widget-metric">
+                            <div class="report-widget-label">Gain %</div>
+                            <div class="report-widget-value report-widget-gain">+${gainPercent}%</div>
+                        </div>
+                        <div class="report-widget-metric">
+                            <div class="report-widget-label">Ending Balance</div>
+                            <div class="report-widget-value">€${balance.toLocaleString('en-US')}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add download functionality
+                const downloadBtn = widget.querySelector('.report-widget-download');
+                downloadBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const filename = this.getAttribute('data-filename');
+                    const period = this.getAttribute('data-period');
+                    
+                    // Trigger download
+                    alert(`Downloading ${filename}\n\nNote: This is a demo. In production, this would generate and download the actual PDF report.`);
+                });
+                
+                return widget;
+            }
+            
+            // Generate widgets when Reports view is shown
+            const reportsView = document.getElementById('reports-view');
+            if (reportsView) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (reportsView.style.display !== 'none') {
+                                generateReportWidgets();
+                            }
+                        }
+                    });
+                });
+                observer.observe(reportsView, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Dashboard form handlers
+            const depositForm = document.getElementById('deposit-form');
+            const withdrawalForm = document.getElementById('withdrawal-form');
+            
+            if (depositForm) {
+                depositForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const amount = document.getElementById('deposit-amount').value;
+                    if (amount) {
+                        alert(`Deposit request of €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} has been sent to your advisor. You will receive a response within 24 hours.`);
+                        depositForm.reset();
+                    }
+                });
+            }
+            
+            if (withdrawalForm) {
+                withdrawalForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const amount = document.getElementById('withdrawal-amount').value;
+                    if (amount) {
+                        alert(`Withdrawal request of €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} has been sent to your advisor. You will receive a response within 24 hours.`);
+                        withdrawalForm.reset();
+                    }
+                });
+            }
+            
+            // Dashboard navigation links
+            const dashboardNewsLink = document.getElementById('dashboard-news-link');
+            
+            if (dashboardNewsLink) {
+                dashboardNewsLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const navItems = document.querySelectorAll('.sidebar-nav-item');
+                    navItems.forEach(item => {
+                        const span = item.querySelector('span');
+                        if (span && span.textContent.trim() === 'Market News') {
+                            item.click();
+                        }
+                    });
+                });
+            }
+            
+            // Dashboard report download buttons
+            const dashboardReportDownloads = document.querySelectorAll('.dashboard-report-download');
+            dashboardReportDownloads.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const month = this.getAttribute('data-month');
+                    const monthNames = {
+                        '2024-10': 'October_2024',
+                        '2024-11': 'November_2024',
+                        '2024-12': 'December_2024',
+                        '2025-01': 'January_2025'
+                    };
+                    const filename = `Monthly_Report_${monthNames[month]}.pdf`;
+                    alert(`Downloading ${filename}\n\nNote: This is a demo. In production, this would generate and download the actual PDF report.`);
+                });
+            });
+            
+            
+            // Dashboard news widget click handler
+            const dashboardNewsWidget = document.getElementById('dashboard-news-widget');
+            if (dashboardNewsWidget) {
+                dashboardNewsWidget.style.cursor = 'pointer';
+                dashboardNewsWidget.addEventListener('click', function() {
+                    const navItems = document.querySelectorAll('.sidebar-nav-item');
+                    navItems.forEach(item => {
+                        const span = item.querySelector('span');
+                        if (span && span.textContent.trim() === 'Market News') {
+                            item.click();
+                        }
+                    });
+                });
+            }
+            
+            // Draw dashboard charts when dashboard is shown
+            const dashboardViewEl = document.getElementById('dashboard-view');
+            if (dashboardViewEl) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (dashboardViewEl.style.display !== 'none') {
+                                setTimeout(function() {
+                                    calculateProjectionValue();
+                                }, 100);
+                            }
+                        }
+                    });
+                });
+                observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Initial draw if dashboard is visible
+            if (dashboardViewEl && dashboardViewEl.style.display !== 'none') {
+                setTimeout(function() {
+                    calculateProjectionValue();
+                }, 100);
+            }
+
+            // Redraw chart on window resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (portfolioView && portfolioView.style.display !== 'none') {
+                        drawPortfolioChart();
+                    }
+                    if (performanceView && performanceView.style.display !== 'none') {
+                        drawPerformanceChart();
+                        setTimeout(setupPerformanceChartHover, 150);
+                    }
+                    // Dashboard widgets resized
+                }, 250);
+            });
+    });
+    </script>
+</body>
+</html>
+
