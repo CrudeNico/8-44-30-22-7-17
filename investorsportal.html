@@ -49,8 +49,35 @@
             <!-- Dashboard View -->
             <div class="dashboard-view" id="dashboard-view" style="display: block;">
                 <div class="dashboard-widgets-grid">
-                    <!-- Main Metrics -->
-                    <div class="dashboard-widget dashboard-widget-compact">
+                    <!-- Crude Oil Price - Top Left -->
+                    <div class="dashboard-widget dashboard-widget-oil" style="grid-column: 1; grid-row: 1;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Crude Oil Price</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                                {
+                                    "symbol": "USOIL",
+                                    "width": "100%",
+                                    "height": "160",
+                                    "locale": "en",
+                                    "dateRange": "1D",
+                                    "colorTheme": "light",
+                                    "trendLineColor": "rgba(37, 99, 235, 1)",
+                                    "underLineColor": "rgba(37, 99, 235, 0.3)",
+                                    "isTransparent": false,
+                                    "autosize": true,
+                                    "largeChartUrl": ""
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Balance - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 1;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Current Balance</h3>
                         </div>
@@ -60,7 +87,8 @@
                         </div>
                     </div>
                     
-                    <div class="dashboard-widget dashboard-widget-compact">
+                    <!-- Total Gain - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 3; grid-row: 1;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Total Gain</h3>
                         </div>
@@ -70,19 +98,19 @@
                         </div>
                     </div>
                     
-                    <!-- 12 Month Projection -->
-                    <div class="dashboard-widget dashboard-widget-compact">
+                    <!-- 12 Month Projection - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 4; grid-row: 1;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">12 Month Projection</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="dashboard-projection-value" id="dashboard-projection-value">€364,892</div>
+                            <div class="dashboard-projection-value" id="dashboard-projection-value">€355,108</div>
                             <div class="dashboard-sub-metric">Projected ending capital</div>
                         </div>
                     </div>
                     
-                    <!-- Latest News -->
-                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget">
+                    <!-- Latest News - Second Row -->
+                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget" style="grid-column: 1; grid-row: 2;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Latest News</h3>
                         </div>
@@ -93,29 +121,21 @@
                             <div class="dashboard-news-item">
                                 <div class="dashboard-news-title">Crude Oil Prices Rally on Middle East Tensions</div>
                             </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">US Shale Production Hits Record High</div>
+                            </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">China's Oil Demand Growth Slows in Q4</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Latest Report -->
-                    <div class="dashboard-widget dashboard-widget-compact">
+                    <!-- Latest Report - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 2;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Latest Report</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">October 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+15.22%</span>
-                                    <span class="dashboard-report-balance">€265,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2024-10">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
                             <div class="dashboard-report-item">
                                 <div class="dashboard-report-period">November 2024</div>
                                 <div class="dashboard-report-metrics">
@@ -161,8 +181,8 @@
                         </div>
                     </div>
                     
-                    <!-- Deposit Widget -->
-                    <div class="dashboard-widget">
+                    <!-- Deposit Widget - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 3; grid-row: 2;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Deposit Funds</h3>
                         </div>
@@ -180,8 +200,8 @@
                         </div>
                     </div>
                     
-                    <!-- Withdrawal Widget -->
-                    <div class="dashboard-widget">
+                    <!-- Withdrawal Widget - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 4; grid-row: 2;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Withdraw Funds</h3>
                         </div>
@@ -196,33 +216,6 @@
                                 </button>
                                 <div class="dashboard-form-note">Your advisor will receive the request and respond within 24 hours.</div>
                             </form>
-                        </div>
-                    </div>
-                    
-                    <!-- Crude Oil Mini Chart -->
-                    <div class="dashboard-widget">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Crude Oil Price</h3>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                                {
-                                    "symbol": "USOIL",
-                                    "width": "100%",
-                                    "height": "160",
-                                    "locale": "en",
-                                    "dateRange": "1D",
-                                    "colorTheme": "light",
-                                    "trendLineColor": "rgba(37, 99, 235, 1)",
-                                    "underLineColor": "rgba(37, 99, 235, 0.3)",
-                                    "isTransparent": false,
-                                    "autosize": true,
-                                    "largeChartUrl": ""
-                                }
-                                </script>
-                            </div>
                         </div>
                     </div>
                     
@@ -249,8 +242,8 @@
                         </div>
                     </div>
                     
-                    <!-- Economic Calendar -->
-                    <div class="dashboard-widget dashboard-widget-wide">
+                    <!-- Economic Calendar - Third Row, spans 3 columns -->
+                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 3;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Economic Calendar</h3>
                             <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
@@ -263,7 +256,7 @@
                                     "colorTheme": "light",
                                     "isTransparent": false,
                                     "width": "100%",
-                                    "height": "400",
+                                    "height": "300",
                                     "locale": "en",
                                     "importanceFilter": "-1,0,1"
                                 }
@@ -288,6 +281,10 @@
                     <div class="balance-card">
                         <div class="balance-label">Total Gain</div>
                         <div class="balance-amount balance-amount-gain" id="total-gain">+24.98%</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">12 Month Projection</div>
+                        <div class="balance-amount" id="portfolio-projection">€355,108</div>
                     </div>
                 </div>
                 <div class="portfolio-chart-container">
@@ -526,7 +523,10 @@
                         dashboardView.style.display = 'block';
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
-                        setTimeout(drawPortfolioChart, 100);
+                        setTimeout(function() {
+                            drawPortfolioChart();
+                            calculateProjectionValue();
+                        }, 100);
                     } else if (navText === 'Transactions' && transactionsView) {
                         transactionsView.style.display = 'block';
                         populateTransactionsTable();
@@ -1552,6 +1552,32 @@
                     });
                 });
                 observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Calculate 12-month projection value
+            function calculateProjectionValue() {
+                const projectionValueEl = document.getElementById('dashboard-projection-value');
+                const portfolioProjectionEl = document.getElementById('portfolio-projection');
+                
+                // Use same calculation as portfolio chart (2% compound growth per month)
+                const monthlyGrowthRate = 0.02; // 2% per month
+                let balance = 287450; // Current balance (month 12)
+                
+                // Calculate 12 months forward
+                for (let i = 0; i < 12; i++) {
+                    balance = balance * (1 + monthlyGrowthRate);
+                }
+                
+                // Round to whole number and format
+                const projectedValue = Math.round(balance);
+                const formattedValue = '€' + projectedValue.toLocaleString('en-US');
+                
+                if (projectionValueEl) {
+                    projectionValueEl.textContent = formattedValue;
+                }
+                if (portfolioProjectionEl) {
+                    portfolioProjectionEl.textContent = formattedValue;
+                }
             }
             
             // Initial draw if dashboard is visible

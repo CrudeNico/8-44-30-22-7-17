@@ -9606,7 +9606,7 @@ body.dashboard-active {
 
 .dashboard-widgets-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 1.25rem;
     align-content: start;
     grid-auto-rows: min-content;
@@ -9621,6 +9621,18 @@ body.dashboard-active {
     display: flex;
     flex-direction: column;
     max-height: fit-content;
+}
+
+/* Make Current Balance, Total Gain, and 12 Month Projection match Crude Oil Price widget height */
+.dashboard-widget[style*="grid-column: 2; grid-row: 1"],
+.dashboard-widget[style*="grid-column: 3; grid-row: 1"],
+.dashboard-widget[style*="grid-column: 4; grid-row: 1"] {
+    min-height: 220px;
+}
+
+/* Make Latest News widget match Latest Reports widget height */
+#dashboard-news-widget {
+    min-height: 190px;
 }
 
 .dashboard-widget-compact {
@@ -9639,7 +9651,7 @@ body.dashboard-active {
 }
 
 .dashboard-widget-wide {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .dashboard-widget-subtitle {
@@ -9705,13 +9717,14 @@ body.dashboard-active {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .dashboard-main-metric {
-    font-size: 1.5rem;
+    font-size: 2.75rem;
     font-weight: 700;
     color: #111827;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.5rem;
     line-height: 1.1;
 }
 
@@ -9720,16 +9733,16 @@ body.dashboard-active {
 }
 
 .dashboard-sub-metric {
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
     color: #6b7280;
-    margin-top: 0.15rem;
+    margin-top: 0;
 }
 
 .dashboard-projection-value {
-    font-size: 1.5rem;
+    font-size: 2.75rem;
     font-weight: 700;
     color: #111827;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.5rem;
     line-height: 1.1;
 }
 
@@ -9754,7 +9767,7 @@ body.dashboard-active {
 }
 
 .dashboard-news-item {
-    padding: 0.4rem 0;
+    padding: 0.5rem 0;
     border-bottom: 1px solid #f3f4f6;
 }
 
@@ -9863,22 +9876,22 @@ body.dashboard-active {
 }
 
 .dashboard-form-button-deposit {
-    background: #4b5563;
+    background: #2563eb;
     color: #ffffff;
 }
 
 .dashboard-form-button-deposit:hover {
-    background: #374151;
+    background: #1d4ed8;
     transform: translateY(-1px);
 }
 
 .dashboard-form-button-withdrawal {
-    background: #6b7280;
+    background: #2563eb;
     color: #ffffff;
 }
 
 .dashboard-form-button-withdrawal:hover {
-    background: #4b5563;
+    background: #1d4ed8;
     transform: translateY(-1px);
 }
 
@@ -9891,8 +9904,18 @@ body.dashboard-active {
 }
 
 @media (max-width: 1200px) {
+    .dashboard-widgets-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
     .dashboard-widget-wide {
-        grid-column: span 1;
+        grid-column: span 3;
+    }
+    
+    /* Adjust grid positions for smaller screens */
+    .dashboard-widget[style*="grid-column: 4"] {
+        grid-column: 1 !important;
+        grid-row: auto !important;
     }
 }
 
@@ -9948,7 +9971,7 @@ body.dashboard-active {
 /* Portfolio View */
 .portfolio-balance-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
