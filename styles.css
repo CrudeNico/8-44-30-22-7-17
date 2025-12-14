@@ -1384,6 +1384,9 @@ body {
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 
 .achievement-card:hover {
@@ -4028,6 +4031,11 @@ table tbody tr:last-child td {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
+    text-align: right;
+}
+
+.learn-content-section .what-we-do-content {
+    text-align: right;
 }
 
 .what-we-do-heading {
@@ -4037,6 +4045,11 @@ table tbody tr:last-child td {
     margin-bottom: 2rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     letter-spacing: 0.02em;
+    text-align: right;
+}
+
+.learn-content-section .what-we-do-heading {
+    text-align: right;
 }
 
 .what-we-do-intro {
@@ -5233,6 +5246,91 @@ table tbody tr:last-child td {
     color: #ffffff;
 }
 
+.offer-feature-info-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.offer-feature-info-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+}
+
+.offer-feature-card {
+    position: relative;
+}
+
+.offer-feature-tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: rgba(13, 28, 57, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.offer-feature-tooltip.active {
+    display: block;
+}
+
+.offer-feature-tooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.offer-feature-tooltip ul li {
+    padding: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.offer-feature-tooltip ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .offer-feature-description {
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.85);
@@ -5244,6 +5342,7 @@ table tbody tr:last-child td {
 .learn-features-section {
     padding: 6rem 0;
     width: 100%;
+    scroll-margin-top: 100px;
     background: linear-gradient(to right, 
         rgba(13, 28, 57, 0.95) 0%,
         rgb(13, 28, 57) 20%,
@@ -5320,6 +5419,8 @@ table tbody tr:last-child td {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
     text-transform: lowercase;
     letter-spacing: 0.02em;
 }
@@ -5336,16 +5437,30 @@ table tbody tr:last-child td {
 
 .learn-content-section .what-we-do-intro {
     color: #ffffff;
+    text-align: right;
+}
+
+.learn-content-section .strategic-objectives {
+    text-align: right;
 }
 
 .learn-content-section .strategic-objectives li {
     color: #ffffff;
+    text-align: right;
+    padding-left: 0;
+    padding-right: 2rem;
+}
+
+.learn-content-section .strategic-objectives li::before {
+    left: auto;
+    right: 0;
 }
 
 /* Learn Pricing Section */
 .learn-pricing-section {
     padding: 6rem 0;
     width: 100%;
+    scroll-margin-top: 100px;
     background: linear-gradient(to right, 
         rgba(13, 28, 57, 0.95) 0%,
         rgb(13, 28, 57) 20%,
@@ -5694,7 +5809,8 @@ table tbody tr:last-child td {
     overflow: visible;
 }
 
-.feature-hoverable:hover .feature-tooltip {
+.feature-hoverable:hover .feature-tooltip,
+.feature-hoverable .feature-tooltip:hover {
     opacity: 1;
     visibility: visible;
     transform: translateX(0) translateY(0);
@@ -5745,6 +5861,160 @@ table tbody tr:last-child td {
     color: #ffffff;
 }
 
+/* Feature Side Panel */
+.feature-side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10000;
+    display: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.feature-side-panel.active {
+    display: block;
+    pointer-events: auto;
+}
+
+.feature-side-panel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-side-panel.active .feature-side-panel-overlay {
+    opacity: 1;
+}
+
+.feature-side-panel-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    background: rgba(13, 28, 57, 0.98);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.feature-side-panel.active .feature-side-panel-content {
+    transform: translateX(0);
+}
+
+.feature-side-panel-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-side-panel-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.feature-side-panel-banner {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.feature-side-panel-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.feature-side-panel-body {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.feature-side-panel-body h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 1.5rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+}
+
+.feature-side-panel-body p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.feature-side-panel-body p:last-child {
+    margin-bottom: 0;
+}
+
+.feature-side-panel-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.feature-side-panel-body ul li {
+    padding: 0.75rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.feature-side-panel-body ul li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .feature-side-panel-content {
+        max-width: 100%;
+    }
+}
 
 .pricing-button {
     width: 100%;
@@ -8133,8 +8403,9 @@ table tbody tr:last-child td {
 .strategy-section-navigation {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 2rem;
     padding: 2rem 0;
     margin-bottom: 3rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);

@@ -2368,20 +2368,201 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initiate Investment Button
-    const initiateInvestmentBtn = document.getElementById('initiate-investment-btn');
-    if (initiateInvestmentBtn) {
-        initiateInvestmentBtn.addEventListener('click', function() {
-            // Scroll to the portfolio selection section to let user choose their model
-            const portfolioSelection = document.querySelector('.portfolio-selection-section');
-            if (portfolioSelection) {
-                portfolioSelection.scrollIntoView({ 
+});
+
+// Tooltip functionality for learn.html offer-feature-info buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const infoButtons = document.querySelectorAll('.offer-feature-info-btn');
+    
+    infoButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const tooltipId = this.getAttribute('data-tooltip');
+            const tooltip = document.getElementById(`tooltip-${tooltipId}`);
+            
+            if (tooltip) {
+                // Close all other tooltips
+                document.querySelectorAll('.offer-feature-tooltip').forEach(t => {
+                    if (t !== tooltip) {
+                        t.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current tooltip
+                tooltip.classList.toggle('active');
+            }
+        });
+    });
+    
+    // Close tooltips when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.offer-feature-info-btn') && !e.target.closest('.offer-feature-tooltip')) {
+            document.querySelectorAll('.offer-feature-tooltip').forEach(tooltip => {
+                tooltip.classList.remove('active');
+            });
+        }
+    });
+    
+    // Handle "what we offer" button click to scroll to learn-features-section
+    const whatWeOfferBtn = document.getElementById('what-we-offer-btn');
+    if (whatWeOfferBtn) {
+        whatWeOfferBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetSection = document.getElementById('learn-features-section');
+            if (targetSection) {
+                targetSection.scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'start' 
                 });
             }
         });
     }
+});
+
+// Feature Side Panel functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const sidePanel = document.getElementById('feature-side-panel');
+    const sidePanelClose = document.getElementById('feature-side-panel-close');
+    const learnMoreLinks = document.querySelectorAll('.tooltip-learn-more[data-feature-detail]');
+    
+    // Feature content data
+    const featureContent = {
+        fundamentals: {
+            image: 'images/marketchart.jpeg',
+            title: 'Market Fundamentals',
+            text: '<p>Understanding market fundamentals is essential for successful energy trading. This comprehensive module covers the core principles that drive crude oil prices, including supply and demand dynamics, inventory cycles, and seasonal patterns.</p><p>You\'ll learn how to analyze production data from major oil-producing regions, understand the impact of refinery utilization rates, and interpret storage levels at key hubs like Cushing, Oklahoma. The course also covers how geopolitical events, OPEC+ decisions, and non-OPEC supply responses create fundamental shifts that affect pricing.</p><p>By mastering these fundamentals, you\'ll be able to identify when market pricing diverges from underlying supply-demand balance, creating opportunities for strategic positioning.</p>'
+        },
+        technical: {
+            image: 'images/marketchart.jpeg',
+            title: 'Technical Analysis',
+            text: '<p>Master the art of chart reading and pattern recognition to make informed trading decisions. This module provides in-depth coverage of technical analysis techniques used by professional energy traders.</p><p>Learn to identify key chart patterns including head and shoulders, triangles, flags, and pennants. Understand how to use technical indicators like moving averages, RSI, MACD, and Bollinger Bands to confirm trade setups. The course covers support and resistance levels, trend lines, and volume analysis specific to energy markets.</p><p>You\'ll also learn how to combine multiple technical signals for higher-probability trades and understand the relationship between technical patterns and fundamental market events.</p>'
+        },
+        risk: {
+            image: 'images/RiskManagement.png',
+            title: 'Risk Management',
+            text: '<p>Effective risk management is the cornerstone of professional trading. This module teaches you how to protect your capital while maximizing trading opportunities through systematic position sizing and risk controls.</p><p>Learn professional techniques for calculating position sizes based on account risk percentage, setting appropriate stop-loss levels, and managing drawdowns. The course covers portfolio-level risk management, correlation analysis, and how to adjust position sizes based on market volatility.</p><p>You\'ll also learn about maximum drawdown limits, risk-reward ratios, and how to maintain discipline during losing streaks. Understanding these concepts is critical for long-term trading success in volatile energy markets.</p>'
+        },
+        macro: {
+            image: 'images/opec1.png',
+            title: 'Macroeconomic Factors',
+            text: '<p>Energy markets are deeply influenced by global macroeconomic conditions. This module explores how currency movements, interest rates, economic growth cycles, and central bank policies impact crude oil pricing.</p><p>Learn to analyze the relationship between the U.S. dollar and oil prices, understand how economic indicators like GDP growth and manufacturing data affect energy demand, and interpret the impact of monetary policy changes on commodity markets.</p><p>The course also covers cross-market analysis, showing you how equity markets, bond yields, and currency pairs can signal broader macroeconomic shifts that affect energy pricing. This knowledge helps you anticipate market moves before they become apparent in price action.</p>'
+        },
+        psychology: {
+            image: 'images/stockexchange4.jpeg',
+            title: 'Trading Psychology',
+            text: '<p>Mental fortitude and emotional discipline are often what separate successful traders from those who struggle. This module focuses on developing the psychological resilience needed to stick to your trading plan under pressure.</p><p>Learn to recognize and manage common psychological traps like fear, greed, revenge trading, and overconfidence. The course covers techniques for maintaining emotional balance during both winning and losing streaks, dealing with drawdowns, and avoiding the temptation to deviate from your strategy.</p><p>You\'ll also learn about the importance of maintaining trading journals, setting realistic expectations, and building confidence through consistent practice. Developing strong trading psychology is essential for long-term success in volatile energy markets.</p>'
+        },
+        advanced: {
+            image: 'images/staretgy.png',
+            title: 'Advanced Trading Strategies',
+            text: '<p>Take your trading to the next level with sophisticated strategies used by professional traders. This advanced module covers complex techniques including spread trading, arbitrage opportunities, and options strategies.</p><p>Learn about calendar spreads, inter-commodity spreads, and crack spreads in energy markets. Understand how to identify and exploit arbitrage opportunities between different contracts or markets. The course also covers options strategies including protective puts, covered calls, and complex multi-leg positions.</p><p>You\'ll learn how to structure trades to maximize risk-adjusted returns and understand when advanced strategies are appropriate versus simpler approaches. These techniques require a solid foundation in fundamentals and technical analysis, making them ideal for experienced traders looking to expand their toolkit.</p>'
+        },
+        realtime: {
+            image: 'images/marketchart.jpeg',
+            title: 'Real-time Market Analysis',
+            text: '<p>Get live market insights and analysis from our expert team to stay ahead of price movements and trading opportunities. This service provides real-time commentary on market developments as they happen.</p><p>Receive live trade ideas, market updates, and expert analysis during active trading hours. Our team monitors market news, economic releases, and technical developments to provide timely insights that help you make informed decisions.</p><p>The real-time analysis includes explanations of why markets are moving, identification of key support and resistance levels, and alerts when significant market events occur. This hands-on learning experience helps you develop your own analytical skills while benefiting from professional insights.</p>'
+        },
+        mentorship: {
+            image: 'images/consult.png',
+            title: 'One-on-One Mentorship',
+            text: '<p>Work directly with experienced traders for personalized guidance tailored to your specific goals and experience level. Our mentorship program provides individualized attention to help accelerate your learning curve.</p><p>Receive personalized feedback on your trading approach, risk management strategies, and market analysis. Your mentor will help you identify areas for improvement, develop your strengths, and work through specific challenges you\'re facing in your trading journey.</p><p>Regular one-on-one sessions provide opportunities to discuss trade setups, review past performance, and develop a personalized trading plan. This direct access to experienced professionals is invaluable for developing confidence and refining your trading skills.</p>'
+        },
+        live: {
+            image: 'images/stockexchange4.jpeg',
+            title: 'Live Trading Sessions',
+            text: '<p>Watch professional traders in action during live market hours to see how strategies are applied in real-time market conditions. These sessions provide valuable insights into the decision-making process of experienced traders.</p><p>Observe how professional traders analyze market conditions, identify opportunities, and execute trades in real-time. You\'ll see how they manage positions, adjust strategies based on changing market conditions, and handle unexpected events.</p><p>The live sessions include commentary explaining the reasoning behind each trade decision, risk management considerations, and how various analytical tools are used in practice. This observational learning complements theoretical knowledge with practical experience.</p>'
+        },
+        certification: {
+            image: 'images/TechnicalAnalysisLibrary.png',
+            title: 'Certification Program',
+            text: '<p>Earn a recognized certification that validates your trading expertise and demonstrates your commitment to professional development in energy markets. Our certification program provides a comprehensive assessment of your knowledge and skills.</p><p>The certification process includes rigorous evaluation of your understanding of market fundamentals, technical analysis, risk management, and trading psychology. Successfully completing the program demonstrates your proficiency across all key areas of energy trading.</p><p>Certified traders receive a credential that can enhance their professional profile and demonstrate their expertise to potential employers or trading partners. The certification is designed to be a meaningful benchmark of your trading knowledge and skills.</p>'
+        }
+    };
+    
+    // Handle "Learn more" link clicks
+    learnMoreLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent any scrolling behavior
+            const scrollY = window.scrollY;
+            
+            const featureType = this.getAttribute('data-feature-detail');
+            const content = featureContent[featureType];
+            
+            if (content && sidePanel) {
+                // Populate panel with content
+                document.getElementById('feature-side-panel-image').src = content.image;
+                document.getElementById('feature-side-panel-image').alt = content.title;
+                document.getElementById('feature-side-panel-title').textContent = content.title;
+                document.getElementById('feature-side-panel-text').innerHTML = content.text;
+                
+                // Prevent body scroll and maintain scroll position
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
+                
+                // Show panel
+                sidePanel.classList.add('active');
+            }
+        });
+    });
+    
+    // Function to close panel without scrolling
+    function closePanel() {
+        // Get the current scroll position from the top style
+        const scrollY = document.body.style.top ? Math.abs(parseInt(document.body.style.top)) : window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Temporarily disable smooth scrolling
+        const html = document.documentElement;
+        const originalScrollBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        
+        // Remove the panel active class first (visual)
+        sidePanel.classList.remove('active');
+        
+        // Restore body styles
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        
+        // Immediately set scroll position without animation
+        window.scrollTo(0, scrollY);
+        html.scrollTop = scrollY;
+        document.body.scrollTop = scrollY;
+        
+        // Restore original scroll behavior after a brief moment
+        requestAnimationFrame(() => {
+            html.style.scrollBehavior = originalScrollBehavior || '';
+        });
+    }
+    
+    // Handle close button
+    if (sidePanelClose) {
+        sidePanelClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closePanel();
+        });
+    }
+    
+    // Close panel when clicking overlay
+    const overlay = sidePanel.querySelector('.feature-side-panel-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closePanel();
+        });
+    }
+    
+    // Close panel on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidePanel.classList.contains('active')) {
+            closePanel();
+        }
+    });
 });
 
 

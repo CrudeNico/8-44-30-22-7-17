@@ -122,8 +122,8 @@
                 <div class="learn-philosophy-header">
                     <h2 class="learn-philosophy-title">Our Learning Philosophy</h2>
                     <div class="learn-buttons-group">
-                        <button class="learn-offer-button">Pricing</button>
-                        <button class="learn-offer-button">what we offer</button>
+                        <a href="#pricing-section" class="learn-offer-button">Pricing</a>
+                        <a href="#" class="learn-offer-button" id="what-we-offer-btn">what we offer</a>
                     </div>
                 </div>
             </div>
@@ -150,9 +150,17 @@
                             </div>
                             <div class="offer-feature-header">
                                 <h3 class="offer-feature-title">Comprehensive Curriculum</h3>
-                                <span class="offer-feature-info">?</span>
+                                <button class="offer-feature-info-btn" data-tooltip="curriculum">?</button>
                             </div>
                             <p class="offer-feature-description">Access structured courses covering all aspects of energy trading from fundamentals to advanced strategies.</p>
+                            <div class="offer-feature-tooltip" id="tooltip-curriculum">
+                                <ul>
+                                    <li>Structured courses from basics to advanced</li>
+                                    <li>Coverage of all energy trading aspects</li>
+                                    <li>Step-by-step learning progression</li>
+                                    <li>Industry-standard curriculum</li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="offer-feature-card">
@@ -166,9 +174,17 @@
                             </div>
                             <div class="offer-feature-header">
                                 <h3 class="offer-feature-title">Expert-Led Sessions</h3>
-                                <span class="offer-feature-info">?</span>
+                                <button class="offer-feature-info-btn" data-tooltip="expert">?</button>
                             </div>
                             <p class="offer-feature-description">Learn from industry professionals with real-world trading experience and proven track records.</p>
+                            <div class="offer-feature-tooltip" id="tooltip-expert">
+                                <ul>
+                                    <li>Learn from industry professionals</li>
+                                    <li>Real-world trading experience</li>
+                                    <li>Proven track records</li>
+                                    <li>Direct access to expert knowledge</li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="offer-feature-card">
@@ -185,9 +201,17 @@
                             </div>
                             <div class="offer-feature-header">
                                 <h3 class="offer-feature-title">Interactive Learning</h3>
-                                <span class="offer-feature-info">?</span>
+                                <button class="offer-feature-info-btn" data-tooltip="interactive">?</button>
                             </div>
                             <p class="offer-feature-description">Engage with hands-on exercises, live market analysis, and practical trading simulations.</p>
+                            <div class="offer-feature-tooltip" id="tooltip-interactive">
+                                <ul>
+                                    <li>Hands-on exercises</li>
+                                    <li>Live market analysis</li>
+                                    <li>Practical trading simulations</li>
+                                    <li>Active participation required</li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="offer-feature-card">
@@ -202,16 +226,24 @@
                             </div>
                             <div class="offer-feature-header">
                                 <h3 class="offer-feature-title">Flexible Schedule</h3>
-                                <span class="offer-feature-info">?</span>
+                                <button class="offer-feature-info-btn" data-tooltip="flexible">?</button>
                             </div>
                             <p class="offer-feature-description">Learn at your own pace with on-demand content accessible anytime, anywhere.</p>
+                            <div class="offer-feature-tooltip" id="tooltip-flexible">
+                                <ul>
+                                    <li>Learn at your own pace</li>
+                                    <li>On-demand content access</li>
+                                    <li>Available anytime, anywhere</li>
+                                    <li>Fit learning into your schedule</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="learn-features-section">
+        <section class="learn-features-section" id="learn-features-section">
             <div class="section-container">
                 <div class="learn-features-grid">
                     <div class="learn-feature-widget">
@@ -315,6 +347,24 @@
                                 <p>Course access and material availability follow our structured learning timeline. Why? Because we refuse to rush through complex concepts simply to meet instant gratification demands. If a topic requires deeper understanding, we take the time. If market conditions change, we update content accordingly. This protects the quality of education and the integrity of our curriculum. We operate like a professional educational institution, not a quick tutorial platform.</p>
                             </div>
                         </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span></span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <button class="accordion-header">
+                                <span></span>
+                                <span class="accordion-plus">+</span>
+                            </button>
+                            <div class="accordion-content">
+                                <p></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -358,7 +408,7 @@
             </div>
         </section>
 
-        <section class="learn-pricing-section">
+        <section class="learn-pricing-section" id="pricing-section">
             <div class="section-container">
                 <div class="pricing-content">
                     <h2 class="pricing-heading">Plans for Every Level of Ambition</h2>
@@ -389,7 +439,7 @@
                                         <img src="images/marketchart.jpeg" alt="Market Fundamentals" />
                                         <h4>Market Fundamentals</h4>
                                         <p>Learn how supply and demand factors influence crude oil prices.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="technical">
@@ -398,7 +448,7 @@
                                         <img src="images/marketchart.jpeg" alt="Technical Analysis" />
                                         <h4>Technical Analysis</h4>
                                         <p>Master chart reading and pattern identification for informed trading decisions.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="technical">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="risk">
@@ -407,7 +457,7 @@
                                         <img src="images/RiskManagement.png" alt="Risk Management" />
                                         <h4>Risk Management</h4>
                                         <p>Learn professional techniques to protect capital and manage positions effectively.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="risk">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="macro">
@@ -416,7 +466,7 @@
                                         <img src="images/opec1.png" alt="Macroeconomic Factors" />
                                         <h4>Macroeconomic Factors</h4>
                                         <p>Understand how global economics and currency movements impact energy markets.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="macro">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="psychology">
@@ -425,7 +475,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Trading Psychology" />
                                         <h4>Trading Psychology</h4>
                                         <p>Develop mental fortitude and discipline to stick to your trading plan.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="psychology">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="advanced">
@@ -434,7 +484,7 @@
                                         <img src="images/staretgy.png" alt="Advanced Strategies" />
                                         <h4>Advanced Strategies</h4>
                                         <p>Learn sophisticated techniques like spread trading and options strategies.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="advanced">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="realtime">
@@ -443,7 +493,7 @@
                                         <img src="images/marketchart.jpeg" alt="Real-time Analysis" />
                                         <h4>Real-time Analysis</h4>
                                         <p>Get live market insights and trade ideas from our expert team.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="realtime">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="mentorship">
@@ -452,7 +502,7 @@
                                         <img src="images/consult.png" alt="Mentorship" />
                                         <h4>One-on-One Mentorship</h4>
                                         <p>Work directly with experienced traders for personalized guidance.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="mentorship">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="live">
@@ -461,7 +511,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Live Trading" />
                                         <h4>Live Trading Sessions</h4>
                                         <p>Watch professional traders in action during live market hours.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="live">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="certification">
@@ -470,7 +520,7 @@
                                         <img src="images/TechnicalAnalysisLibrary.png" alt="Certification" />
                                         <h4>Certification Program</h4>
                                         <p>Earn a recognized certification to validate your trading expertise.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="certification">Learn more</a>
                                     </div>
                                 </li>
                             </ul>
@@ -493,7 +543,7 @@
                                         <img src="images/marketchart.jpeg" alt="Market Fundamentals" />
                                         <h4>Market Fundamentals</h4>
                                         <p>Learn how supply and demand factors influence crude oil prices.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="technical">
@@ -502,7 +552,7 @@
                                         <img src="images/marketchart.jpeg" alt="Technical Analysis" />
                                         <h4>Technical Analysis</h4>
                                         <p>Master chart reading and pattern identification for informed trading decisions.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="technical">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="risk">
@@ -511,7 +561,7 @@
                                         <img src="images/RiskManagement.png" alt="Risk Management" />
                                         <h4>Risk Management</h4>
                                         <p>Learn professional techniques to protect capital and manage positions effectively.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="risk">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="macro">
@@ -520,7 +570,7 @@
                                         <img src="images/opec1.png" alt="Macroeconomic Factors" />
                                         <h4>Macroeconomic Factors</h4>
                                         <p>Understand how global economics and currency movements impact energy markets.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="macro">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="psychology">
@@ -529,7 +579,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Trading Psychology" />
                                         <h4>Trading Psychology</h4>
                                         <p>Develop mental fortitude and discipline to stick to your trading plan.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="psychology">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="advanced">
@@ -538,7 +588,7 @@
                                         <img src="images/staretgy.png" alt="Advanced Strategies" />
                                         <h4>Advanced Trading Strategies</h4>
                                         <p>Take your trading to the next level with sophisticated strategies. Learn spread trading, arbitrage opportunities, options strategies, and other advanced techniques used by professional traders.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="realtime">
@@ -547,7 +597,7 @@
                                         <img src="images/marketchart.jpeg" alt="Real-time Analysis" />
                                         <h4>Real-time Market Analysis</h4>
                                         <p>Get live market insights and analysis from our expert team. Access real-time commentary, trade ideas, and market updates to stay ahead of price movements and opportunities.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="mentorship">
@@ -556,7 +606,7 @@
                                         <img src="images/consult.png" alt="Mentorship" />
                                         <h4>One-on-One Mentorship</h4>
                                         <p>Work directly with experienced traders for personalized guidance.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="mentorship">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="live">
@@ -565,7 +615,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Live Trading" />
                                         <h4>Live Trading Sessions</h4>
                                         <p>Watch professional traders in action during live market hours.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="live">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-excluded feature-hoverable" data-feature="certification">
@@ -574,7 +624,7 @@
                                         <img src="images/TechnicalAnalysisLibrary.png" alt="Certification" />
                                         <h4>Certification Program</h4>
                                         <p>Earn a recognized certification to validate your trading expertise.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="certification">Learn more</a>
                                     </div>
                                 </li>
                             </ul>
@@ -607,7 +657,7 @@
                                         <img src="images/marketchart.jpeg" alt="Market Fundamentals" />
                                         <h4>Market Fundamentals</h4>
                                         <p>Learn how supply and demand factors influence crude oil prices.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="technical">
@@ -616,7 +666,7 @@
                                         <img src="images/marketchart.jpeg" alt="Technical Analysis" />
                                         <h4>Technical Analysis</h4>
                                         <p>Master chart reading and pattern identification for informed trading decisions.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="technical">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="risk">
@@ -625,7 +675,7 @@
                                         <img src="images/RiskManagement.png" alt="Risk Management" />
                                         <h4>Risk Management</h4>
                                         <p>Learn professional techniques to protect capital and manage positions effectively.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="risk">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="macro">
@@ -634,7 +684,7 @@
                                         <img src="images/opec1.png" alt="Macroeconomic Factors" />
                                         <h4>Macroeconomic Factors</h4>
                                         <p>Understand how global economics and currency movements impact energy markets.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="macro">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="psychology">
@@ -643,7 +693,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Trading Psychology" />
                                         <h4>Trading Psychology</h4>
                                         <p>Develop mental fortitude and discipline to stick to your trading plan.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="psychology">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="advanced">
@@ -652,7 +702,7 @@
                                         <img src="images/staretgy.png" alt="Advanced Strategies" />
                                         <h4>Advanced Trading Strategies</h4>
                                         <p>Take your trading to the next level with sophisticated strategies. Learn spread trading, arbitrage opportunities, options strategies, and other advanced techniques used by professional traders.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="realtime">
@@ -661,7 +711,7 @@
                                         <img src="images/marketchart.jpeg" alt="Real-time Analysis" />
                                         <h4>Real-time Market Analysis</h4>
                                         <p>Get live market insights and analysis from our expert team. Access real-time commentary, trade ideas, and market updates to stay ahead of price movements and opportunities.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="mentorship">
@@ -670,7 +720,7 @@
                                         <img src="images/consult.png" alt="Mentorship" />
                                         <h4>One-on-One Mentorship</h4>
                                         <p>Work directly with experienced traders for personalized guidance.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="mentorship">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="live">
@@ -679,7 +729,7 @@
                                         <img src="images/stockexchange4.jpeg" alt="Live Trading" />
                                         <h4>Live Trading Sessions</h4>
                                         <p>Watch professional traders in action during live market hours.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="live">Learn more</a>
                                     </div>
                                 </li>
                                 <li class="feature-included feature-hoverable" data-feature="certification">
@@ -688,7 +738,7 @@
                                         <img src="images/TechnicalAnalysisLibrary.png" alt="Certification" />
                                         <h4>Certification Program</h4>
                                         <p>Earn a recognized certification upon completion of the program. Validate your knowledge and skills with a professional credential that demonstrates your expertise in energy trading.</p>
-                                        <a href="#" class="tooltip-learn-more">Learn more</a>
+                                        <a href="#" class="tooltip-learn-more" data-feature-detail="fundamentals">Learn more</a>
                                     </div>
                                 </li>
                             </ul>
@@ -707,30 +757,21 @@
             <div class="footer-container">
                 <div class="footer-column">
                     <h3>Our Offices</h3>
-                    <p><strong>Germany</strong><br>Neue Schönhauser Straße 13<br>10178 Berlin</p>
-                    <p><strong>United Kingdom</strong><br>136 High Holborn<br>London, WC1V 6PX</p>
-                    <p><strong>Netherlands</strong><br>'s-Gravenhekje 1A<br>1011 TG Amsterdam</p>
+                    <p><strong>Spain</strong><br>Madrid. Castellana, 81<br>Tetuán, 28046</p>
+                    <p><strong>United Arab Emirates</strong><br>Dubai, The Bay Gate<br>Business Bay</p>
                 </div>
                 <div class="footer-column">
-                    <h3>Product</h3>
-                    <a href="#">For Venture Capital</a>
-                    <a href="#">For Private Equity</a>
-                    <h3>Resources</h3>
-                    <a href="#">Case Studies</a>
-                    <a href="#">Blog</a>
-                    <a href="#">Glossary</a>
-                    <a href="#">Newsletter</a>
+                    <h3>Legal</h3>
+                    <a href="terms-conditions.html#terms-conditions">Terms &amp; Conditions</a>
+                    <a href="terms-conditions.html#privacy-policy">Privacy Policy</a>
+                    <a href="terms-conditions.html#legal-notice">Legal Notice</a>
+                    <a href="terms-conditions.html#cookie-settings">Cookie Settings</a>
                 </div>
                 <div class="footer-column">
                     <h3>Company</h3>
-                    <a href="#">About</a>
-                    <a href="#">Join us</a>
-                    <a href="#">LinkedIn</a>
-                    <h3>Legal</h3>
-                    <a href="#">Terms &amp; Conditions</a>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Legal Notice</a>
-                    <a href="#">Cookie Settings</a>
+                    <a href="about-us.html">About</a>
+                    <a href="book-a-call.html">Join us</a>
+                    <a href="https://www.linkedin.com/in/opessocius" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 </div>
                 <div class="footer-column footer-certificates">
                     <h3>Accreditations</h3>
@@ -745,11 +786,30 @@
                 </div>
             </div>
             <div class="footer-disclaimer">
-                <p>© 2025 bunch technology</p>
-                <p><strong>Disclaimer:</strong> The information presented on bunch's website is for your information only. None of the information provided constitutes investment brokerage (Anlagevermittlung) or investment advice (Anlageberatung). It is not intended to serve as legal, tax or financial advice or as an endorsement of any investment strategy. bunch does not provide legal, tax or financial advice. It does not contain any offer, recommendation or incitement to make investment decisions of any kind, e.g. to invest in shares of companies or to conclude any kind of contract, nor does it take into account any particular investment objectives, financial conditions or needs of specific investors. In particular, this information should not be used as a substitute for suitable investment and product-related advice. The content contained herein is subject to change without notice. While we aim to present accurate and up-to-date information as part of bunch's content, we undertake no obligation to update our content from time to time.</p>
+                <p>© 2025 Opessocius Technology</p>
+                <p><strong>Disclaimer:</strong></p>
+                <p>The information presented on Opessocius' website is provided for informational purposes only. None of the information constitutes investment brokerage (Anlagevermittlung) or investment advice (Anlageberatung). It is not intended to serve as legal, tax, or financial advice, nor as an endorsement of any investment strategy. Opessocius does not provide legal, tax, or financial advice.</p>
+                <p>This content does not contain any offer, recommendation, or solicitation to make investment decisions of any kind, including but not limited to investing in shares, financial instruments, or entering into any contractual arrangement. It does not take into account the specific investment objectives, financial situation, or particular needs of any individual investor. Accordingly, the information provided should not be used as a substitute for professional, personalized investment or product-related advice.</p>
+                <p>The content on this website is subject to change without notice. While Opessocius aims to present accurate and up-to-date information, it undertakes no obligation to update or revise the content on an ongoing basis.</p>
             </div>
         </footer>
     </main>
+
+    <!-- Feature Detail Side Panel -->
+    <div class="feature-side-panel" id="feature-side-panel">
+        <div class="feature-side-panel-overlay"></div>
+        <div class="feature-side-panel-content">
+            <button class="feature-side-panel-close" id="feature-side-panel-close" aria-label="Close panel">✕</button>
+            <div class="feature-side-panel-banner">
+                <img id="feature-side-panel-image" src="" alt="" />
+            </div>
+            <div class="feature-side-panel-body">
+                <h2 id="feature-side-panel-title"></h2>
+                <div id="feature-side-panel-text"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
