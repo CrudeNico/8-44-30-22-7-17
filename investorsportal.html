@@ -35,6 +35,12 @@
                 <a href="#" class="sidebar-nav-item">
                     <span>Reports</span>
                 </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Learning</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Community</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <a href="index.html" class="sidebar-footer-item">
@@ -409,6 +415,98 @@
                 </div>
             </div>
 
+            <!-- Learning View -->
+            <div class="learning-view" id="learning-view" style="display: none;">
+                <!-- Modules List View -->
+                <div class="learning-content" id="modules-list-view">
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Learning Modules</h2>
+                        <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Explore our comprehensive learning modules to enhance your trading knowledge.</p>
+                    </div>
+                    
+                    <div class="modules-grid" id="modules-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Modules will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Module Detail View -->
+                <div class="module-detail-view" id="module-detail-view" style="display: none;">
+                    <div style="position: relative; max-width: 900px; margin: 0 auto; padding: 2rem;">
+                        <button id="close-module-btn" style="position: absolute; top: 1rem; right: 1rem; background: #1f2937; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; transition: background 0.2s;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='#1f2937'">&times;</button>
+                        <div id="module-detail-content" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                            <!-- Module content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Community View -->
+            <div class="community-view" id="community-view" style="display: none;">
+                <div class="community-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Left Side - Professors Messages Widget -->
+                    <div class="dashboard-widget" style="display: flex; flex-direction: column; height: 600px; max-height: 600px;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Professors' Messages</h3>
+                        </div>
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                            <!-- Professors Messages Area -->
+                            <div id="professors-messages-container" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1rem; background: #f9fafb; display: flex; flex-direction: column; gap: 1rem; min-height: 0;">
+                                <!-- Professors messages will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Group Chat Widget -->
+                    <div class="dashboard-widget" style="display: flex; flex-direction: column; height: 600px; max-height: 600px;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Group Chat</h3>
+                        </div>
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                            <!-- Chat Messages Area -->
+                            <div id="community-chat-messages-container" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1rem; background: #f9fafb; display: flex; flex-direction: column; gap: 0.75rem; min-height: 0;">
+                                <!-- Messages will be populated by JavaScript -->
+                            </div>
+                            
+                            <!-- Chat Input Area -->
+                            <div style="border-top: 1px solid #e5e7eb; padding: 1rem; background: white;">
+                                <div id="community-chat-images-preview" style="display: none; margin-bottom: 0.75rem; padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="community-chat-images-preview-container">
+                                        <!-- Image previews will be shown here -->
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                                    <textarea id="community-chat-message-input" placeholder="Type your message..." style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: none; font-family: inherit; font-size: 0.875rem; min-height: 40px; max-height: 80px;" rows="1"></textarea>
+                                    <label for="community-chat-image-input" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                        Add Image
+                                    </label>
+                                    <input type="file" id="community-chat-image-input" accept="image/*" multiple style="display: none;">
+                                    <button type="button" id="community-chat-send-btn" style="cursor: pointer; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content; transition: background 0.2s;">
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weekly Reports Widget - Full Width Below -->
+                    <div class="dashboard-widget" style="grid-column: 1 / -1; margin-top: 0.25rem;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Weekly Reports</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div id="weekly-reports-display" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                                <!-- Weekly Reports will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Market News View -->
             <div class="market-news-view" id="market-news-view" style="display: none;">
                 <div class="market-news-content">
@@ -508,6 +606,8 @@
                     const marketNewsView = document.getElementById('market-news-view');
                     const accountSettingsView = document.getElementById('account-settings-view');
                     const reportsView = document.getElementById('reports-view');
+                    const learningView = document.getElementById('learning-view');
+                    const communityView = document.getElementById('community-view');
                     
                     // Hide all views
                     if (dashboardView) dashboardView.style.display = 'none';
@@ -517,6 +617,8 @@
                     if (marketNewsView) marketNewsView.style.display = 'none';
                     if (accountSettingsView) accountSettingsView.style.display = 'none';
                     if (reportsView) reportsView.style.display = 'none';
+                    if (learningView) learningView.style.display = 'none';
+                    if (communityView) communityView.style.display = 'none';
                     
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
@@ -545,6 +647,14 @@
                         setTimeout(function() {
                             generateReportWidgets();
                         }, 100);
+                    } else if (navText === 'Learning' && learningView) {
+                        learningView.style.display = 'block';
+                        loadModulesList();
+                    } else if (navText === 'Community' && communityView) {
+                        communityView.style.display = 'block';
+                        loadCommunityChatMessages();
+                        loadProfessorsMessages();
+                        loadWeeklyReports();
                     }
                 });
             });
@@ -1602,6 +1712,909 @@
                     // Dashboard widgets resized
                 }, 250);
             });
+            
+            // Learning Modules Section
+            // Modules data (same as admin portal, but users can only view)
+            let modulesData = [
+                {
+                    id: 1,
+                    title: 'Introduction to Crude Oil Trading',
+                    description: 'Learn the fundamentals of crude oil trading, including market basics, key terminology, and trading strategies.',
+                    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+                    content: `
+                        <h3>Understanding Crude Oil Markets</h3>
+                        <p>Crude oil is one of the most important commodities in the global economy. This module covers:</p>
+                        <ul>
+                            <li>Market fundamentals</li>
+                            <li>Trading terminology</li>
+                            <li>Price factors</li>
+                            <li>Risk management</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">What is Crude Oil?</h3>
+                        <p>Crude oil, also known as petroleum, is a naturally occurring, unrefined petroleum product composed of hydrocarbon deposits and other organic materials. It is a fossil fuel that is extracted from the ground and refined into various products such as gasoline, diesel, jet fuel, and heating oil.</p>
+                        <p>The global crude oil market is one of the largest and most liquid commodity markets in the world, with daily trading volumes exceeding billions of dollars. Understanding this market is crucial for anyone looking to trade energy commodities.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Types of Crude Oil</h3>
+                        <p>There are several types of crude oil, each with different characteristics that affect their price and trading:</p>
+                        <ul>
+                            <li><strong>West Texas Intermediate (WTI):</strong> A high-quality crude oil benchmark produced in the United States. It is light and sweet, making it ideal for refining into gasoline.</li>
+                            <li><strong>Brent Crude:</strong> A major trading classification of sweet light crude oil that serves as a major benchmark price for purchases of oil worldwide. It is extracted from the North Sea.</li>
+                            <li><strong>Dubai Crude:</strong> A medium sour crude oil produced in Dubai and used as a benchmark for pricing Middle Eastern crude oil exports to Asia.</li>
+                            <li><strong>OPEC Basket:</strong> A weighted average of oil prices from various OPEC member countries, used as a reference price for OPEC crude oil.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Market Fundamentals</h3>
+                        <p>The crude oil market is driven by a complex interplay of supply and demand factors. Understanding these fundamentals is essential for successful trading:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Supply Factors</h4>
+                        <p>Supply factors that influence crude oil prices include:</p>
+                        <ul>
+                            <li><strong>Production Levels:</strong> The amount of crude oil being produced by major oil-producing countries, particularly OPEC members, Russia, and the United States.</li>
+                            <li><strong>Geopolitical Events:</strong> Wars, sanctions, and political instability in oil-producing regions can disrupt supply chains and affect prices.</li>
+                            <li><strong>Natural Disasters:</strong> Hurricanes, earthquakes, and other natural disasters can damage oil infrastructure and reduce production.</li>
+                            <li><strong>Technological Advances:</strong> Innovations in extraction technology, such as fracking and deep-water drilling, can increase supply.</li>
+                            <li><strong>Storage Levels:</strong> The amount of crude oil in storage facilities affects available supply and can signal market sentiment.</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem;">Demand Factors</h4>
+                        <p>Demand factors that influence crude oil prices include:</p>
+                        <ul>
+                            <li><strong>Economic Growth:</strong> Strong economic growth typically increases energy consumption, driving up demand for crude oil.</li>
+                            <li><strong>Seasonal Variations:</strong> Demand for heating oil increases in winter, while gasoline demand peaks during summer driving season.</li>
+                            <li><strong>Transportation Needs:</strong> The global transportation sector is heavily dependent on petroleum products, making it a major demand driver.</li>
+                            <li><strong>Industrial Activity:</strong> Manufacturing and industrial processes require significant amounts of energy derived from crude oil.</li>
+                            <li><strong>Alternative Energy:</strong> The growth of renewable energy sources and electric vehicles can reduce long-term demand for crude oil.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Trading Terminology</h3>
+                        <p>To effectively trade crude oil, you need to understand the key terminology used in the market:</p>
+                        <ul>
+                            <li><strong>Barrel:</strong> The standard unit of measurement for crude oil, equal to 42 US gallons or approximately 159 liters.</li>
+                            <li><strong>Spot Price:</strong> The current market price at which crude oil can be bought or sold for immediate delivery.</li>
+                            <li><strong>Futures Contract:</strong> A standardized agreement to buy or sell a specific quantity of crude oil at a predetermined price on a future date.</li>
+                            <li><strong>Contango:</strong> A market condition where futures prices are higher than spot prices, typically indicating expectations of higher future prices.</li>
+                            <li><strong>Backwardation:</strong> A market condition where futures prices are lower than spot prices, often indicating supply shortages or high immediate demand.</li>
+                            <li><strong>Spread:</strong> The price difference between two related crude oil contracts, such as the WTI-Brent spread.</li>
+                            <li><strong>Volatility:</strong> A measure of how much crude oil prices fluctuate over time, indicating market uncertainty.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Price Factors</h3>
+                        <p>Several key factors influence crude oil prices on a daily basis:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">OPEC Decisions</h4>
+                        <p>The Organization of the Petroleum Exporting Countries (OPEC) plays a crucial role in global oil markets. OPEC decisions regarding production quotas can significantly impact prices. When OPEC reduces production, prices typically rise, and when they increase production, prices usually fall.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">US Dollar Strength</h4>
+                        <p>Crude oil is priced in US dollars, so the strength of the dollar directly affects oil prices. A stronger dollar makes oil more expensive for buyers using other currencies, potentially reducing demand and lowering prices. Conversely, a weaker dollar makes oil cheaper for international buyers, potentially increasing demand.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Inventory Reports</h4>
+                        <p>Weekly inventory reports from organizations like the US Energy Information Administration (EIA) and the American Petroleum Institute (API) provide crucial data on oil stockpiles. Higher-than-expected inventory levels typically indicate oversupply and can push prices down, while lower-than-expected levels suggest tight supply and can drive prices up.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Economic Indicators</h4>
+                        <p>Economic indicators such as GDP growth, employment data, and manufacturing indices provide insights into economic health and energy demand. Strong economic indicators often correlate with higher oil demand and prices.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Risk Management</h3>
+                        <p>Effective risk management is essential when trading crude oil, as the market can be highly volatile. Here are key risk management strategies:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Position Sizing</h4>
+                        <p>Never risk more than you can afford to lose on a single trade. A common rule is to risk no more than 1-2% of your trading capital on any single position. This helps protect your account from significant losses during adverse market movements.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Stop-Loss Orders</h4>
+                        <p>Always use stop-loss orders to limit potential losses. A stop-loss order automatically closes your position if the price moves against you by a predetermined amount. This prevents emotional decision-making and helps protect your capital.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Diversification</h4>
+                        <p>Don't put all your capital into crude oil trading. Diversify your portfolio across different asset classes and commodities to reduce overall risk. This way, losses in one area can be offset by gains in others.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Stay Informed</h4>
+                        <p>Keep up with market news, economic data releases, and geopolitical events that could affect oil prices. Being informed helps you make better trading decisions and avoid unexpected market moves.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Use Leverage Wisely</h4>
+                        <p>While leverage can amplify profits, it also amplifies losses. Use leverage conservatively and understand the risks involved. High leverage can quickly wipe out your trading account if the market moves against you.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Trading Strategies</h3>
+                        <p>There are several approaches to trading crude oil, each with its own advantages and risks:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Day Trading</h4>
+                        <p>Day trading involves opening and closing positions within the same trading day. This strategy requires constant monitoring of the market and quick decision-making. Day traders typically focus on short-term price movements and technical analysis.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Swing Trading</h4>
+                        <p>Swing trading involves holding positions for several days to weeks, capturing medium-term price movements. This approach allows traders to take advantage of larger price swings while avoiding the stress of constant monitoring required in day trading.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Trend Following</h4>
+                        <p>Trend following strategies involve identifying and trading in the direction of established market trends. This approach assumes that prices will continue moving in the same direction until the trend reverses.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Fundamental Analysis</h4>
+                        <p>Fundamental analysis focuses on supply and demand factors, economic indicators, and geopolitical events to predict price movements. This approach is better suited for longer-term trading and investment decisions.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Conclusion</h3>
+                        <p>Crude oil trading offers significant opportunities for profit, but it also comes with substantial risks. Success in this market requires a solid understanding of market fundamentals, trading terminology, price factors, and risk management principles.</p>
+                        <p>Remember that no trading strategy guarantees profits, and losses are an inevitable part of trading. The key to long-term success is consistent application of sound trading principles, continuous learning, and disciplined risk management.</p>
+                        <p>As you continue your journey in crude oil trading, always stay informed about market developments, practice with a demo account before risking real money, and never invest more than you can afford to lose.</p>
+                    `,
+                    additionalImages: [],
+                    order: 1,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    title: 'Technical Analysis Fundamentals',
+                    description: 'Master the art of technical analysis with charts, indicators, and patterns used by professional traders.',
+                    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+                    content: '<h3>Chart Patterns and Indicators</h3><p>Technical analysis is crucial for successful trading. This module teaches:</p><ul><li>Reading price charts</li><li>Common patterns</li><li>Technical indicators</li><li>Entry and exit signals</li></ul>',
+                    additionalImages: [],
+                    order: 2,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            function loadModulesList() {
+                const container = document.getElementById('modules-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Sort modules by order and filter only published ones
+                const sortedModules = [...modulesData]
+                    .filter(m => m.published)
+                    .sort((a, b) => a.order - b.order);
+                
+                sortedModules.forEach(module => {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.style.background = 'white';
+                    moduleCard.style.borderRadius = '8px';
+                    moduleCard.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    moduleCard.style.overflow = 'hidden';
+                    moduleCard.style.display = 'flex';
+                    moduleCard.style.flexDirection = 'column';
+                    moduleCard.style.cursor = 'pointer';
+                    moduleCard.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                    
+                    moduleCard.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                    });
+                    
+                    moduleCard.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    });
+                    
+                    moduleCard.addEventListener('click', function() {
+                        viewModule(module.id);
+                    });
+                    
+                    const imageContainer = document.createElement('div');
+                    imageContainer.style.width = '100%';
+                    imageContainer.style.height = '200px';
+                    imageContainer.style.overflow = 'hidden';
+                    imageContainer.style.background = '#f3f4f6';
+                    
+                    const img = document.createElement('img');
+                    img.src = module.image || 'https://via.placeholder.com/400x200?text=No+Image';
+                    img.alt = module.title;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    
+                    imageContainer.appendChild(img);
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.style.padding = '1.5rem';
+                    cardBody.style.flex = '1';
+                    cardBody.style.display = 'flex';
+                    cardBody.style.flexDirection = 'column';
+                    
+                    const title = document.createElement('h3');
+                    title.textContent = module.title;
+                    title.style.margin = '0 0 0.5rem 0';
+                    title.style.fontSize = '1.25rem';
+                    title.style.color = '#1f2937';
+                    title.style.fontWeight = '600';
+                    
+                    const description = document.createElement('p');
+                    description.textContent = module.description || 'No description available.';
+                    description.style.margin = '0 0 1rem 0';
+                    description.style.color = '#6b7280';
+                    description.style.fontSize = '0.875rem';
+                    description.style.lineHeight = '1.5';
+                    
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View Module';
+                    viewBtn.style.width = '100%';
+                    viewBtn.style.marginTop = 'auto';
+                    viewBtn.style.padding = '0.75rem 1.5rem';
+                    viewBtn.style.fontSize = '0.875rem';
+                    viewBtn.style.fontWeight = '600';
+                    viewBtn.style.background = '#1f2937';
+                    viewBtn.style.color = 'white';
+                    viewBtn.style.border = 'none';
+                    viewBtn.style.borderRadius = '8px';
+                    viewBtn.style.cursor = 'pointer';
+                    viewBtn.style.transition = 'background 0.2s';
+                    viewBtn.addEventListener('mouseenter', function() {
+                        this.style.background = '#374151';
+                    });
+                    viewBtn.addEventListener('mouseleave', function() {
+                        this.style.background = '#1f2937';
+                    });
+                    viewBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        viewModule(module.id);
+                    });
+                    
+                    cardBody.appendChild(title);
+                    cardBody.appendChild(description);
+                    cardBody.appendChild(viewBtn);
+                    
+                    moduleCard.appendChild(imageContainer);
+                    moduleCard.appendChild(cardBody);
+                    container.appendChild(moduleCard);
+                });
+            }
+            
+            function viewModule(moduleId) {
+                const module = modulesData.find(m => m.id === moduleId);
+                if (!module) return;
+                
+                const modulesListView = document.getElementById('modules-list-view');
+                const moduleDetailView = document.getElementById('module-detail-view');
+                const moduleDetailContent = document.getElementById('module-detail-content');
+                
+                if (!modulesListView || !moduleDetailView || !moduleDetailContent) return;
+                
+                // Hide modules list and show module detail
+                modulesListView.style.display = 'none';
+                moduleDetailView.style.display = 'block';
+                
+                // Populate module content
+                moduleDetailContent.innerHTML = `
+                    <h2 style="margin: 0 0 1rem 0; font-size: 2rem; color: #1f2937; font-weight: 700;">${module.title}</h2>
+                    ${module.image ? `<img src="${module.image}" alt="${module.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 2rem;">` : ''}
+                    ${module.description ? `<p style="color: #6b7280; margin-bottom: 2rem; font-size: 1.125rem; line-height: 1.6;">${module.description}</p>` : ''}
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 2rem; color: #374151; line-height: 1.8;">
+                        ${module.content || '<p>No content available.</p>'}
+                    </div>
+                    ${module.additionalImages && module.additionalImages.length > 0 ? `
+                        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+                            ${module.additionalImages.map(img => `<img src="${img}" alt="Additional image" style="width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">`).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+                
+                // Attach close button handler
+                const closeBtn = document.getElementById('close-module-btn');
+                if (closeBtn) {
+                    // Remove existing listeners by cloning and replacing
+                    const newCloseBtn = closeBtn.cloneNode(true);
+                    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+                    newCloseBtn.addEventListener('click', closeModuleView);
+                }
+            }
+            
+            function closeModuleView() {
+                const modulesListView = document.getElementById('modules-list-view');
+                const moduleDetailView = document.getElementById('module-detail-view');
+                
+                if (modulesListView) modulesListView.style.display = 'block';
+                if (moduleDetailView) moduleDetailView.style.display = 'none';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+            
+            // Close module button handler
+            const closeModuleBtn = document.getElementById('close-module-btn');
+            if (closeModuleBtn) {
+                closeModuleBtn.addEventListener('click', closeModuleView);
+            }
+            
+            // Community Group Chat Section
+            let communityChatMessages = [
+                {
+                    id: 1,
+                    sender: 'Admin',
+                    message: 'Welcome to the community chat! Feel free to ask questions and share insights.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+                },
+                {
+                    id: 2,
+                    sender: 'John Investor',
+                    message: 'Thanks! Looking forward to learning more about the market trends.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3300000).toISOString() // 55 minutes ago
+                }
+            ];
+            
+            function loadCommunityChatMessages() {
+                const container = document.getElementById('community-chat-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (communityChatMessages.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages yet. Start the conversation!</p>';
+                    return;
+                }
+                
+                communityChatMessages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.flexDirection = 'column';
+                    messageDiv.style.gap = '0.25rem';
+                    messageDiv.style.maxWidth = '80%';
+                    messageDiv.style.marginLeft = msg.sender === 'Admin' ? 'auto' : '0';
+                    
+                    const senderName = document.createElement('div');
+                    senderName.style.fontSize = '0.75rem';
+                    senderName.style.fontWeight = '600';
+                    senderName.style.color = msg.sender === 'Admin' ? '#2563eb' : '#6b7280';
+                    senderName.textContent = msg.sender;
+                    
+                    const messageBubble = document.createElement('div');
+                    messageBubble.style.padding = '0.75rem 1rem';
+                    messageBubble.style.borderRadius = '12px';
+                    messageBubble.style.background = msg.sender === 'Admin' ? '#2563eb' : 'white';
+                    messageBubble.style.color = msg.sender === 'Admin' ? 'white' : '#1f2937';
+                    messageBubble.style.border = msg.sender === 'Admin' ? 'none' : '1px solid #e5e7eb';
+                    messageBubble.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                    
+                    if (msg.message) {
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.lineHeight = '1.5';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message;
+                        messageBubble.appendChild(messageText);
+                    }
+                    
+                    if (msg.images && msg.images.length > 0) {
+                        const imagesContainer = document.createElement('div');
+                        imagesContainer.style.display = 'grid';
+                        imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                        imagesContainer.style.gap = '0.5rem';
+                        imagesContainer.style.marginTop = msg.message ? '0.5rem' : '0';
+                        
+                        msg.images.forEach(imgUrl => {
+                            const img = document.createElement('img');
+                            img.src = imgUrl;
+                            img.style.width = '100%';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+                            img.style.cursor = 'pointer';
+                            img.onclick = function() {
+                                window.open(imgUrl, '_blank');
+                            };
+                            imagesContainer.appendChild(img);
+                        });
+                        messageBubble.appendChild(imagesContainer);
+                    }
+                    
+                    const timestamp = document.createElement('div');
+                    timestamp.style.fontSize = '0.625rem';
+                    timestamp.style.color = '#9ca3af';
+                    timestamp.style.marginTop = '0.25rem';
+                    timestamp.style.textAlign = msg.sender === 'Admin' ? 'right' : 'left';
+                    const date = new Date(msg.timestamp);
+                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.appendChild(senderName);
+                    messageDiv.appendChild(messageBubble);
+                    messageDiv.appendChild(timestamp);
+                    container.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // Community Chat image preview
+            let selectedCommunityChatImages = [];
+            const communityChatImageInput = document.getElementById('community-chat-image-input');
+            const communityChatImagesPreview = document.getElementById('community-chat-images-preview');
+            const communityChatImagesPreviewContainer = document.getElementById('community-chat-images-preview-container');
+            
+            if (communityChatImageInput && communityChatImagesPreview && communityChatImagesPreviewContainer) {
+                communityChatImageInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    selectedCommunityChatImages = files;
+                    communityChatImagesPreviewContainer.innerHTML = '';
+                    
+                    if (files.length > 0) {
+                        communityChatImagesPreview.style.display = 'block';
+                    } else {
+                        communityChatImagesPreview.style.display = 'none';
+                    }
+                    
+                    files.forEach((file, index) => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                imgDiv.style.width = '80px';
+                                imgDiv.style.height = '80px';
+                                
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '6px';
+                                img.style.border = '1px solid #e5e7eb';
+                                
+                                const removeBtn = document.createElement('button');
+                                removeBtn.textContent = '×';
+                                removeBtn.style.position = 'absolute';
+                                removeBtn.style.top = '-8px';
+                                removeBtn.style.right = '-8px';
+                                removeBtn.style.background = '#ef4444';
+                                removeBtn.style.color = 'white';
+                                removeBtn.style.border = 'none';
+                                removeBtn.style.borderRadius = '50%';
+                                removeBtn.style.width = '20px';
+                                removeBtn.style.height = '20px';
+                                removeBtn.style.cursor = 'pointer';
+                                removeBtn.style.fontSize = '14px';
+                                removeBtn.style.lineHeight = '1';
+                                removeBtn.onclick = function() {
+                                    selectedCommunityChatImages = selectedCommunityChatImages.filter((f, i) => i !== index);
+                                    const dt = new DataTransfer();
+                                    selectedCommunityChatImages.forEach(f => dt.items.add(f));
+                                    communityChatImageInput.files = dt.files;
+                                    if (selectedCommunityChatImages.length === 0) {
+                                        communityChatImagesPreview.style.display = 'none';
+                                    } else {
+                                        communityChatImageInput.dispatchEvent(new Event('change'));
+                                    }
+                                };
+                                
+                                imgDiv.appendChild(img);
+                                imgDiv.appendChild(removeBtn);
+                                communityChatImagesPreviewContainer.appendChild(imgDiv);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Send community chat message
+            const communityChatSendBtn = document.getElementById('community-chat-send-btn');
+            const communityChatMessageInput = document.getElementById('community-chat-message-input');
+            
+            function sendCommunityChatMessage() {
+                const messageText = communityChatMessageInput.value.trim();
+                const images = selectedCommunityChatImages;
+                
+                if (!messageText && images.length === 0) {
+                    return;
+                }
+                
+                // Process images
+                const imageUrls = [];
+                images.forEach(file => {
+                    imageUrls.push(URL.createObjectURL(file));
+                });
+                
+                // Add message
+                const newMessage = {
+                    id: communityChatMessages.length + 1,
+                    sender: 'John Investor',
+                    message: messageText,
+                    images: imageUrls,
+                    timestamp: new Date().toISOString()
+                };
+                
+                communityChatMessages.push(newMessage);
+                loadCommunityChatMessages();
+                
+                // Clear input
+                communityChatMessageInput.value = '';
+                selectedCommunityChatImages = [];
+                communityChatImageInput.value = '';
+                communityChatImagesPreview.style.display = 'none';
+                communityChatImagesPreviewContainer.innerHTML = '';
+            }
+            
+            if (communityChatSendBtn) {
+                communityChatSendBtn.addEventListener('click', sendCommunityChatMessage);
+                // Add hover effect
+                communityChatSendBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#1d4ed8';
+                });
+                communityChatSendBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#2563eb';
+                });
+            }
+            
+            if (communityChatMessageInput) {
+                communityChatMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendCommunityChatMessage();
+                    }
+                });
+            }
+            
+            // Professors' Messages Section
+            let professorsMessages = [
+                {
+                    id: 1,
+                    professor: 'Dr. Sarah Johnson',
+                    title: 'Market Analysis Expert',
+                    message: 'The crude oil market is showing strong fundamentals this quarter. Key indicators suggest continued upward momentum.',
+                    timestamp: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
+                },
+                {
+                    id: 2,
+                    professor: 'Prof. Michael Chen',
+                    title: 'Trading Strategy Specialist',
+                    message: 'Remember to always use stop-loss orders when trading volatile commodities. Risk management is crucial for long-term success.',
+                    timestamp: new Date(Date.now() - 10800000).toISOString() // 3 hours ago
+                },
+                {
+                    id: 3,
+                    professor: 'Dr. Emily Rodriguez',
+                    title: 'Energy Economics Professor',
+                    message: 'OPEC decisions continue to be a major driver of oil prices. Keep an eye on production quotas and inventory reports.',
+                    timestamp: new Date(Date.now() - 14400000).toISOString() // 4 hours ago
+                },
+                {
+                    id: 4,
+                    professor: 'Prof. James Wilson',
+                    title: 'Technical Analysis Expert',
+                    message: 'The current chart patterns suggest a potential breakout. Monitor key resistance levels closely in the coming days.',
+                    timestamp: new Date(Date.now() - 18000000).toISOString() // 5 hours ago
+                }
+            ];
+            
+            function loadProfessorsMessages() {
+                const container = document.getElementById('professors-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (professorsMessages.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages from professors yet.</p>';
+                    return;
+                }
+                
+                // Sort messages by timestamp (oldest first) so users scroll down to see newer messages
+                const sortedMessages = [...professorsMessages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                sortedMessages.forEach(msg => {
+                    const messageCard = document.createElement('div');
+                    messageCard.style.background = 'white';
+                    messageCard.style.padding = '1rem';
+                    messageCard.style.borderRadius = '8px';
+                    messageCard.style.border = '1px solid #e5e7eb';
+                    messageCard.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                    messageCard.style.flexShrink = '0';
+                    messageCard.style.width = '100%';
+                    messageCard.style.boxSizing = 'border-box';
+                    
+                    const professorName = document.createElement('div');
+                    professorName.style.fontSize = '0.875rem';
+                    professorName.style.fontWeight = '700';
+                    professorName.style.color = '#1f2937';
+                    professorName.style.marginBottom = '0.25rem';
+                    professorName.textContent = msg.professor;
+                    
+                    const professorTitle = document.createElement('div');
+                    professorTitle.style.fontSize = '0.75rem';
+                    professorTitle.style.color = '#2563eb';
+                    professorTitle.style.marginBottom = '0.75rem';
+                    professorTitle.textContent = msg.title;
+                    
+                    const messageText = document.createElement('div');
+                    messageText.style.fontSize = '0.875rem';
+                    messageText.style.color = '#374151';
+                    messageText.style.lineHeight = '1.6';
+                    messageText.style.marginBottom = '0.75rem';
+                    messageText.style.whiteSpace = 'pre-wrap';
+                    messageText.style.wordBreak = 'break-word';
+                    messageText.textContent = msg.message;
+                    
+                    const timestamp = document.createElement('div');
+                    timestamp.style.fontSize = '0.625rem';
+                    timestamp.style.color = '#9ca3af';
+                    const date = new Date(msg.timestamp);
+                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + ' • ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    messageCard.appendChild(professorName);
+                    messageCard.appendChild(professorTitle);
+                    messageCard.appendChild(messageText);
+                    messageCard.appendChild(timestamp);
+                    container.appendChild(messageCard);
+                });
+                
+                // Scroll to bottom to show most recent messages initially
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // Weekly Reports Section
+            // Sample weekly report data (in a real app, this would come from the admin portal)
+            let weeklyReportData = {
+                author: 'Dr. Sarah Johnson',
+                datePublished: '2024-12-15',
+                fileName: 'Weekly_Report_Dec_15_2024.pdf',
+                fileUrl: '#', // In real app, this would be the actual file URL
+                videoTitle: 'Weekly Market Analysis - December 15, 2024',
+                videoFileName: 'weekly_analysis_dec_15_2024.mp4',
+                videoUrl: '#', // In real app, this would be the actual video URL
+                uploadDate: new Date().toISOString()
+            };
+            
+            function loadWeeklyReports() {
+                const container = document.getElementById('weekly-reports-display');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (!weeklyReportData) {
+                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">No weekly reports available yet.</div>';
+                    return;
+                }
+                
+                // PDF Report Section (Left)
+                const pdfSection = document.createElement('div');
+                pdfSection.style.background = 'white';
+                pdfSection.style.padding = '1.5rem';
+                pdfSection.style.borderRadius = '8px';
+                pdfSection.style.border = '1px solid #e5e7eb';
+                pdfSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                pdfSection.style.display = 'flex';
+                pdfSection.style.gap = '1.5rem';
+                pdfSection.style.alignItems = 'center';
+                
+                const pdfContent = document.createElement('div');
+                pdfContent.style.flex = '1';
+                
+                const pdfTitle = document.createElement('h4');
+                pdfTitle.style.margin = '0 0 1rem 0';
+                pdfTitle.style.fontSize = '1.125rem';
+                pdfTitle.style.fontWeight = '600';
+                pdfTitle.style.color = '#1f2937';
+                pdfTitle.textContent = 'Weekly PDF Report';
+                
+                const pdfInfo = document.createElement('div');
+                pdfInfo.style.marginBottom = '1rem';
+                pdfInfo.style.fontSize = '0.875rem';
+                pdfInfo.style.color = '#6b7280';
+                pdfInfo.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${weeklyReportData.author}</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Date Published:</strong> ${new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                    <div><strong>File:</strong> ${weeklyReportData.fileName}</div>
+                `;
+                
+                pdfContent.appendChild(pdfTitle);
+                pdfContent.appendChild(pdfInfo);
+                
+                // PDF Cover Image (Right)
+                const pdfCoverContainer = document.createElement('div');
+                pdfCoverContainer.style.flexShrink = '0';
+                pdfCoverContainer.style.width = '350px';
+                pdfCoverContainer.style.height = '140px';
+                pdfCoverContainer.style.cursor = 'pointer';
+                pdfCoverContainer.style.borderRadius = '8px';
+                pdfCoverContainer.style.overflow = 'hidden';
+                pdfCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                pdfCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                
+                pdfCoverContainer.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                });
+                
+                pdfCoverContainer.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                });
+                
+                pdfCoverContainer.addEventListener('click', function() {
+                    if (weeklyReportData.fileUrl && weeklyReportData.fileUrl !== '#') {
+                        window.open(weeklyReportData.fileUrl, '_blank');
+                    } else {
+                        alert('PDF download will be available once the report is uploaded by the admin.');
+                    }
+                });
+                
+                const pdfCover = document.createElement('img');
+                pdfCover.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=560&fit=crop';
+                pdfCover.alt = 'PDF Cover';
+                pdfCover.style.width = '100%';
+                pdfCover.style.height = '100%';
+                pdfCover.style.objectFit = 'cover';
+                
+                pdfCoverContainer.appendChild(pdfCover);
+                
+                pdfSection.appendChild(pdfContent);
+                pdfSection.appendChild(pdfCoverContainer);
+                
+                // Video Section (Right)
+                const videoSection = document.createElement('div');
+                videoSection.style.background = 'white';
+                videoSection.style.padding = '1.5rem';
+                videoSection.style.borderRadius = '8px';
+                videoSection.style.border = '1px solid #e5e7eb';
+                videoSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                videoSection.style.display = 'flex';
+                videoSection.style.gap = '1.5rem';
+                videoSection.style.alignItems = 'center';
+                
+                const videoContent = document.createElement('div');
+                videoContent.style.flex = '1';
+                
+                const videoTitle = document.createElement('h4');
+                videoTitle.style.margin = '0 0 1rem 0';
+                videoTitle.style.fontSize = '1.125rem';
+                videoTitle.style.fontWeight = '600';
+                videoTitle.style.color = '#1f2937';
+                videoTitle.textContent = 'Weekly Analysis Video';
+                
+                const videoInfo = document.createElement('div');
+                videoInfo.style.fontSize = '0.875rem';
+                videoInfo.style.color = '#6b7280';
+                videoInfo.innerHTML = `
+                    <div style="margin-bottom: 0.5rem;"><strong>Title:</strong> ${weeklyReportData.videoTitle || 'Weekly Analysis Video'}</div>
+                    <div><strong>File:</strong> ${weeklyReportData.videoFileName || 'N/A'}</div>
+                `;
+                
+                videoContent.appendChild(videoTitle);
+                videoContent.appendChild(videoInfo);
+                
+                // Video Cover Image (Right)
+                const videoCoverContainer = document.createElement('div');
+                videoCoverContainer.style.position = 'relative';
+                videoCoverContainer.style.flexShrink = '0';
+                videoCoverContainer.style.width = '350px';
+                videoCoverContainer.style.height = '140px';
+                videoCoverContainer.style.cursor = 'pointer';
+                videoCoverContainer.style.borderRadius = '8px';
+                videoCoverContainer.style.overflow = 'hidden';
+                videoCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                videoCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                
+                videoCoverContainer.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                });
+                
+                videoCoverContainer.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                });
+                
+                const videoCover = document.createElement('img');
+                videoCover.src = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=560&fit=crop';
+                videoCover.alt = 'Video Cover';
+                videoCover.style.width = '100%';
+                videoCover.style.height = '100%';
+                videoCover.style.objectFit = 'cover';
+                
+                // Play button overlay
+                const playButton = document.createElement('div');
+                playButton.style.position = 'absolute';
+                playButton.style.top = '50%';
+                playButton.style.left = '50%';
+                playButton.style.transform = 'translate(-50%, -50%)';
+                playButton.style.width = '60px';
+                playButton.style.height = '60px';
+                playButton.style.background = 'rgba(37, 99, 235, 0.9)';
+                playButton.style.borderRadius = '50%';
+                playButton.style.display = 'flex';
+                playButton.style.alignItems = 'center';
+                playButton.style.justifyContent = 'center';
+                playButton.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                playButton.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                `;
+                
+                videoCoverContainer.appendChild(videoCover);
+                videoCoverContainer.appendChild(playButton);
+                
+                // Video modal
+                let videoModal = null;
+                videoCoverContainer.addEventListener('click', function() {
+                    if (weeklyReportData.videoUrl && weeklyReportData.videoUrl !== '#') {
+                        // Create modal for video
+                        videoModal = document.createElement('div');
+                        videoModal.style.position = 'fixed';
+                        videoModal.style.top = '0';
+                        videoModal.style.left = '0';
+                        videoModal.style.width = '100%';
+                        videoModal.style.height = '100%';
+                        videoModal.style.background = 'rgba(0, 0, 0, 0.9)';
+                        videoModal.style.zIndex = '10000';
+                        videoModal.style.display = 'flex';
+                        videoModal.style.alignItems = 'center';
+                        videoModal.style.justifyContent = 'center';
+                        videoModal.style.padding = '2rem';
+                        
+                        const videoContainer = document.createElement('div');
+                        videoContainer.style.position = 'relative';
+                        videoContainer.style.maxWidth = '90%';
+                        videoContainer.style.maxHeight = '90%';
+                        videoContainer.style.width = '800px';
+                        
+                        const closeBtn = document.createElement('button');
+                        closeBtn.textContent = '×';
+                        closeBtn.style.position = 'absolute';
+                        closeBtn.style.top = '-40px';
+                        closeBtn.style.right = '0';
+                        closeBtn.style.background = 'white';
+                        closeBtn.style.color = '#1f2937';
+                        closeBtn.style.border = 'none';
+                        closeBtn.style.width = '36px';
+                        closeBtn.style.height = '36px';
+                        closeBtn.style.borderRadius = '50%';
+                        closeBtn.style.fontSize = '24px';
+                        closeBtn.style.cursor = 'pointer';
+                        closeBtn.style.zIndex = '10001';
+                        closeBtn.addEventListener('click', function() {
+                            document.body.removeChild(videoModal);
+                            videoModal = null;
+                        });
+                        
+                        const video = document.createElement('video');
+                        video.src = weeklyReportData.videoUrl;
+                        video.controls = true;
+                        video.style.width = '100%';
+                        video.style.height = 'auto';
+                        video.style.borderRadius = '8px';
+                        
+                        videoContainer.appendChild(closeBtn);
+                        videoContainer.appendChild(video);
+                        videoModal.appendChild(videoContainer);
+                        document.body.appendChild(videoModal);
+                        
+                        // Close on background click
+                        videoModal.addEventListener('click', function(e) {
+                            if (e.target === videoModal) {
+                                document.body.removeChild(videoModal);
+                                videoModal = null;
+                            }
+                        });
+                    } else {
+                        alert('Video will be available once uploaded by the admin.');
+                    }
+                });
+                
+                videoSection.appendChild(videoContent);
+                videoSection.appendChild(videoCoverContainer);
+                
+                container.appendChild(pdfSection);
+                container.appendChild(videoSection);
+            }
+            
+            // Load chat messages when community view is shown
+            const communityView = document.getElementById('community-view');
+            if (communityView) {
+                // Use MutationObserver to detect when community view becomes visible
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (communityView.style.display !== 'none') {
+                                loadCommunityChatMessages();
+                                loadProfessorsMessages();
+                                loadWeeklyReports();
+                            }
+                        }
+                    });
+                });
+                observer.observe(communityView, { attributes: true, attributeFilter: ['style'] });
+            }
     });
     </script>
 </body>
