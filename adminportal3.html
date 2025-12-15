@@ -275,13 +275,7 @@
                     <span>Transactions</span>
                 </a>
                 <a href="#" class="sidebar-nav-item">
-                    <span>Performance</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
                     <span>Market News</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
-                    <span>Account Settings</span>
                 </a>
                 <a href="#" class="sidebar-nav-item">
                     <span>Reports</span>
@@ -654,102 +648,6 @@
                 </div>
             </div>
 
-            <!-- Performance View - Investors List -->
-            <div class="performance-view" id="performance-view" style="display: none;">
-                <div class="investors-list-container">
-                    <div class="investors-grid" id="investors-grid">
-                        <!-- Investors will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Investor Performance Modal -->
-            <div id="investor-performance-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="investor-performance-modal-title">Add Performance</h2>
-                        <form id="investor-performance-form" class="admin-modal-form">
-                            <div class="admin-form-group">
-                                <label for="performance-month">Month</label>
-                                <select id="performance-month" class="admin-form-input" required>
-                                    <option value="">Select Month</option>
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-year">Year</label>
-                                <input type="number" id="performance-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-growth">Growth Rate (%)</label>
-                                <input type="number" id="performance-growth" class="admin-form-input" step="0.01" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-deposits">Deposits (€)</label>
-                                <input type="number" id="performance-deposits" class="admin-form-input" step="0.01" value="0" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-deposit-date">Deposit Date</label>
-                                <input type="date" id="performance-deposit-date" class="admin-form-input">
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-withdrawals">Withdrawals (€)</label>
-                                <input type="number" id="performance-withdrawals" class="admin-form-input" step="0.01" value="0" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-withdrawal-date">Withdrawal Date</label>
-                                <input type="date" id="performance-withdrawal-date" class="admin-form-input">
-                            </div>
-                            <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-investor-performance">Cancel</button>
-                                <button type="submit" class="admin-btn-save">Add Performance</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Investor Performance Table Modal -->
-            <div id="investor-performance-table-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container" style="max-width: 900px;">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="investor-performance-table-title">Performance History</h2>
-                        <div class="performance-table-container">
-                            <table class="transactions-table">
-                                <thead>
-                                    <tr>
-                                        <th>Month</th>
-                                        <th>Starting Balance</th>
-                                        <th>Ending Balance</th>
-                                        <th>Growth %</th>
-                                        <th>Deposits</th>
-                                        <th>Withdrawals</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="investor-performance-table-body">
-                                    <!-- Table rows will be populated by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Investor Edit/Add Modal -->
             <div id="investor-edit-modal" class="admin-modal" style="display: none;">
                 <div class="admin-modal-overlay"></div>
@@ -799,89 +697,97 @@
                 </div>
             </div>
 
-            <!-- Account Settings View -->
-            <div class="account-settings-view" id="account-settings-view" style="display: none;">
-                <div class="account-settings-content">
-                    <div class="users-list-container">
-                        <div class="users-grid" id="users-grid">
-                            <!-- Users will be populated by JavaScript -->
+            <!-- Reports View -->
+            <div class="reports-view" id="reports-view" style="display: none;">
+                <div class="reports-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Message Sending Widget -->
+                    <div class="reports-widget" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem; color: #1f2937;">Send Message to Community</h2>
+                        <form id="send-message-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="message-title">Title</label>
+                                <input type="text" id="message-title" class="admin-form-input" placeholder="Enter message title" required>
                         </div>
-                    </div>
-                </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="message-subheading">Subheading</label>
+                                <input type="text" id="message-subheading" class="admin-form-input" placeholder="Enter subheading (optional)">
             </div>
 
-            <!-- User Edit Modal -->
-            <div id="user-edit-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container" style="max-width: 700px;">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="user-modal-title">Edit User</h2>
-                        <form id="user-edit-form" class="admin-modal-form">
-                            <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Account Information</h3>
                             <div class="admin-form-group">
-                                <label for="edit-user-name">Full Name</label>
-                                <input type="text" id="edit-user-name" class="admin-form-input" required>
+                                <label for="message-link">Link to Share</label>
+                                <input type="url" id="message-link" class="admin-form-input" placeholder="https://example.com">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Optional: Add a link to share with the community</span>
                             </div>
+                            
                             <div class="admin-form-group">
-                                <label for="edit-user-email">Email Address</label>
-                                <input type="email" id="edit-user-email" class="admin-form-input" required>
+                                <label for="message-text">Message</label>
+                                <textarea id="message-text" class="admin-form-input" rows="8" placeholder="Write your message here..." required style="resize: vertical;"></textarea>
                             </div>
+                            
                             <div class="admin-form-group">
-                                <label for="edit-user-phone">Phone Number</label>
-                                <input type="tel" id="edit-user-phone" class="admin-form-input" required>
+                                <label for="message-images">Add Images/Pictures</label>
+                                <input type="file" id="message-images" class="admin-form-input" accept="image/*" multiple>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">You can select multiple images (JPG, PNG, GIF)</span>
+                                <div id="message-images-preview" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                                    <!-- Image previews will be shown here -->
                             </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-account">Account Number</label>
-                                <input type="text" id="edit-user-account" class="admin-form-input" required>
                             </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-status">Account Status</label>
-                                <select id="edit-user-status" class="admin-form-input" required>
-                                    <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Suspended">Suspended</option>
-                                </select>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-country">Country</label>
-                                <input type="text" id="edit-user-country" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-member-since">Initiation Date</label>
-                                <input type="text" id="edit-user-member-since" class="admin-form-input" required>
-                            </div>
-
-                            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Investment Details</h3>
-                            <div class="admin-form-group">
-                                <label for="edit-user-initial">Initial Investment (€)</label>
-                                <input type="number" id="edit-user-initial" class="admin-form-input" step="0.01" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-strategy">Investment Strategy</label>
-                                <input type="text" id="edit-user-strategy" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-operator">Assigned Operator Email</label>
-                                <input type="email" id="edit-user-operator" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group" style="padding: 1rem; background: #f3f4f6; border-radius: 6px; margin-top: 1rem;">
-                                <p style="margin: 0; color: #6b7280; font-size: 0.875rem;"><strong>Note:</strong> Current Balance and Total Return are calculated automatically based on performance entries.</p>
-                            </div>
+                            
                             <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-user-edit">Cancel</button>
-                                <button type="submit" class="admin-btn-save">Save Changes</button>
+                                <button type="button" class="admin-btn-cancel" id="clear-message-form">Clear</button>
+                                <button type="submit" class="admin-btn-save">Send Message</button>
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
-
-            <!-- Reports View -->
-            <div class="reports-view" id="reports-view" style="display: none;">
-                <div class="reports-content">
-                    <div class="reports-users-grid" id="reports-users-grid">
-                        <!-- Users will be populated by JavaScript -->
+                    
+                    <!-- Weekly Report Upload Widget -->
+                    <div class="reports-widget" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                        <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem; color: #1f2937;">Upload Weekly Report</h2>
+                        <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem;">Upload a new weekly report. It will replace the previous one.</p>
+                        <form id="weekly-report-upload-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="weekly-report-author">Author</label>
+                                <input type="text" id="weekly-report-author" class="admin-form-input" placeholder="Enter author name" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="weekly-report-date-published">Date Published</label>
+                                <input type="date" id="weekly-report-date-published" class="admin-form-input" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="weekly-report-file">Upload Weekly PDF Report</label>
+                                <input type="file" id="weekly-report-file" class="admin-form-input" accept=".pdf" required>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 10MB</span>
+                            </div>
+                            
+                            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+                                <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Weekly Analysis Video (Optional)</h3>
+                                
+                                <div class="admin-form-group">
+                                    <label for="weekly-video-title">Video Title</label>
+                                    <input type="text" id="weekly-video-title" class="admin-form-input" placeholder="Enter video title">
+                                </div>
+                                
+                                <div class="admin-form-group">
+                                    <label for="weekly-video-file">Upload MP4 Video</label>
+                                    <input type="file" id="weekly-video-file" class="admin-form-input" accept="video/mp4">
+                                    <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 100MB</span>
+                                </div>
+                                
+                                <div id="weekly-video-preview" style="margin-top: 1rem; display: none;">
+                                    <video id="weekly-video-preview-player" controls style="width: 100%; max-height: 300px; border-radius: 6px; background: #000;">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                            
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="clear-weekly-report-form">Clear</button>
+                                <button type="submit" class="admin-btn-save">Upload Weekly Report</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -1167,7 +1073,6 @@
             const dashboardView = document.getElementById('dashboard-view');
             const portfolioView = document.getElementById('portfolio-view');
             const transactionsView = document.getElementById('transactions-view');
-            const performanceView = document.getElementById('performance-view');
 
             navItems.forEach(item => {
                 item.addEventListener('click', function(e) {
@@ -1184,7 +1089,6 @@
                     
                     // Get all views
                     const marketNewsView = document.getElementById('market-news-view');
-                    const accountSettingsView = document.getElementById('account-settings-view');
                     const reportsView = document.getElementById('reports-view');
                     const consultationsView = document.getElementById('consultations-view');
                     const emailsView = document.getElementById('emails-view');
@@ -1193,9 +1097,7 @@
                     if (dashboardView) dashboardView.style.display = 'none';
                     if (portfolioView) portfolioView.style.display = 'none';
                     if (transactionsView) transactionsView.style.display = 'none';
-                    if (performanceView) performanceView.style.display = 'none';
                     if (marketNewsView) marketNewsView.style.display = 'none';
-                    if (accountSettingsView) accountSettingsView.style.display = 'none';
                     if (reportsView) reportsView.style.display = 'none';
                     if (consultationsView) consultationsView.style.display = 'none';
                     if (emailsView) emailsView.style.display = 'none';
@@ -1213,17 +1115,10 @@
                     } else if (navText === 'Transactions' && transactionsView) {
                         transactionsView.style.display = 'block';
                         populateTransactionsTable();
-                    } else if (navText === 'Performance' && performanceView) {
-                        performanceView.style.display = 'block';
-                        loadInvestorsList();
                     } else if (navText === 'Market News' && marketNewsView) {
                         marketNewsView.style.display = 'block';
-                    } else if (navText === 'Account Settings' && accountSettingsView) {
-                        accountSettingsView.style.display = 'block';
-                        loadUsersList();
                     } else if (navText === 'Reports' && reportsView) {
                         reportsView.style.display = 'block';
-                        loadReportsUsersList();
                     } else if (navText === 'Consultations' && consultationsView) {
                         consultationsView.style.display = 'block';
                         loadConsultationsList();
@@ -1631,504 +1526,6 @@
                 return date.toLocaleDateString('en-US', options);
             }
 
-            // Performance Chart Function
-            let performanceDataPoints = [];
-            
-            function drawPerformanceChart() {
-                const canvas = document.getElementById('performance-chart');
-                if (!canvas) return;
-                
-                const ctx = canvas.getContext('2d');
-                const container = canvas.parentElement;
-                const width = container ? container.clientWidth - 64 : 800;
-                const height = 700;
-                
-                // Set canvas size
-                canvas.width = width;
-                canvas.height = height;
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, width, height);
-                
-                // Chart configuration
-                const padding = { top: 80, right: 40, bottom: 60, left: 80 };
-                const chartWidth = width - padding.left - padding.right;
-                const chartHeight = height - padding.top - padding.bottom;
-                
-                const months = ['Start', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-                              'Jan', 'Feb', 'Mar', 'Apr'];
-                
-                // Use actual account balance values (not normalized)
-                const initialInvestment = 230000;
-                
-                // Historical data (12 months) - actual account balances - with Month 0
-                // All lines start from the exact same initial investment
-                const opessociusHistorical = [
-                    initialInvestment,  // Month 0 - exact same starting balance as S&P 500 and Banks
-                    235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000, 280000
-                ];
-                
-                // Projection data (4 months) - fixed values (2% compound growth per month for Opessocius)
-                const lastHistoricalValue = opessociusHistorical[12];
-                const projectionData = [
-                    lastHistoricalValue * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02 * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02 * 1.02 * 1.02
-                ];
-                
-                // S&P 500 monthly returns (%): +2.3%, −1.4%, +3.1%, +0.6%, −2.8%, +4.5%, +1.2%, −3.6%, +2.9%, +0.4%, +5.1%, −1.9%, +1.7%, +3.8%, −0.7%, +2.5%
-                const sp500MonthlyReturns = [
-                    2.3, -1.4, 3.1, 0.6, -2.8, 4.5, 1.2, -3.6, 2.9, 0.4, 5.1, -1.9,  // 12 historical
-                    1.7, 3.8, -0.7, 2.5  // 4 projection
-                ];
-                
-                // Calculate S&P 500 values - SIMPLE INTEREST (no compound, each return based on initial investment)
-                const sp500DataRaw = [initialInvestment]; // Month 0
-                let cumulativeReturn = 0;
-                sp500MonthlyReturns.forEach((returnPercent) => {
-                    cumulativeReturn += returnPercent;
-                    const monthValue = initialInvestment * (1 + cumulativeReturn / 100);
-                    sp500DataRaw.push(monthValue);
-                });
-                
-                // Light smoothing for S&P 500 (2-point average) to reduce sharp peaks but keep volatility visible
-                function lightSmooth(data) {
-                    const smoothed = [data[0]]; // Keep month 0 unchanged
-                    for (let i = 1; i < data.length; i++) {
-                        if (i === data.length - 1) {
-                            smoothed.push(data[i]);
-                        } else {
-                            // Average with adjacent points (60% current, 20% each adjacent)
-                            smoothed.push(data[i] * 0.6 + data[i - 1] * 0.2 + data[i + 1] * 0.2);
-                        }
-                    }
-                    return smoothed;
-                }
-                
-                const sp500Data = lightSmooth(sp500DataRaw);
-                
-                // Split S&P 500 data into historical and projection (Month 0 + 12 historical, 4 projection)
-                const sp500Historical = sp500Data.slice(0, 13); // Month 0 + 12 months
-                const sp500Projection = sp500Data.slice(13, 17); // 4 months
-                
-                // Banks: constant 0.20% monthly growth - SIMPLE INTEREST (no compound)
-                // Ensure it starts from exact same initial investment
-                const banksMonthlyGrowth = 0.20; // 0.20% per month
-                const banksData = [initialInvestment]; // Month 0 - exact same starting balance
-                for (let i = 1; i <= 16; i++) {
-                    // Simple interest: add 0.20% of initial investment each month
-                    const monthValue = initialInvestment * (1 + (banksMonthlyGrowth * i) / 100);
-                    banksData.push(monthValue);
-                }
-                
-                // Split Banks data into historical and projection
-                const banksHistorical = banksData.slice(0, 13); // Month 0 + 12 months
-                const banksProjection = banksData.slice(13, 17); // 4 months
-                
-                
-                // Combine all data for max/min calculation
-                const allData = [...opessociusHistorical, ...projectionData, ...sp500Data, ...banksData];
-                const maxValue = Math.max(...allData) * 1.1;
-                const minValue = Math.min(...allData) * 0.9;
-                const valueRange = maxValue - minValue;
-                
-                // Store data points for hover
-                performanceDataPoints = [];
-                
-                // Draw grid lines
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 1;
-                for (let i = 0; i <= 5; i++) {
-                    const y = padding.top + (chartHeight / 5) * i;
-                    ctx.beginPath();
-                    ctx.moveTo(padding.left, y);
-                    ctx.lineTo(width - padding.right, y);
-                    ctx.stroke();
-                }
-                
-                // Total months: 17 (Month 0 + 12 historical + 4 projection)
-                const totalMonths = 17;
-                
-                // Draw area fill for user investment historical section only (Month 0 + 12 months)
-                const gradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
-                    padding.top + chartHeight
-                );
-                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
-                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-                
-                ctx.beginPath();
-                const firstX = padding.left + (chartWidth / totalMonths) / 2;
-                const firstY = padding.top + chartHeight - ((opessociusHistorical[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(firstX, height - padding.bottom);
-                ctx.lineTo(firstX, firstY);
-                
-                opessociusHistorical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                const lastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                ctx.lineTo(lastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                
-                // Draw area fill for S&P 500 historical section only - orange shade (Month 0 + 12 months)
-                const sp500Gradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
-                    padding.top + chartHeight
-                );
-                sp500Gradient.addColorStop(0, 'rgba(249, 115, 22, 0.25)');
-                sp500Gradient.addColorStop(1, 'rgba(249, 115, 22, 0.05)');
-                
-                ctx.beginPath();
-                const sp500FirstX = padding.left + (chartWidth / totalMonths) / 2;
-                const sp500FirstY = padding.top + chartHeight - ((sp500Historical[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(sp500FirstX, height - padding.bottom);
-                ctx.lineTo(sp500FirstX, sp500FirstY);
-                
-                sp500Historical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                const sp500LastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                ctx.lineTo(sp500LastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = sp500Gradient;
-                ctx.fill();
-                
-                // Draw area fill for Banks historical section only - grey shade (Month 0 + 12 months)
-                const banksGradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
-                    padding.top + chartHeight
-                );
-                banksGradient.addColorStop(0, 'rgba(107, 114, 128, 0.25)');
-                banksGradient.addColorStop(1, 'rgba(107, 114, 128, 0.05)');
-                
-                ctx.beginPath();
-                const banksFirstX = padding.left + (chartWidth / totalMonths) / 2;
-                const banksFirstY = padding.top + chartHeight - ((banksHistorical[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(banksFirstX, height - padding.bottom);
-                ctx.lineTo(banksFirstX, banksFirstY);
-                
-                banksHistorical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                const banksLastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                ctx.lineTo(banksLastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = banksGradient;
-                ctx.fill();
-                
-                // Draw Opessocius historical line
-                ctx.beginPath();
-                ctx.strokeStyle = '#2563eb';
-                ctx.lineWidth = 2.5;
-                opessociusHistorical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                ctx.stroke();
-                
-                // Draw Opessocius projection line (dashed, green)
-                ctx.beginPath();
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                projectionData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((opessociusHistorical[12] - minValue) / valueRange) * chartHeight;
-                        ctx.moveTo(lastHistX, lastHistY);
-                    }
-                    ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                // Draw S&P 500 historical line (orange) - straight lines to show ups and downs
-                ctx.beginPath();
-                ctx.strokeStyle = '#f97316';
-                ctx.lineWidth = 2.5;
-                sp500Historical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                ctx.stroke();
-                
-                // Draw S&P 500 projection line (dashed, orange)
-                ctx.beginPath();
-                ctx.strokeStyle = '#f97316';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                sp500Projection.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((sp500Historical[12] - minValue) / valueRange) * chartHeight;
-                        ctx.moveTo(lastHistX, lastHistY);
-                    }
-                    ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                // Draw Banks historical line (grey) - constant growth
-                ctx.beginPath();
-                ctx.strokeStyle = '#6b7280';
-                ctx.lineWidth = 2.5;
-                banksHistorical.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                ctx.stroke();
-                
-                // Draw Banks projection line (dashed, grey)
-                ctx.beginPath();
-                ctx.strokeStyle = '#6b7280';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                banksProjection.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((banksHistorical[12] - minValue) / valueRange) * chartHeight;
-                        ctx.moveTo(lastHistX, lastHistY);
-                    }
-                    ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                // Draw data points for Opessocius investment
-                [...opessociusHistorical, ...projectionData].forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
-                    
-                    ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                    
-                    // Store for hover
-                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
-                    performanceDataPoints.push({
-                        x: x,
-                        y: y,
-                        value: value,
-                        month: months[index],
-                        name: 'Investment',
-                        color: isHistorical ? '#2563eb' : '#10b981',
-                        growthPercent: growthPercent,
-                        isHistorical: isHistorical
-                    });
-                });
-                
-                // Draw data points for S&P 500
-                sp500Data.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
-                    
-                    ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = '#f97316';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                    
-                    // Store for hover
-                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
-                    performanceDataPoints.push({
-                        x: x,
-                        y: y,
-                        value: value,
-                        month: months[index],
-                        name: 'S&P 500',
-                        color: '#f97316',
-                        growthPercent: growthPercent,
-                        isHistorical: isHistorical
-                    });
-                });
-                
-                // Draw data points for Banks
-                banksData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
-                    
-                    ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = '#6b7280';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                    
-                    // Store for hover
-                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
-                    performanceDataPoints.push({
-                        x: x,
-                        y: y,
-                        value: value,
-                        month: months[index],
-                        name: 'Banks',
-                        color: '#6b7280',
-                        growthPercent: growthPercent,
-                        isHistorical: isHistorical
-                    });
-                });
-                
-                // Draw Y-axis labels (in euros)
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
-                for (let i = 0; i <= 5; i++) {
-                    const value = minValue + (valueRange / 5) * (5 - i);
-                    const y = padding.top + (chartHeight / 5) * i;
-                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
-                    ctx.fillText(formattedValue, padding.left - 10, y);
-                }
-                
-                // Draw X-axis labels (17 months total: Month 0 + 12 historical + 4 projection)
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                for (let i = 0; i < totalMonths; i += 2) {
-                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
-                    ctx.fillText(months[i], x, height - padding.bottom + 10);
-                }
-                
-                // Draw legend at the top
-                const legendY = padding.top - 50;
-                const legendX = padding.left;
-                const legendItems = [
-                    { name: 'Opessocius', color: '#2563eb', risk: '0%' },
-                    { name: 'Savings Account', color: '#6b7280', risk: '0%' },
-                    { name: 'S&P 500', color: '#f97316', risk: '100%' }
-                ];
-                
-                let currentX = legendX;
-                const legendSpacing = 180;
-                
-                legendItems.forEach((item) => {
-                    // Draw colored line
-                    ctx.strokeStyle = item.color;
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(currentX, legendY);
-                    ctx.lineTo(currentX + 30, legendY);
-                    ctx.stroke();
-                    
-                    // Draw name
-                    ctx.fillStyle = '#1f2937';
-                    ctx.font = 'bold 13px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                    ctx.textAlign = 'left';
-                    ctx.fillText(item.name, currentX + 35, legendY + 5);
-                    
-                    // Draw risk percentage below
-                    ctx.fillStyle = '#6b7280';
-                    ctx.font = '11px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                    ctx.fillText(`Risk: ${item.risk}`, currentX + 35, legendY + 20);
-                    
-                    // Move to next position
-                    currentX += legendSpacing;
-                });
-            }
-            
-            // Setup performance chart hover
-            function setupPerformanceChartHover() {
-                const canvas = document.getElementById('performance-chart');
-                const tooltip = document.getElementById('performance-tooltip');
-                if (!canvas || !tooltip) return;
-                
-                canvas.addEventListener('mousemove', function(e) {
-                    const rect = canvas.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    
-                    // Find nearest data point
-                    let nearestPoint = null;
-                    let minDistance = Infinity;
-                    
-                    performanceDataPoints.forEach(point => {
-                        const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
-                        if (distance < 30 && distance < minDistance) {
-                            minDistance = distance;
-                            nearestPoint = point;
-                        }
-                    });
-                    
-                    if (nearestPoint) {
-                        const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
-                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
-                        tooltip.innerHTML = `
-                            <div class="tooltip-name" style="color: ${nearestPoint.color}; font-weight: 600;">${nearestPoint.name}</div>
-                            <div class="tooltip-balance">${formattedValue}</div>
-                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
-                        `;
-                        tooltip.style.display = 'block';
-                        tooltip.style.left = (nearestPoint.x + 10) + 'px';
-                        tooltip.style.top = (nearestPoint.y - 40) + 'px';
-                    } else {
-                        tooltip.style.display = 'none';
-                    }
-                });
-                
-                canvas.addEventListener('mouseleave', function() {
-                    if (tooltip) tooltip.style.display = 'none';
-                });
-            }
-            
-            // Setup performance hover after chart is drawn
-            setTimeout(setupPerformanceChartHover, 150);
 
             // Reports Section - Store reports data
             let reportsData = {}; // Structure: { userId: { '2024-01': { file: File, month: 'January', year: 2024 }, ... } }
@@ -2562,146 +1959,6 @@
                 { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' }
             ];
             
-            // Investor Performance Data - stores performance entries for each investor
-            let investorPerformanceData = {};
-            
-            function loadInvestorsList() {
-                const container = document.getElementById('investors-grid');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                investorsData.forEach(investor => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const returnPercent = ((investor.balance - investor.initial) / investor.initial * 100).toFixed(2);
-                    const performanceCount = investorPerformanceData[investor.id] ? investorPerformanceData[investor.id].length : 0;
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${investor.name}</h3>
-                            <span class="investor-status investor-status-${investor.status.toLowerCase()}">${investor.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Email:</strong> ${investor.email}</p>
-                            <p><strong>Account:</strong> ${investor.account}</p>
-                            <p><strong>Initial Investment:</strong> €${investor.initial.toLocaleString('en-US')}</p>
-                            <p><strong>Current Balance:</strong> €${investor.balance.toLocaleString('en-US')}</p>
-                            <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            <p><strong>Performance Entries:</strong> ${performanceCount}</p>
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
-                            <button class="admin-btn-save" onclick="openInvestorPerformanceModal(${investor.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
-                            <button class="admin-btn-view" onclick="viewInvestorPerformance(${investor.id})">View History</button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-            
-            function openInvestorPerformanceModal(investorId) {
-                const investor = investorsData.find(inv => inv.id === investorId);
-                if (!investor) return;
-                
-                const modal = document.getElementById('investor-performance-modal');
-                document.getElementById('investor-performance-modal-title').textContent = `Add Performance - ${investor.name}`;
-                document.getElementById('investor-performance-form').reset();
-                modal.setAttribute('data-investor-id', investorId);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeInvestorPerformanceModal() {
-                document.getElementById('investor-performance-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            function viewInvestorPerformance(investorId) {
-                const investor = investorsData.find(inv => inv.id === investorId);
-                if (!investor) return;
-                
-                const modal = document.getElementById('investor-performance-table-modal');
-                document.getElementById('investor-performance-table-title').textContent = `Performance History - ${investor.name}`;
-                
-                const tableBody = document.getElementById('investor-performance-table-body');
-                const performanceEntries = investorPerformanceData[investorId] || [];
-                
-                if (performanceEntries.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
-                } else {
-                    tableBody.innerHTML = '';
-                    let currentBalance = investor.initial;
-                    
-                    performanceEntries.sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
-                    
-                    performanceEntries.forEach((entry, index) => {
-                        const startingBalance = index === 0 ? investor.initial : currentBalance;
-                        const endingBalance = startingBalance * (1 + entry.growth / 100) + (entry.deposits || 0) - (entry.withdrawals || 0);
-                        currentBalance = endingBalance;
-                        
-                        const row = document.createElement('tr');
-                        const depositDisplay = entry.deposits > 0 && entry.depositDate
-                            ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate)}</span>`
-                            : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
-                        const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
-                            ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate)}</span>`
-                            : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
-                        
-                        row.innerHTML = `
-                            <td>${entry.month} ${entry.year}</td>
-                            <td>€${startingBalance.toLocaleString('en-US')}</td>
-                            <td>€${endingBalance.toLocaleString('en-US')}</td>
-                            <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
-                            <td class="transaction-cell">${depositDisplay}</td>
-                            <td class="transaction-cell">${withdrawalDisplay}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                }
-                
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeInvestorPerformanceTableModal() {
-                document.getElementById('investor-performance-table-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            window.openInvestorPerformanceModal = openInvestorPerformanceModal;
-            window.viewInvestorPerformance = viewInvestorPerformance;
-            
-            // Investor performance form handler
-            const investorPerformanceForm = document.getElementById('investor-performance-form');
-            if (investorPerformanceForm) {
-                investorPerformanceForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const investorId = parseInt(document.getElementById('investor-performance-modal').getAttribute('data-investor-id'));
-                    
-                    if (!investorPerformanceData[investorId]) {
-                        investorPerformanceData[investorId] = [];
-                    }
-                    
-                    const entry = {
-                        month: document.getElementById('performance-month').value,
-                        year: parseInt(document.getElementById('performance-year').value),
-                        growth: parseFloat(document.getElementById('performance-growth').value),
-                        deposits: parseFloat(document.getElementById('performance-deposits').value) || 0,
-                        withdrawals: parseFloat(document.getElementById('performance-withdrawals').value) || 0,
-                        depositDate: document.getElementById('performance-deposit-date').value || null,
-                        withdrawalDate: document.getElementById('performance-withdrawal-date').value || null
-                    };
-                    
-                    investorPerformanceData[investorId].push(entry);
-                    loadInvestorsList();
-                    closeInvestorPerformanceModal();
-                    alert('Performance entry added successfully!');
-                });
-            }
-            
             function openInvestorEditModal(id) {
                 const investor = investorsData.find(inv => inv.id === id);
                 if (!investor) return;
@@ -2742,7 +1999,6 @@
                         investor.initial = parseFloat(document.getElementById('edit-investor-initial').value);
                         investor.balance = parseFloat(document.getElementById('edit-investor-balance').value);
                         investor.status = document.getElementById('edit-investor-status').value;
-                        loadInvestorsList();
                         closeInvestorEditModal();
                     }
                 });
@@ -2761,163 +2017,303 @@
                 });
             }
             
+            // New Reports Section - Message Sending and Weekly Report Upload
             
-            // Users List Functions
-            let usersData = [
-                { id: 1, name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
-                { id: 2, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 3, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 4, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                // Additional investors for Payment Tracking widget
-                { id: 5, name: 'Elena Martínez', email: 'elena.martinez@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', status: 'Active', country: 'Spain', memberSince: 'April 2024', initial: 120000, balance: 144000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 6, name: 'David Wilson', email: 'david.wilson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', status: 'Active', country: 'Spain', memberSince: 'May 2024', initial: 160000, balance: 192000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 7, name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+39 345 678 901', account: 'ACC-2024-001239', status: 'Active', country: 'Italy', memberSince: 'June 2024', initial: 200000, balance: 210000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 8, name: 'Lukas Schneider', email: 'lukas.schneider@example.com', phone: '+49 160 123 4567', account: 'ACC-2024-001240', status: 'Active', country: 'Germany', memberSince: 'July 2024', initial: 175000, balance: 189000, return: 8.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 9, name: 'Sofia Novak', email: 'sofia.novak@example.com', phone: '+420 777 123 456', account: 'ACC-2024-001241', status: 'Active', country: 'Czech Republic', memberSince: 'August 2024', initial: 140000, balance: 147000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 }
-            ];
+            // Store weekly reports data (only one report, replaces previous)
+            let weeklyReportData = null; // Object: { author, datePublished, file, fileName, videoTitle, videoFile, videoFileName, uploadDate }
             
-            function loadUsersList() {
-                const container = document.getElementById('users-grid');
+            // Message sending form handler
+            let selectedImages = []; // Store selected images for message form
+            const sendMessageForm = document.getElementById('send-message-form');
+            if (sendMessageForm) {
+                // Image preview functionality
+                const messageImagesInput = document.getElementById('message-images');
+                const messageImagesPreview = document.getElementById('message-images-preview');
+                
+                if (messageImagesInput) {
+                    messageImagesInput.addEventListener('change', function(e) {
+                        const files = Array.from(e.target.files);
+                        selectedImages = files;
+                        messageImagesPreview.innerHTML = '';
+                        
+                        files.forEach((file, index) => {
+                            if (file.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    const previewDiv = document.createElement('div');
+                                    previewDiv.style.position = 'relative';
+                                    previewDiv.style.border = '1px solid #e5e7eb';
+                                    previewDiv.style.borderRadius = '6px';
+                                    previewDiv.style.overflow = 'hidden';
+                                    
+                                    const img = document.createElement('img');
+                                    img.src = e.target.result;
+                                    img.style.width = '100%';
+                                    img.style.height = '150px';
+                                    img.style.objectFit = 'cover';
+                                    img.style.display = 'block';
+                                    
+                                    const removeBtn = document.createElement('button');
+                                    removeBtn.textContent = '×';
+                                    removeBtn.style.position = 'absolute';
+                                    removeBtn.style.top = '0.25rem';
+                                    removeBtn.style.right = '0.25rem';
+                                    removeBtn.style.background = '#ef4444';
+                                    removeBtn.style.color = 'white';
+                                    removeBtn.style.border = 'none';
+                                    removeBtn.style.borderRadius = '50%';
+                                    removeBtn.style.width = '24px';
+                                    removeBtn.style.height = '24px';
+                                    removeBtn.style.cursor = 'pointer';
+                                    removeBtn.style.fontSize = '1.25rem';
+                                    removeBtn.style.lineHeight = '1';
+                                    removeBtn.onclick = function() {
+                                        // Remove the file from selectedImages array
+                                        const fileIndex = selectedImages.findIndex(f => f === file);
+                                        if (fileIndex > -1) {
+                                            selectedImages.splice(fileIndex, 1);
+                                        }
+                                        previewDiv.remove();
+                                        updateFileInput();
+                                    };
+                                    
+                                    previewDiv.appendChild(img);
+                                    previewDiv.appendChild(removeBtn);
+                                    messageImagesPreview.appendChild(previewDiv);
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        });
+                    });
+                }
+                
+                function updateFileInput() {
+                    const dt = new DataTransfer();
+                    selectedImages.forEach(file => dt.items.add(file));
+                    messageImagesInput.files = dt.files;
+                }
+                
+                sendMessageForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('message-title').value;
+                    const subheading = document.getElementById('message-subheading').value;
+                    const link = document.getElementById('message-link').value;
+                    const message = document.getElementById('message-text').value;
+                    const images = selectedImages;
+                    
+                    // Here you would typically send this data to a server
+                    // For now, we'll just show a success message
+                    console.log('Message to send:', {
+                        title,
+                        subheading,
+                        link,
+                        message,
+                        images: images.map(img => img.name)
+                    });
+                    
+                    alert('Message sent successfully to community!');
+                    sendMessageForm.reset();
+                    selectedImages = [];
+                    messageImagesPreview.innerHTML = '';
+                });
+            }
+            
+            // Clear message form button
+            const clearMessageForm = document.getElementById('clear-message-form');
+            if (clearMessageForm) {
+                clearMessageForm.addEventListener('click', function() {
+                    const form = document.getElementById('send-message-form');
+                    form.reset();
+                    selectedImages = [];
+                    const preview = document.getElementById('message-images-preview');
+                    if (preview) preview.innerHTML = '';
+                });
+            }
+            
+            // Weekly report upload form handler
+            const weeklyReportUploadForm = document.getElementById('weekly-report-upload-form');
+            if (weeklyReportUploadForm) {
+                // Video preview functionality
+                const weeklyVideoFileInput = document.getElementById('weekly-video-file');
+                const weeklyVideoPreview = document.getElementById('weekly-video-preview');
+                const weeklyVideoPreviewPlayer = document.getElementById('weekly-video-preview-player');
+                
+                if (weeklyVideoFileInput && weeklyVideoPreview && weeklyVideoPreviewPlayer) {
+                    weeklyVideoFileInput.addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file && file.type === 'video/mp4') {
+                            const url = URL.createObjectURL(file);
+                            weeklyVideoPreviewPlayer.src = url;
+                            weeklyVideoPreview.style.display = 'block';
+                        } else if (file) {
+                            alert('Please select an MP4 video file.');
+                            e.target.value = '';
+                            weeklyVideoPreview.style.display = 'none';
+                        } else {
+                            weeklyVideoPreview.style.display = 'none';
+                        }
+                    });
+                }
+                
+                weeklyReportUploadForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const author = document.getElementById('weekly-report-author').value;
+                    const datePublished = document.getElementById('weekly-report-date-published').value;
+                    const fileInput = document.getElementById('weekly-report-file');
+                    const videoTitle = document.getElementById('weekly-video-title').value;
+                    const videoFileInput = document.getElementById('weekly-video-file');
+                    
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        alert('Please select a PDF file to upload.');
+                        return;
+                    }
+                    
+                    const file = fileInput.files[0];
+                    
+                    // Check PDF file size (10MB limit)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('PDF file size exceeds 10MB limit.');
+                        return;
+                    }
+                    
+                    // Process video if uploaded
+                    let videoFile = null;
+                    let videoFileName = null;
+                    if (videoFileInput.files && videoFileInput.files.length > 0) {
+                        videoFile = videoFileInput.files[0];
+                        
+                        // Check video file size (100MB limit)
+                        if (videoFile.size > 100 * 1024 * 1024) {
+                            alert('Video file size exceeds 100MB limit.');
+                            return;
+                        }
+                        
+                        // Check if it's an MP4 file
+                        if (!videoFile.type.includes('mp4')) {
+                            alert('Please upload an MP4 video file.');
+                            return;
+                        }
+                        
+                        videoFileName = videoFile.name;
+                    }
+                    
+                    // Replace previous report (only one report, replaces previous)
+                    weeklyReportData = {
+                        author: author,
+                        datePublished: datePublished,
+                        file: file,
+                        fileName: file.name,
+                        videoTitle: videoTitle || null,
+                        videoFile: videoFile,
+                        videoFileName: videoFileName,
+                        uploadDate: new Date().toISOString()
+                    };
+                    
+                    weeklyReportUploadForm.reset();
+                    if (weeklyVideoPreview) weeklyVideoPreview.style.display = 'none';
+                    alert('Weekly report uploaded successfully! The previous report has been replaced.');
+                });
+            }
+            
+            // Clear weekly report form button
+            const clearWeeklyReportForm = document.getElementById('clear-weekly-report-form');
+            if (clearWeeklyReportForm) {
+                clearWeeklyReportForm.addEventListener('click', function() {
+                    const form = document.getElementById('weekly-report-upload-form');
+                    form.reset();
+                    const videoPreview = document.getElementById('weekly-video-preview');
+                    if (videoPreview) videoPreview.style.display = 'none';
+                });
+            }
+            
+            // Load weekly reports list (no longer needed, but keeping function for compatibility)
+            function loadWeeklyReportsList() {
+                // Function kept for compatibility but no longer displays a list
+                // Weekly reports now replace the previous one automatically
+                return;
+                
+                // Old code removed - reports list no longer displayed
+                /*
+                const container = document.getElementById('weekly-reports-list');
                 if (!container) return;
                 
-                container.innerHTML = '';
-                usersData.forEach(user => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const returnPercent = user.initial > 0 ? ((user.balance - user.initial) / user.initial * 100).toFixed(2) : '0.00';
-                    const isAdmin = user.type === 'admin';
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${user.name}</h3>
-                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Type:</strong> ${user.type === 'admin' ? 'Admin' : 'Investor'}</p>
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Account:</strong> ${user.account}</p>
-                            ${user.type === 'admin' ? `
-                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
-                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
-                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            ` : `
-                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
-                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
-                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            `}
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                            <button class="admin-edit-btn" onclick="openUserEditModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
-                            ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New User</button>` : ''}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-            
-            function openAddUserModal() {
-                const modal = document.getElementById('user-edit-modal');
-                document.getElementById('user-modal-title').textContent = 'Add New User';
-                document.getElementById('user-edit-form').reset();
-                modal.removeAttribute('data-edit-id');
-                modal.setAttribute('data-add-mode', 'true');
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            window.openAddUserModal = openAddUserModal;
-            
-            function openUserEditModal(id) {
-                const user = usersData.find(u => u.id === id);
-                if (!user) return;
+                if (weeklyReportsData.length === 0) {
+                    container.innerHTML = '<p style="color: #6b7280; font-size: 0.875rem; margin: 0;">No weekly reports uploaded yet.</p>';
+                    return;
+                }
                 
-                const modal = document.getElementById('user-edit-modal');
-                document.getElementById('edit-user-name').value = user.name;
-                document.getElementById('edit-user-email').value = user.email;
-                document.getElementById('edit-user-phone').value = user.phone;
-                document.getElementById('edit-user-account').value = user.account;
-                document.getElementById('edit-user-status').value = user.status;
-                document.getElementById('edit-user-country').value = user.country;
-                document.getElementById('edit-user-member-since').value = user.memberSince;
-                document.getElementById('edit-user-initial').value = user.initial;
-                document.getElementById('edit-user-strategy').value = user.strategy;
-                document.getElementById('edit-user-operator').value = user.operator;
-                modal.setAttribute('data-edit-id', id);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeUserEditModal() {
-                document.getElementById('user-edit-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            window.openUserEditModal = openUserEditModal;
-            
-            // User edit form handler
-            const userEditForm = document.getElementById('user-edit-form');
-            if (userEditForm) {
-                userEditForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const modal = document.getElementById('user-edit-modal');
-                    const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                container.innerHTML = '';
+                weeklyReportsData.forEach((report, index) => {
+                    const reportItem = document.createElement('div');
+                    reportItem.style.display = 'flex';
+                    reportItem.style.justifyContent = 'space-between';
+                    reportItem.style.alignItems = 'center';
+                    reportItem.style.padding = '0.75rem';
+                    reportItem.style.background = '#f9fafb';
+                    reportItem.style.borderRadius = '6px';
+                    reportItem.style.border = '1px solid #e5e7eb';
                     
-                    if (isAddMode) {
-                        // Add new user
-                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
-                        const newUser = {
-                            id: newId,
-                            name: document.getElementById('edit-user-name').value,
-                            email: document.getElementById('edit-user-email').value,
-                            phone: document.getElementById('edit-user-phone').value,
-                            account: document.getElementById('edit-user-account').value,
-                            status: document.getElementById('edit-user-status').value,
-                            country: document.getElementById('edit-user-country').value,
-                            memberSince: document.getElementById('edit-user-member-since').value,
-                            initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
-                            balance: parseFloat(document.getElementById('edit-user-initial').value) || 0, // Start with initial investment
-                            return: 0,
-                            strategy: document.getElementById('edit-user-strategy').value,
-                            operator: document.getElementById('edit-user-operator').value,
-                            type: 'investor'
-                        };
-                        usersData.push(newUser);
-                        // Also add to investorsData if it exists
-                        if (typeof investorsData !== 'undefined') {
-                            investorsData.push({
-                                id: newId,
-                                name: newUser.name,
-                                email: newUser.email,
-                                phone: newUser.phone,
-                                account: newUser.account,
-                                initial: newUser.initial,
-                                balance: newUser.balance,
-                                status: newUser.status
-                            });
-                        }
-                        loadUsersList();
-                        closeUserEditModal();
-                        alert('New user added successfully!');
-                    } else {
-                        // Edit existing user
-                        const id = parseInt(modal.getAttribute('data-edit-id'));
-                        const user = usersData.find(u => u.id === id);
-                        if (user) {
-                            user.name = document.getElementById('edit-user-name').value;
-                            user.email = document.getElementById('edit-user-email').value;
-                            user.phone = document.getElementById('edit-user-phone').value;
-                            user.account = document.getElementById('edit-user-account').value;
-                            user.status = document.getElementById('edit-user-status').value;
-                            user.country = document.getElementById('edit-user-country').value;
-                            user.memberSince = document.getElementById('edit-user-member-since').value;
-                            user.initial = parseFloat(document.getElementById('edit-user-initial').value);
-                            // Balance and return are calculated automatically - don't update them here
-                            user.strategy = document.getElementById('edit-user-strategy').value;
-                            user.operator = document.getElementById('edit-user-operator').value;
-                            loadUsersList();
-                            closeUserEditModal();
-                        }
+                    const reportInfo = document.createElement('div');
+                    reportInfo.style.flex = '1';
+                    
+                    const reportTitle = document.createElement('div');
+                    reportTitle.style.fontWeight = '600';
+                    reportTitle.style.color = '#1f2937';
+                    reportTitle.style.marginBottom = '0.25rem';
+                    reportTitle.textContent = `${report.week} - ${report.month} ${report.year}`;
+                    
+                    const reportDetails = document.createElement('div');
+                    reportDetails.style.fontSize = '0.875rem';
+                    reportDetails.style.color = '#6b7280';
+                    reportDetails.textContent = report.fileName;
+                    
+                    if (report.description) {
+                        const reportDesc = document.createElement('div');
+                        reportDesc.style.fontSize = '0.75rem';
+                        reportDesc.style.color = '#9ca3af';
+                        reportDesc.style.marginTop = '0.25rem';
+                        reportDesc.textContent = report.description;
+                        reportDetails.appendChild(reportDesc);
                     }
+                    
+                    reportInfo.appendChild(reportTitle);
+                    reportInfo.appendChild(reportDetails);
+                    
+                    const reportActions = document.createElement('div');
+                    reportActions.style.display = 'flex';
+                    reportActions.style.gap = '0.5rem';
+                    
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View';
+                    viewBtn.className = 'admin-btn-view';
+                    viewBtn.style.padding = '0.5rem 1rem';
+                    viewBtn.style.fontSize = '0.875rem';
+                    viewBtn.onclick = function() {
+                        viewWeeklyReport(index);
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.className = 'admin-btn-cancel';
+                    deleteBtn.style.padding = '0.5rem 1rem';
+                    deleteBtn.style.fontSize = '0.875rem';
+                    deleteBtn.onclick = function() {
+                        if (confirm('Are you sure you want to delete this weekly report?')) {
+                            weeklyReportsData.splice(index, 1);
+                            loadWeeklyReportsList();
+                        }
+                    };
+                    
+                    reportActions.appendChild(viewBtn);
+                    reportActions.appendChild(deleteBtn);
+                    
+                    reportItem.appendChild(reportInfo);
+                    reportItem.appendChild(reportActions);
+                    container.appendChild(reportItem);
                 });
+                */
             }
             
             // News Edit Functions
@@ -3333,25 +2729,6 @@
                     document.getElementById('cancel-investor-edit')?.addEventListener('click', closeInvestorEditModal);
                 }
                 
-                const investorPerformanceModal = document.getElementById('investor-performance-modal');
-                if (investorPerformanceModal) {
-                    investorPerformanceModal.querySelector('.admin-modal-close')?.addEventListener('click', closeInvestorPerformanceModal);
-                    investorPerformanceModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeInvestorPerformanceModal);
-                    document.getElementById('cancel-investor-performance')?.addEventListener('click', closeInvestorPerformanceModal);
-                }
-                
-                const investorPerformanceTableModal = document.getElementById('investor-performance-table-modal');
-                if (investorPerformanceTableModal) {
-                    investorPerformanceTableModal.querySelector('.admin-modal-close')?.addEventListener('click', closeInvestorPerformanceTableModal);
-                    investorPerformanceTableModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeInvestorPerformanceTableModal);
-                }
-                
-                const userModal = document.getElementById('user-edit-modal');
-                if (userModal) {
-                    userModal.querySelector('.admin-modal-close')?.addEventListener('click', closeUserEditModal);
-                    userModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeUserEditModal);
-                    document.getElementById('cancel-user-edit')?.addEventListener('click', closeUserEditModal);
-                }
             }, 100);
             
             // Initial draw if dashboard is visible
@@ -3368,10 +2745,6 @@
                 resizeTimeout = setTimeout(function() {
                     if (portfolioView && portfolioView.style.display !== 'none') {
                         drawPortfolioChart();
-                    }
-                    if (performanceView && performanceView.style.display !== 'none') {
-                        drawPerformanceChart();
-                        setTimeout(setupPerformanceChartHover, 150);
                     }
                     // Dashboard widgets resized
                 }, 250);
