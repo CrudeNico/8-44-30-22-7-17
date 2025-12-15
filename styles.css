@@ -9635,6 +9635,12 @@ body.dashboard-active {
     min-height: 190px;
 }
 
+/* Make Investors Payment Tracking widget match Latest News/Report widget height */
+.dashboard-widget[style*="grid-column: 3 / 5"][style*="grid-row: 2 / 3"] {
+    min-height: 200px;
+    max-height: 200px;
+}
+
 .dashboard-widget-compact {
     min-height: auto;
     padding: 0.5rem 0.7rem;
@@ -9718,6 +9724,13 @@ body.dashboard-active {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* Investors Payment Tracking widget – make list scrollable inside fixed widget */
+#investors-payment-list {
+    max-height: 140px; /* Adjusted to fit within 190px widget height (accounting for header and padding) */
+    overflow-y: auto;
+    padding-right: 4px; /* space for scrollbar */
 }
 
 .dashboard-main-metric {
