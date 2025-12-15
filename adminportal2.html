@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Opessocius</title>
+    <title>Admin Portal 2 - Opessocius</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         /* Admin Modal Styles */
@@ -144,44 +144,10 @@
         }
         
         /* Investors/Users Grid */
-        .investors-grid, .users-grid, .reports-users-grid, .consultations-grid {
+        .investors-grid, .users-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-        }
-        
-        /* Consultation Card Styles */
-        .consultation-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .consultation-card:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-        .consultation-card.selected {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-        .consultation-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .consultation-status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .consultation-status-done {
-            background: #d1fae5;
-            color: #065f46;
         }
         .investor-card {
             background: white;
@@ -229,27 +195,6 @@
             font-weight: 600;
         }
         
-        /* News Edit Button */
-        .news-card-wrapper {
-            position: relative;
-        }
-        .news-edit-btn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(37, 99, 235, 0.9);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            z-index: 10;
-        }
-        .news-edit-btn:hover {
-            background: rgba(37, 99, 235, 1);
-        }
-        
         /* Transactions table edit button */
         .transactions-table th:last-child,
         .transactions-table td:last-child {
@@ -278,19 +223,7 @@
                     <span>Performance</span>
                 </a>
                 <a href="#" class="sidebar-nav-item">
-                    <span>Market News</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
                     <span>Account Settings</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
-                    <span>Reports</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
-                    <span>Consultations</span>
-                </a>
-                <a href="#" class="sidebar-nav-item">
-                    <span>Emails</span>
                 </a>
             </nav>
             <div class="sidebar-footer">
@@ -366,135 +299,62 @@
                         </div>
                     </div>
                     
-                    <!-- Latest News - Second Row -->
-                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget" style="grid-column: 1; grid-row: 2;">
+                    <!-- Top Accounts - Second Row -->
+                    <!-- To adjust widget height, modify min-height values below (line 303 and 307) -->
+                    <div class="dashboard-widget" id="top-accounts-widget" style="grid-column: 1; grid-row: 2 / 3; min-height: 575px;">
                         <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Latest News</h3>
+                            <h3 class="dashboard-widget-title">Top Accounts</h3>
                         </div>
-                        <div class="dashboard-widget-content">
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">OPEC+ Maintains Production Cuts</div>
-                            </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">Crude Oil Prices Rally on Middle East Tensions</div>
-                            </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">US Shale Production Hits Record High</div>
-                            </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">China's Oil Demand Growth Slows in Q4</div>
+                        <div class="dashboard-widget-content" style="min-height: 520px;">
+                            <div id="top-accounts-list">
+                                <!-- Top 5 accounts will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Latest Report - Second Row -->
-                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 2;">
+                    <!-- Crude Oil Trading View Chart - Big Widget spans rows 2-3, columns 2-5 -->
+                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 2 / 4;">
                         <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Latest Report</h3>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">November 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+17.39%</span>
-                                    <span class="dashboard-report-balance">€270,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2024-11">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">December 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+19.57%</span>
-                                    <span class="dashboard-report-balance">€275,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2024-12">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">January 2025</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+21.74%</span>
-                                    <span class="dashboard-report-balance">€280,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2025-01">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Investors Payment Tracking Widget - Second Row -->
-                    <div class="dashboard-widget" style="grid-column: 3 / 5; grid-row: 2 / 3;">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Investors Payment Tracking</h3>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div id="investors-payment-list">
-                                <!-- Investors will be populated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Top Stories -->
-                    <div class="dashboard-widget">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Top Stories</h3>
+                            <h3 class="dashboard-widget-title">Crude Oil Chart</h3>
                         </div>
                         <div class="dashboard-widget-content">
                             <div class="tradingview-widget-container-dashboard">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                                {
-                                    "feedMode": "all_symbols",
-                                    "colorTheme": "light",
-                                    "isTransparent": false,
-                                    "displayMode": "regular",
+                                <div id="crude-oil-chart-dashboard"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                                <script type="text/javascript">
+                                new TradingView.widget({
                                     "width": "100%",
-                                    "height": "300",
-                                    "locale": "en"
-                                }
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Economic Calendar - Third Row, spans 3 columns -->
-                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 3;">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Economic Calendar</h3>
-                            <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                                {
-                                    "colorTheme": "light",
-                                    "isTransparent": false,
-                                    "width": "100%",
-                                    "height": "300",
+                                    "height": "525",
+                                    "symbol": "USOIL",
+                                    "interval": "60",
+                                    "theme": "light",
+                                    "style": "1",
+                                    "timezone": "Europe/Amsterdam",
                                     "locale": "en",
-                                    "importanceFilter": "-1,0,1"
-                                }
+                                    "allow_symbol_change": true,
+                                    "withdateranges": true,
+                                    "container_id": "crude-oil-chart-dashboard",
+                                    "hide_volume": false,
+                                    "studies": [
+                                        {
+                                            "id": "MASimple@tv-basicstudies",
+                                            "inputs": {
+                                                "length": 200,
+                                                "source": "close",
+                                                "maType": "EMA"
+                                            },
+                                            "overrides": {
+                                                "plot.color": "#FFFF00",
+                                                "plot.linewidth": 3
+                                            }
+                                        }
+                                    ]
+                                });
                                 </script>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
 
@@ -654,16 +514,16 @@
                 </div>
             </div>
 
-            <!-- Performance View - Investors List -->
+            <!-- Performance View - Funded Accounts List -->
             <div class="performance-view" id="performance-view" style="display: none;">
                 <div class="investors-list-container">
                     <div class="investors-grid" id="investors-grid">
-                        <!-- Investors will be populated by JavaScript -->
+                        <!-- Funded Accounts will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
             
-            <!-- Investor Performance Modal -->
+            <!-- Funded Account Performance Modal -->
             <div id="investor-performance-modal" class="admin-modal" style="display: none;">
                 <div class="admin-modal-overlay"></div>
                 <div class="admin-modal-container">
@@ -698,14 +558,6 @@
                                 <input type="number" id="performance-growth" class="admin-form-input" step="0.01" required>
                             </div>
                             <div class="admin-form-group">
-                                <label for="performance-deposits">Deposits (€)</label>
-                                <input type="number" id="performance-deposits" class="admin-form-input" step="0.01" value="0" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="performance-deposit-date">Deposit Date</label>
-                                <input type="date" id="performance-deposit-date" class="admin-form-input">
-                            </div>
-                            <div class="admin-form-group">
                                 <label for="performance-withdrawals">Withdrawals (€)</label>
                                 <input type="number" id="performance-withdrawals" class="admin-form-input" step="0.01" value="0" required>
                             </div>
@@ -722,7 +574,7 @@
                 </div>
             </div>
             
-            <!-- Investor Performance Table Modal -->
+            <!-- Funded Account Performance Table Modal -->
             <div id="investor-performance-table-modal" class="admin-modal" style="display: none;">
                 <div class="admin-modal-overlay"></div>
                 <div class="admin-modal-container" style="max-width: 900px;">
@@ -750,13 +602,13 @@
                 </div>
             </div>
 
-            <!-- Investor Edit/Add Modal -->
+            <!-- Funded Account Edit/Add Modal -->
             <div id="investor-edit-modal" class="admin-modal" style="display: none;">
                 <div class="admin-modal-overlay"></div>
                 <div class="admin-modal-container" style="max-width: 600px;">
                     <button class="admin-modal-close" aria-label="Close modal">&times;</button>
                     <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="investor-modal-title">Edit Investor</h2>
+                        <h2 class="admin-modal-title" id="investor-modal-title">Edit Funded Account</h2>
                         <form id="investor-edit-form" class="admin-modal-form">
                             <div class="admin-form-group">
                                 <label for="edit-investor-name">Full Name</label>
@@ -816,20 +668,16 @@
                 <div class="admin-modal-container" style="max-width: 700px;">
                     <button class="admin-modal-close" aria-label="Close modal">&times;</button>
                     <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="user-modal-title">Edit User</h2>
+                        <h2 class="admin-modal-title" id="user-modal-title">Edit Account</h2>
                         <form id="user-edit-form" class="admin-modal-form">
                             <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Account Information</h3>
                             <div class="admin-form-group">
-                                <label for="edit-user-name">Full Name</label>
+                                <label for="edit-user-name">Title</label>
                                 <input type="text" id="edit-user-name" class="admin-form-input" required>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-email">Email Address</label>
                                 <input type="email" id="edit-user-email" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-phone">Phone Number</label>
-                                <input type="tel" id="edit-user-phone" class="admin-form-input" required>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-account">Account Number</label>
@@ -838,14 +686,11 @@
                             <div class="admin-form-group">
                                 <label for="edit-user-status">Account Status</label>
                                 <select id="edit-user-status" class="admin-form-input" required>
+                                    <option value="Phase 1">Phase 1</option>
+                                    <option value="Phase 2">Phase 2</option>
                                     <option value="Active">Active</option>
                                     <option value="Inactive">Inactive</option>
-                                    <option value="Suspended">Suspended</option>
                                 </select>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-country">Country</label>
-                                <input type="text" id="edit-user-country" class="admin-form-input" required>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-member-since">Initiation Date</label>
@@ -861,13 +706,6 @@
                                 <label for="edit-user-strategy">Investment Strategy</label>
                                 <input type="text" id="edit-user-strategy" class="admin-form-input" required>
                             </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-operator">Assigned Operator Email</label>
-                                <input type="email" id="edit-user-operator" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group" style="padding: 1rem; background: #f3f4f6; border-radius: 6px; margin-top: 1rem;">
-                                <p style="margin: 0; color: #6b7280; font-size: 0.875rem;"><strong>Note:</strong> Current Balance and Total Return are calculated automatically based on performance entries.</p>
-                            </div>
                             <div class="admin-form-actions">
                                 <button type="button" class="admin-btn-cancel" id="cancel-user-edit">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
@@ -877,285 +715,7 @@
                 </div>
             </div>
 
-            <!-- Reports View -->
-            <div class="reports-view" id="reports-view" style="display: none;">
-                <div class="reports-content">
-                    <div class="reports-users-grid" id="reports-users-grid">
-                        <!-- Users will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Admin Reports Widget Modal -->
-            <div id="admin-reports-widget-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container" style="max-width: 800px;">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title">Admin Account Reports</h2>
-                        <div class="reports-widgets-container" id="admin-reports-widgets-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-                            <!-- Report widgets will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Report Upload Modal -->
-            <div id="report-upload-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title" id="report-upload-modal-title">Upload Monthly Report</h2>
-                        <form id="report-upload-form" class="admin-modal-form">
-                            <div class="admin-form-group">
-                                <label for="report-month">Month</label>
-                                <select id="report-month" class="admin-form-input" required>
-                                    <option value="">Select Month</option>
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="report-year">Year</label>
-                                <input type="number" id="report-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="report-file">Upload PDF Report</label>
-                                <input type="file" id="report-file" class="admin-form-input" accept=".pdf" required>
-                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 10MB</span>
-                            </div>
-                            <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-report-upload">Cancel</button>
-                                <button type="submit" class="admin-btn-save">Upload Report</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Report Viewer Modal (for Admin) -->
-            <div id="report-viewer-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container" style="max-width: 90%; max-height: 90vh;">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content" style="padding: 0;">
-                        <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                            <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0;">Monthly Report</h2>
-                        </div>
-                        <div style="padding: 2rem; overflow: auto; max-height: calc(90vh - 100px);">
-                            <iframe id="report-viewer-iframe" style="width: 100%; height: 800px; border: 1px solid #e5e7eb; border-radius: 6px;"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Consultations View -->
-            <div class="consultations-view" id="consultations-view" style="display: none;">
-                <div class="consultations-content">
-                    <!-- Filter Tabs -->
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #e5e7eb;">
-                        <button class="consultation-tab-btn active" data-filter="all" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; cursor: pointer; font-size: 1rem;">All Consultations</button>
-                        <button class="consultation-tab-btn" data-filter="pending" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 500; cursor: pointer; font-size: 1rem;">Pending</button>
-                        <button class="consultation-tab-btn" data-filter="done" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 500; cursor: pointer; font-size: 1rem;">Done</button>
-                    </div>
-
-                    <!-- Consultations List -->
-                    <div class="consultations-list-container">
-                        <div class="consultations-grid" id="consultations-grid">
-                            <!-- Consultations will be populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Send Email Section (for Pending Consultations) -->
-                    <div class="send-email-section" id="send-email-section" style="display: none; background: white; padding: 2rem; border-radius: 8px; margin-top: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-                        <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; color: #1f2937;">Send Google Meet Link</h3>
-                        <div style="margin-bottom: 1.5rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Selected Consultation:</label>
-                            <div id="selected-consultation-info" style="padding: 1rem; background: #f3f4f6; border-radius: 6px; color: #6b7280;">
-                                No consultation selected
-                            </div>
-                        </div>
-                        <form id="send-email-form" class="admin-modal-form">
-                            <div class="admin-form-group">
-                                <label for="google-meet-link">Google Meet Link</label>
-                                <input type="url" id="google-meet-link" class="admin-form-input" placeholder="https://meet.google.com/xxx-xxxx-xxx" required>
-                            </div>
-                            <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-send-email">Clear Selection</button>
-                                <button type="submit" class="admin-btn-save">Send Google Meet Link</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Emails View -->
-            <div class="emails-view" id="emails-view" style="display: none;">
-                <div class="emails-content">
-                    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-                        <h2 style="margin-top: 0; margin-bottom: 2rem; font-size: 1.5rem; color: #1f2937;">Send Email</h2>
-                        
-                        <form id="send-email-to-user-form" class="admin-modal-form">
-                            <div class="admin-form-group">
-                                <label for="email-recipient">Email Recipient(s)</label>
-                                <div id="email-recipients-container">
-                                    <div class="email-recipient-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                                        <input type="email" class="admin-form-input email-recipient-input" placeholder="Enter email address" required style="flex: 1;">
-                                        <button type="button" class="remove-email-btn" style="display: none; background: #fca5a5; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Remove</button>
-                                    </div>
-                                </div>
-                                <button type="button" id="add-email-recipient-btn" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer;">+ Add Another Email</button>
-                            </div>
-
-                            <div class="admin-form-group">
-                                <label for="email-subject-input">Email Subject</label>
-                                <input type="text" id="email-subject-input" class="admin-form-input" placeholder="Enter email subject" required>
-                            </div>
-
-                            <div class="admin-form-group">
-                                <label for="email-message-input">Email Message</label>
-                                <textarea id="email-message-input" class="admin-form-input" rows="10" placeholder="Write your email message here..." required></textarea>
-                            </div>
-
-                            <div class="admin-form-group">
-                                <label for="email-attachment">Attach PDF (Optional)</label>
-                                <input type="file" id="email-attachment" class="admin-form-input" accept=".pdf" multiple>
-                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">You can attach multiple PDF files</span>
-                                <div id="attachment-list" style="margin-top: 0.5rem;">
-                                    <!-- Selected attachments will be listed here -->
-                                </div>
-                            </div>
-
-                            <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="clear-email-form">Clear Form</button>
-                                <button type="submit" class="admin-btn-save">Send Email</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Market News View -->
-            <div class="market-news-view" id="market-news-view" style="display: none;">
-                <div class="market-news-content">
-                    <div class="market-news-chart-section">
-                        <div class="tradingview-widget-container market-news-chart">
-                            <div id="market_news_chart"></div>
-                            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-                            <script type="text/javascript">
-                                new TradingView.widget({
-                                    "width": "100%",
-                                    "height": 500,
-                                    "symbol": "USOIL",
-                                    "interval": "60",
-                                    "theme": "light",
-                                    "style": "1",
-                                    "timezone": "Europe/Amsterdam",
-                                    "locale": "en",
-                                    "allow_symbol_change": true,
-                                    "withdateranges": true,
-                                    "container_id": "market_news_chart",
-                                    "hide_volume": true,
-                                    "studies": [
-                                        {
-                                            "id": "MASimple@tv-basicstudies",
-                                            "inputs": {
-                                                "length": 200,
-                                                "source": "close",
-                                                "maType": "EMA"
-                                            },
-                                            "overrides": {
-                                                "plot.color": "#FFFF00",
-                                                "plot.linewidth": 3
-                                            }
-                                        }
-                                    ]
-                                });
-                            </script>
-                        </div>
-                    </div>
-                    <div class="market-news-articles-section">
-                        <div class="news-grid">
-                            <div class="news-card-wrapper" data-news-index="0">
-                                <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
-                                        <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="0">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="1">
-                                <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
-                                        <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="1">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="2">
-                                <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
-                                        <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="2">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="3">
-                                <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
-                                        <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="3">Edit</button>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-
-            <!-- News Edit Modal -->
-            <div id="news-edit-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
-                    <div class="admin-modal-content">
-                        <h2 class="admin-modal-title">Edit News Article</h2>
-                        <form id="news-edit-form" class="admin-modal-form">
-                            <div class="admin-form-group">
-                                <label for="edit-news-title">Title</label>
-                                <input type="text" id="edit-news-title" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-news-link">Link URL</label>
-                                <input type="url" id="edit-news-link" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-news-image">Image URL</label>
-                                <input type="url" id="edit-news-image" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit">Cancel</button>
-                                <button type="submit" class="admin-btn-save">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                </div>
-            </div>
         </div>
     </section>
     
@@ -1183,27 +743,19 @@
                     this.classList.add('active');
                     
                     // Get all views
-                    const marketNewsView = document.getElementById('market-news-view');
                     const accountSettingsView = document.getElementById('account-settings-view');
-                    const reportsView = document.getElementById('reports-view');
-                    const consultationsView = document.getElementById('consultations-view');
-                    const emailsView = document.getElementById('emails-view');
                     
                     // Hide all views
                     if (dashboardView) dashboardView.style.display = 'none';
                     if (portfolioView) portfolioView.style.display = 'none';
                     if (transactionsView) transactionsView.style.display = 'none';
                     if (performanceView) performanceView.style.display = 'none';
-                    if (marketNewsView) marketNewsView.style.display = 'none';
                     if (accountSettingsView) accountSettingsView.style.display = 'none';
-                    if (reportsView) reportsView.style.display = 'none';
-                    if (consultationsView) consultationsView.style.display = 'none';
-                    if (emailsView) emailsView.style.display = 'none';
                     
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
                         dashboardView.style.display = 'block';
-                        loadInvestorsPaymentList();
+                        loadTopAccounts();
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
                         setTimeout(function() {
@@ -1216,19 +768,9 @@
                     } else if (navText === 'Performance' && performanceView) {
                         performanceView.style.display = 'block';
                         loadInvestorsList();
-                    } else if (navText === 'Market News' && marketNewsView) {
-                        marketNewsView.style.display = 'block';
                     } else if (navText === 'Account Settings' && accountSettingsView) {
                         accountSettingsView.style.display = 'block';
                         loadUsersList();
-                    } else if (navText === 'Reports' && reportsView) {
-                        reportsView.style.display = 'block';
-                        loadReportsUsersList();
-                    } else if (navText === 'Consultations' && consultationsView) {
-                        consultationsView.style.display = 'block';
-                        loadConsultationsList();
-                    } else if (navText === 'Emails' && emailsView) {
-                        emailsView.style.display = 'block';
                     }
                 });
             });
@@ -2130,387 +1672,6 @@
             // Setup performance hover after chart is drawn
             setTimeout(setupPerformanceChartHover, 150);
 
-            // Reports Section - Store reports data
-            let reportsData = {}; // Structure: { userId: { '2024-01': { file: File, month: 'January', year: 2024 }, ... } }
-            
-            function loadReportsUsersList() {
-                const container = document.getElementById('reports-users-grid');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                
-                // Get all users (admin + investors)
-                const allUsers = [...usersData];
-                
-                allUsers.forEach(user => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const userReports = reportsData[user.id] || {};
-                    const reportCount = Object.keys(userReports).length;
-                    const isAdmin = user.type === 'admin';
-                    
-                    // Get list of reports for this user
-                    const reportsList = Object.values(userReports).sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
-                    
-                    let reportsHtml = '';
-                    if (reportsList.length > 0) {
-                        reportsHtml = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><strong style="font-size: 0.875rem; color: #374151;">Uploaded Reports:</strong><ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem; color: #6b7280;">';
-                        reportsList.forEach(report => {
-                            reportsHtml += `<li>${report.month} ${report.year}</li>`;
-                        });
-                        reportsHtml += '</ul></div>';
-                    }
-                    
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${user.name}</h3>
-                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Account:</strong> ${user.account}</p>
-                            <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
-                            ${reportsHtml}
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="admin-btn-save" onclick="openReportUploadModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
-                            ${isAdmin ? `<button class="admin-btn-view" onclick="viewAdminReportsWidget()">View Admin Reports</button>` : ''}
-                            ${isAdmin && reportCount > 0 ? `<button class="admin-btn-view" onclick="viewAdminReport(${user.id})">View Report</button>` : ''}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            }
-            
-            function openReportUploadModal(userId) {
-                const user = usersData.find(u => u.id === userId);
-                if (!user) return;
-                
-                const modal = document.getElementById('report-upload-modal');
-                document.getElementById('report-upload-modal-title').textContent = `Upload Report - ${user.name}`;
-                document.getElementById('report-upload-form').reset();
-                modal.setAttribute('data-user-id', userId);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeReportUploadModal() {
-                document.getElementById('report-upload-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            function viewAdminReport(userId) {
-                const userReports = reportsData[userId] || {};
-                const reportsList = Object.values(userReports).sort((a, b) => {
-                    const yearDiff = a.year - b.year;
-                    if (yearDiff !== 0) return yearDiff;
-                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    return months.indexOf(a.month) - months.indexOf(b.month);
-                });
-                
-                if (reportsList.length === 0) {
-                    alert('No reports available for this account.');
-                    return;
-                }
-                
-                // Get the most recent report
-                const latestReport = reportsList[reportsList.length - 1];
-                const modal = document.getElementById('report-viewer-modal');
-                const iframe = document.getElementById('report-viewer-iframe');
-                const title = document.getElementById('report-viewer-title');
-                
-                title.textContent = `Monthly Report - ${latestReport.month} ${latestReport.year}`;
-                
-                // Create object URL from the file
-                if (latestReport.file) {
-                    const fileUrl = URL.createObjectURL(latestReport.file);
-                    iframe.src = fileUrl;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                } else if (latestReport.url) {
-                    // If stored as URL (for demo purposes)
-                    iframe.src = latestReport.url;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                }
-            }
-            
-            function closeReportViewerModal() {
-                const modal = document.getElementById('report-viewer-modal');
-                const iframe = document.getElementById('report-viewer-iframe');
-                iframe.src = '';
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            window.openReportUploadModal = openReportUploadModal;
-            window.viewAdminReport = viewAdminReport;
-            
-            // Report upload form handler
-            const reportUploadForm = document.getElementById('report-upload-form');
-            if (reportUploadForm) {
-                reportUploadForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const userId = parseInt(document.getElementById('report-upload-modal').getAttribute('data-user-id'));
-                    const month = document.getElementById('report-month').value;
-                    const year = parseInt(document.getElementById('report-year').value);
-                    const fileInput = document.getElementById('report-file');
-                    const file = fileInput.files[0];
-                    
-                    if (!file) {
-                        alert('Please select a PDF file to upload.');
-                        return;
-                    }
-                    
-                    if (file.size > 10 * 1024 * 1024) {
-                        alert('File size exceeds 10MB limit.');
-                        return;
-                    }
-                    
-                    if (!file.type.includes('pdf')) {
-                        alert('Please upload a PDF file.');
-                        return;
-                    }
-                    
-                    if (!reportsData[userId]) {
-                        reportsData[userId] = {};
-                    }
-                    
-                    const reportKey = `${year}-${String(month).padStart(2, '0')}`;
-                    reportsData[userId][reportKey] = {
-                        file: file,
-                        month: month,
-                        year: year,
-                        fileName: file.name,
-                        uploadDate: new Date().toISOString()
-                    };
-                    
-                    loadReportsUsersList();
-                    closeReportUploadModal();
-                    alert(`Report for ${month} ${year} uploaded successfully!`);
-                });
-            }
-            
-            // Admin Reports Widget Functions
-            function viewAdminReportsWidget() {
-                const adminId = 1; // Admin user ID
-                const adminReports = reportsData[adminId] || {};
-                const reportsList = Object.values(adminReports).sort((a, b) => {
-                    const yearDiff = a.year - b.year;
-                    if (yearDiff !== 0) return yearDiff;
-                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    return months.indexOf(a.month) - months.indexOf(b.month);
-                });
-                
-                const container = document.getElementById('admin-reports-widgets-container');
-                const modal = document.getElementById('admin-reports-widget-modal');
-                
-                if (reportsList.length === 0) {
-                    container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 2rem;">No reports uploaded yet.</p>';
-                } else {
-                    container.innerHTML = '';
-                    reportsList.forEach(report => {
-                        const widget = document.createElement('div');
-                        widget.className = 'report-widget';
-                        widget.style.cssText = 'background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);';
-                        widget.innerHTML = `
-                            <div style="margin-bottom: 1rem;">
-                                <h4 style="margin: 0; font-size: 1.1rem; color: #1f2937;">${report.month} ${report.year}</h4>
-                                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: #6b7280;">${report.fileName || 'Report.pdf'}</p>
-                            </div>
-                            <button class="admin-btn-save" onclick="downloadAdminReport(${adminId}, '${report.month}', ${report.year})" style="width: 100%;">
-                                Download
-                            </button>
-                        `;
-                        container.appendChild(widget);
-                    });
-                }
-                
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeAdminReportsWidget() {
-                document.getElementById('admin-reports-widget-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            function downloadAdminReport(userId, month, year) {
-                const reportKey = `${year}-${String(month).padStart(2, '0')}`;
-                const report = reportsData[userId]?.[reportKey];
-                if (report && report.file) {
-                    const url = URL.createObjectURL(report.file);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = report.fileName || `Report_${month}_${year}.pdf`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }
-            }
-            
-            window.downloadAdminReport = downloadAdminReport;
-            
-            
-            // Close modal handlers for reports
-            setTimeout(function() {
-                const reportUploadModal = document.getElementById('report-upload-modal');
-                if (reportUploadModal) {
-                    reportUploadModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportUploadModal);
-                    reportUploadModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportUploadModal);
-                    document.getElementById('cancel-report-upload')?.addEventListener('click', closeReportUploadModal);
-                }
-                
-                const reportViewerModal = document.getElementById('report-viewer-modal');
-                if (reportViewerModal) {
-                    reportViewerModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportViewerModal);
-                    reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
-                }
-                
-                const adminReportsWidgetModal = document.getElementById('admin-reports-widget-modal');
-                if (adminReportsWidgetModal) {
-                    adminReportsWidgetModal.querySelector('.admin-modal-close')?.addEventListener('click', closeAdminReportsWidget);
-                    adminReportsWidgetModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeAdminReportsWidget);
-                }
-            }, 100);
-            
-            // Investors Payment Tracking
-            let investorsPaymentStatus = {}; // Store payment status: { investorId: { paid: true/false } }
-            
-            function loadInvestorsPaymentList() {
-                const container = document.getElementById('investors-payment-list');
-                if (!container) return;
-                
-                // Get all investors (exclude admin)
-                const investors = usersData.filter(user => user.type === 'investor');
-                
-                if (investors.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No investors found.</p>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                
-                investors.forEach(investor => {
-                    // Determine growth rate (2% or 4%) - default to 2% if not specified
-                    const growthRate = investor.growthRate || 2; // Can be 2 or 4
-                    const growthPercent = growthRate;
-                    const paymentAmount = (investor.balance * (growthRate / 100)).toFixed(2);
-                    const isPaid = investorsPaymentStatus[investor.id]?.paid || false;
-                    
-                    const item = document.createElement('div');
-                    item.className = 'investor-payment-item';
-                    item.style.cssText = 'display: grid; grid-template-columns: 2fr 1.5fr 0.8fr 1.5fr 0.8fr; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb; gap: 1rem;';
-                    if (isPaid) {
-                        item.style.opacity = '0.6';
-                        item.style.textDecoration = 'line-through';
-                    }
-                    
-                    item.innerHTML = `
-                        <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem;">${investor.name}</div>
-                        <div style="color: #374151; font-size: 0.875rem; text-align: right;">€${investor.balance.toLocaleString('en-US')}</div>
-                        <div style="color: #374151; font-size: 0.875rem; text-align: center;">${growthPercent}%</div>
-                        <div style="color: #2563eb; font-weight: 600; font-size: 0.875rem; text-align: right;">€${parseFloat(paymentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
-                        <div style="text-align: center;">
-                            <input type="checkbox" 
-                                   class="payment-checkbox" 
-                                   data-investor-id="${investor.id}"
-                                   ${isPaid ? 'checked' : ''}
-                                   style="width: 18px; height: 18px; cursor: pointer;">
-                        </div>
-                    `;
-                    
-                    container.appendChild(item);
-                });
-                
-                // Add event listeners to checkboxes
-                container.querySelectorAll('.payment-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const investorId = parseInt(this.getAttribute('data-investor-id'));
-                        if (!investorsPaymentStatus[investorId]) {
-                            investorsPaymentStatus[investorId] = {};
-                        }
-                        investorsPaymentStatus[investorId].paid = this.checked;
-                        loadInvestorsPaymentList(); // Reload to update styling
-                    });
-                });
-            }
-            
-            // Load investors payment list when dashboard view is shown
-            // Use the dashboardView already declared in navigation handler
-            if (dashboardView) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            if (dashboardView.style.display !== 'none') {
-                                loadInvestorsPaymentList();
-                            }
-                        }
-                    });
-                });
-                observer.observe(dashboardView, { attributes: true, attributeFilter: ['style'] });
-                
-                // Also load on initial page load if dashboard is visible
-                if (dashboardView.style.display !== 'none') {
-                    setTimeout(loadInvestorsPaymentList, 100);
-                }
-            }
-            
-            // Dashboard navigation links
-            const dashboardNewsLink = document.getElementById('dashboard-news-link');
-            
-            if (dashboardNewsLink) {
-                dashboardNewsLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const navItems = document.querySelectorAll('.sidebar-nav-item');
-                    navItems.forEach(item => {
-                        const span = item.querySelector('span');
-                        if (span && span.textContent.trim() === 'Market News') {
-                            item.click();
-                        }
-                    });
-                });
-            }
-            
-            // Dashboard report download buttons
-            const dashboardReportDownloads = document.querySelectorAll('.dashboard-report-download');
-            dashboardReportDownloads.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const month = this.getAttribute('data-month');
-                    const monthNames = {
-                        '2024-10': 'October_2024',
-                        '2024-11': 'November_2024',
-                        '2024-12': 'December_2024',
-                        '2025-01': 'January_2025'
-                    };
-                    const filename = `Monthly_Report_${monthNames[month]}.pdf`;
-                    alert(`Downloading ${filename}\n\nNote: This is a demo. In production, this would generate and download the actual PDF report.`);
-                });
-            });
-            
-            
-            // Dashboard news widget click handler
-            const dashboardNewsWidget = document.getElementById('dashboard-news-widget');
-            if (dashboardNewsWidget) {
-                dashboardNewsWidget.style.cursor = 'pointer';
-                dashboardNewsWidget.addEventListener('click', function() {
-                    const navItems = document.querySelectorAll('.sidebar-nav-item');
-                    navItems.forEach(item => {
-                        const span = item.querySelector('span');
-                        if (span && span.textContent.trim() === 'Market News') {
-                            item.click();
-                        }
-                    });
-                });
-            }
-            
             // Draw dashboard charts when dashboard is shown
             const dashboardViewEl = document.getElementById('dashboard-view');
             if (dashboardViewEl) {
@@ -2520,12 +1681,20 @@
                             if (dashboardViewEl.style.display !== 'none') {
                                 setTimeout(function() {
                                     calculateProjectionValue();
+                                    loadTopAccounts();
                                 }, 100);
                             }
                         }
                     });
                 });
                 observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
+                
+                // Also load on initial page load if dashboard is visible
+                if (dashboardViewEl.style.display !== 'none') {
+                    setTimeout(function() {
+                        loadTopAccounts();
+                    }, 100);
+                }
             }
             
             // Calculate 12-month projection value
@@ -2554,15 +1723,61 @@
                 }
             }
             
-            // Investors List Functions
+            // Top Accounts Widget Function
+            function loadTopAccounts() {
+                const container = document.getElementById('top-accounts-list');
+                if (!container || typeof investorsData === 'undefined') return;
+                
+                // Sort accounts by balance (highest first) and get top 5
+                const topAccounts = [...investorsData]
+                    .sort((a, b) => b.balance - a.balance)
+                    .slice(0, 5);
+                
+                if (topAccounts.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No accounts found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                topAccounts.forEach((account, index) => {
+                    const returnPercent = ((account.balance - account.initial) / account.initial * 100).toFixed(2);
+                    const item = document.createElement('div');
+                    item.style.cssText = 'padding: 0.875rem 0; border-bottom: 1px solid #e5e7eb;';
+                    if (index === topAccounts.length - 1) {
+                        item.style.borderBottom = 'none';
+                    }
+                    
+                    item.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="font-weight: 600; color: #1f2937; font-size: 0.9375rem;">${account.name}</div>
+                            <span style="background: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">#${index + 1}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem;">
+                            <div style="color: #6b7280;">
+                                <div>${account.account}</div>
+                                <div style="margin-top: 0.25rem; color: #10b981; font-weight: 600;">+${returnPercent}%</div>
+                            </div>
+                            <div style="text-align: right; font-weight: 600; color: #1f2937;">
+                                €${account.balance.toLocaleString('en-US')}
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+            }
+            
+            // Funded Accounts List Functions
             let investorsData = [
                 { id: 1, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', initial: 230000, balance: 287450, status: 'Active' },
                 { id: 2, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', initial: 150000, balance: 187500, status: 'Active' },
                 { id: 3, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', initial: 500000, balance: 625000, status: 'Active' },
-                { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' }
+                { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' },
+                { id: 5, name: 'David Johnson', email: 'david.johnson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', initial: 80000, balance: 96000, status: 'Active' }
             ];
             
-            // Investor Performance Data - stores performance entries for each investor
+            // Funded Account Performance Data - stores performance entries for each funded account
             let investorPerformanceData = {};
             
             function loadInvestorsList() {
@@ -2674,7 +1889,7 @@
             window.openInvestorPerformanceModal = openInvestorPerformanceModal;
             window.viewInvestorPerformance = viewInvestorPerformance;
             
-            // Investor performance form handler
+            // Funded Account performance form handler
             const investorPerformanceForm = document.getElementById('investor-performance-form');
             if (investorPerformanceForm) {
                 investorPerformanceForm.addEventListener('submit', function(e) {
@@ -2689,9 +1904,9 @@
                         month: document.getElementById('performance-month').value,
                         year: parseInt(document.getElementById('performance-year').value),
                         growth: parseFloat(document.getElementById('performance-growth').value),
-                        deposits: parseFloat(document.getElementById('performance-deposits').value) || 0,
+                        deposits: 0,
                         withdrawals: parseFloat(document.getElementById('performance-withdrawals').value) || 0,
-                        depositDate: document.getElementById('performance-deposit-date').value || null,
+                        depositDate: null,
                         withdrawalDate: document.getElementById('performance-withdrawal-date').value || null
                     };
                     
@@ -2727,7 +1942,7 @@
             // Make function global
             window.openInvestorEditModal = openInvestorEditModal;
             
-            // Investor edit form handler
+            // Funded Account edit form handler
             const investorEditForm = document.getElementById('investor-edit-form');
             if (investorEditForm) {
                 investorEditForm.addEventListener('submit', function(e) {
@@ -2748,11 +1963,11 @@
                 });
             }
             
-            // Add investor button
+            // Add funded account button
             if (document.getElementById('add-investor-btn')) {
                 document.getElementById('add-investor-btn').addEventListener('click', function() {
                     const modal = document.getElementById('investor-edit-modal');
-                    document.getElementById('investor-modal-title').textContent = 'Add New Investor';
+                    document.getElementById('investor-modal-title').textContent = 'Add New Funded Account';
                     document.getElementById('investor-edit-form').reset();
                     modal.removeAttribute('data-edit-id');
                     modal.setAttribute('data-add-mode', 'true');
@@ -2807,7 +2022,7 @@
                         </div>
                         <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                             <button class="admin-edit-btn" onclick="openUserEditModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
-                            ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New User</button>` : ''}
+                            ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New Account</button>` : ''}
                         </div>
                     `;
                     container.appendChild(card);
@@ -2816,7 +2031,7 @@
             
             function openAddUserModal() {
                 const modal = document.getElementById('user-edit-modal');
-                document.getElementById('user-modal-title').textContent = 'Add New User';
+                document.getElementById('user-modal-title').textContent = 'Add New Account';
                 document.getElementById('user-edit-form').reset();
                 modal.removeAttribute('data-edit-id');
                 modal.setAttribute('data-add-mode', 'true');
@@ -2833,14 +2048,11 @@
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('edit-user-name').value = user.name;
                 document.getElementById('edit-user-email').value = user.email;
-                document.getElementById('edit-user-phone').value = user.phone;
                 document.getElementById('edit-user-account').value = user.account;
                 document.getElementById('edit-user-status').value = user.status;
-                document.getElementById('edit-user-country').value = user.country;
                 document.getElementById('edit-user-member-since').value = user.memberSince;
                 document.getElementById('edit-user-initial').value = user.initial;
                 document.getElementById('edit-user-strategy').value = user.strategy;
-                document.getElementById('edit-user-operator').value = user.operator;
                 modal.setAttribute('data-edit-id', id);
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
@@ -2868,16 +2080,16 @@
                             id: newId,
                             name: document.getElementById('edit-user-name').value,
                             email: document.getElementById('edit-user-email').value,
-                            phone: document.getElementById('edit-user-phone').value,
+                            phone: '',
                             account: document.getElementById('edit-user-account').value,
                             status: document.getElementById('edit-user-status').value,
-                            country: document.getElementById('edit-user-country').value,
+                            country: '',
                             memberSince: document.getElementById('edit-user-member-since').value,
                             initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
                             balance: parseFloat(document.getElementById('edit-user-initial').value) || 0, // Start with initial investment
                             return: 0,
                             strategy: document.getElementById('edit-user-strategy').value,
-                            operator: document.getElementById('edit-user-operator').value,
+                            operator: '',
                             type: 'investor'
                         };
                         usersData.push(newUser);
@@ -2887,7 +2099,7 @@
                                 id: newId,
                                 name: newUser.name,
                                 email: newUser.email,
-                                phone: newUser.phone,
+                                phone: '',
                                 account: newUser.account,
                                 initial: newUser.initial,
                                 balance: newUser.balance,
@@ -2896,7 +2108,7 @@
                         }
                         loadUsersList();
                         closeUserEditModal();
-                        alert('New user added successfully!');
+                        alert('New account added successfully!');
                     } else {
                         // Edit existing user
                         const id = parseInt(modal.getAttribute('data-edit-id'));
@@ -2904,15 +2116,12 @@
                         if (user) {
                             user.name = document.getElementById('edit-user-name').value;
                             user.email = document.getElementById('edit-user-email').value;
-                            user.phone = document.getElementById('edit-user-phone').value;
                             user.account = document.getElementById('edit-user-account').value;
                             user.status = document.getElementById('edit-user-status').value;
-                            user.country = document.getElementById('edit-user-country').value;
                             user.memberSince = document.getElementById('edit-user-member-since').value;
                             user.initial = parseFloat(document.getElementById('edit-user-initial').value);
                             // Balance and return are calculated automatically - don't update them here
                             user.strategy = document.getElementById('edit-user-strategy').value;
-                            user.operator = document.getElementById('edit-user-operator').value;
                             loadUsersList();
                             closeUserEditModal();
                         }
@@ -2920,411 +2129,8 @@
                 });
             }
             
-            // News Edit Functions
-            let newsData = [
-                { title: 'OPEC+ Maintains Production Cuts Amid Global Demand Concerns', link: 'https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: 'Crude Oil Prices Rally on Middle East Tensions', link: 'https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop' },
-                { title: 'US Shale Production Hits Record High Despite Lower Prices', link: 'https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: "China's Oil Demand Growth Slows in Q4 2024", link: 'https://www.ft.com/content/china-oil-demand-slowdown-q4-2024', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop' }
-            ];
-            
-            function updateNewsDisplay() {
-                newsData.forEach((news, index) => {
-                    const wrapper = document.querySelector(`[data-news-index="${index}"]`);
-                    if (wrapper) {
-                        const link = wrapper.querySelector('.news-card');
-                        const img = wrapper.querySelector('.news-image');
-                        const title = wrapper.querySelector('.news-title');
-                        link.href = news.link;
-                        img.src = news.image;
-                        img.alt = news.title;
-                        title.textContent = news.title;
-                    }
-                });
-            }
-            
-            // News edit button handlers - initialize after DOM is ready
-            function initNewsEditButtons() {
-                document.querySelectorAll('.news-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const index = parseInt(this.getAttribute('data-news-index'));
-                        openNewsEditModal(index);
-                    });
-                });
-            }
-            
-            // Initialize news edit buttons when market news view is shown
-            const marketNewsView = document.getElementById('market-news-view');
-            if (marketNewsView) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            if (marketNewsView.style.display !== 'none') {
-                                setTimeout(initNewsEditButtons, 100);
-                            }
-                        }
-                    });
-                });
-                observer.observe(marketNewsView, { attributes: true, attributeFilter: ['style'] });
-            }
-            
-            // Also initialize on page load if view is visible
-            if (marketNewsView && marketNewsView.style.display !== 'none') {
-                setTimeout(initNewsEditButtons, 100);
-            }
-            
-            function openNewsEditModal(index) {
-                const news = newsData[index];
-                const modal = document.getElementById('news-edit-modal');
-                document.getElementById('edit-news-title').value = news.title;
-                document.getElementById('edit-news-link').value = news.link;
-                document.getElementById('edit-news-image').value = news.image;
-                modal.setAttribute('data-edit-index', index);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeNewsEditModal() {
-                document.getElementById('news-edit-modal').style.display = 'none';
-                document.body.style.overflow = '';
-            }
-            
-            // News edit form handler
-            const newsEditForm = document.getElementById('news-edit-form');
-            if (newsEditForm) {
-                newsEditForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const index = parseInt(document.getElementById('news-edit-modal').getAttribute('data-edit-index'));
-                    newsData[index].title = document.getElementById('edit-news-title').value;
-                    newsData[index].link = document.getElementById('edit-news-link').value;
-                    newsData[index].image = document.getElementById('edit-news-image').value;
-                    updateNewsDisplay();
-                    closeNewsEditModal();
-                });
-            }
-            
-            // Consultations Section
-            let consultationsData = [
-                { id: 1, name: 'John Doe', email: 'john.doe@example.com', date: '2025-01-15', status: 'pending', topic: 'Investment Strategy Consultation' },
-                { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', date: '2025-01-14', status: 'done', topic: 'Portfolio Review' },
-                { id: 3, name: 'Robert Johnson', email: 'robert.j@example.com', date: '2025-01-16', status: 'pending', topic: 'Risk Assessment' },
-                { id: 4, name: 'Emily Davis', email: 'emily.davis@example.com', date: '2025-01-13', status: 'done', topic: 'Market Analysis' },
-                { id: 5, name: 'Michael Wilson', email: 'michael.w@example.com', date: '2025-01-17', status: 'pending', topic: 'Financial Planning' }
-            ];
-            
-            let selectedConsultationId = null;
-            let currentFilter = 'all';
-            
-            function loadConsultationsList() {
-                const container = document.getElementById('consultations-grid');
-                if (!container) return;
-                
-                container.innerHTML = '';
-                
-                // Filter consultations based on current filter
-                let filteredConsultations = consultationsData;
-                if (currentFilter === 'pending') {
-                    filteredConsultations = consultationsData.filter(c => c.status === 'pending');
-                } else if (currentFilter === 'done') {
-                    filteredConsultations = consultationsData.filter(c => c.status === 'done');
-                }
-                
-                if (filteredConsultations.length === 0) {
-                    container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 2rem;">No consultations found.</p>';
-                    return;
-                }
-                
-                filteredConsultations.forEach(consultation => {
-                    const card = document.createElement('div');
-                    card.className = 'consultation-card';
-                    if (selectedConsultationId === consultation.id) {
-                        card.classList.add('selected');
-                    }
-                    card.setAttribute('data-consultation-id', consultation.id);
-                    
-                    const statusClass = consultation.status === 'pending' ? 'consultation-status-pending' : 'consultation-status-done';
-                    const statusText = consultation.status === 'pending' ? 'Pending' : 'Done';
-                    
-                    card.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <h3 style="margin: 0; font-size: 1.125rem; color: #1f2937;">${consultation.name}</h3>
-                            <span class="consultation-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
-                            <p style="margin: 0.25rem 0;"><strong>Email:</strong> ${consultation.email}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${new Date(consultation.date).toLocaleDateString()}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Topic:</strong> ${consultation.topic}</p>
-                        </div>
-                    `;
-                    
-                    // Only allow selection of pending consultations
-                    if (consultation.status === 'pending') {
-                        card.addEventListener('click', function() {
-                            selectConsultation(consultation.id);
-                        });
-                    }
-                    
-                    container.appendChild(card);
-                });
-                
-                // Update send email section visibility
-                updateSendEmailSection();
-            }
-            
-            function selectConsultation(id) {
-                selectedConsultationId = id;
-                loadConsultationsList();
-                
-                const consultation = consultationsData.find(c => c.id === id);
-                if (consultation) {
-                    const infoDiv = document.getElementById('selected-consultation-info');
-                    infoDiv.innerHTML = `
-                        <strong>${consultation.name}</strong> - ${consultation.email}<br>
-                        <span style="font-size: 0.875rem; color: #6b7280;">${consultation.topic} (${new Date(consultation.date).toLocaleDateString()})</span>
-                    `;
-                    document.getElementById('send-email-section').style.display = 'block';
-                }
-            }
-            
-            function updateSendEmailSection() {
-                const section = document.getElementById('send-email-section');
-                if (selectedConsultationId) {
-                    const consultation = consultationsData.find(c => c.id === selectedConsultationId);
-                    if (consultation && consultation.status === 'pending') {
-                        section.style.display = 'block';
-                    } else {
-                        section.style.display = 'none';
-                        selectedConsultationId = null;
-                    }
-                } else {
-                    section.style.display = 'none';
-                }
-            }
-            
-            // Filter tab handlers
-            document.querySelectorAll('.consultation-tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.consultation-tab-btn').forEach(b => {
-                        b.classList.remove('active');
-                        b.style.borderBottomColor = 'transparent';
-                        b.style.color = '#6b7280';
-                        b.style.fontWeight = '500';
-                    });
-                    
-                    this.classList.add('active');
-                    this.style.borderBottomColor = '#2563eb';
-                    this.style.color = '#2563eb';
-                    this.style.fontWeight = '600';
-                    
-                    currentFilter = this.getAttribute('data-filter');
-                    selectedConsultationId = null;
-                    loadConsultationsList();
-                });
-            });
-            
-            // Send email form handler
-            const sendEmailForm = document.getElementById('send-email-form');
-            if (sendEmailForm) {
-                sendEmailForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (!selectedConsultationId) {
-                        alert('Please select a consultation first.');
-                        return;
-                    }
-                    
-                    const consultation = consultationsData.find(c => c.id === selectedConsultationId);
-                    if (!consultation) return;
-                    
-                    const googleMeetLink = document.getElementById('google-meet-link').value;
-                    
-                    if (!googleMeetLink) {
-                        alert('Please enter a Google Meet link.');
-                        return;
-                    }
-                    
-                    // In a real application, this would send an email via a backend service
-                    alert(`Google Meet link would be sent to ${consultation.email}:\n\nLink: ${googleMeetLink}\n\nNote: This is a demo. In production, this would send an actual email with the Google Meet link.`);
-                    
-                    // Mark consultation as done (optional)
-                    // consultation.status = 'done';
-                    // loadConsultationsList();
-                });
-            }
-            
-            // Clear selection button
-            const cancelSendEmailBtn = document.getElementById('cancel-send-email');
-            if (cancelSendEmailBtn) {
-                cancelSendEmailBtn.addEventListener('click', function() {
-                    selectedConsultationId = null;
-                    document.getElementById('send-email-form').reset();
-                    document.getElementById('selected-consultation-info').textContent = 'No consultation selected';
-                    document.getElementById('send-email-section').style.display = 'none';
-                    loadConsultationsList();
-                });
-            }
-            
-            // Emails Section
-            function loadEmailUsersList() {
-                // Function kept for compatibility but not needed anymore
-            }
-            
-            // Add email recipient field
-            function addEmailRecipientField() {
-                const container = document.getElementById('email-recipients-container');
-                if (!container) return;
-                
-                const newRow = document.createElement('div');
-                newRow.className = 'email-recipient-row';
-                newRow.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 0.5rem;';
-                
-                const input = document.createElement('input');
-                input.type = 'email';
-                input.className = 'admin-form-input email-recipient-input';
-                input.placeholder = 'Enter email address';
-                input.style.flex = '1';
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.type = 'button';
-                removeBtn.className = 'remove-email-btn';
-                removeBtn.textContent = 'Remove';
-                removeBtn.style.cssText = 'background: #fca5a5; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;';
-                
-                removeBtn.addEventListener('click', function() {
-                    newRow.remove();
-                    updateRemoveButtons();
-                });
-                
-                newRow.appendChild(input);
-                newRow.appendChild(removeBtn);
-                container.appendChild(newRow);
-                
-                updateRemoveButtons();
-            }
-            
-            function updateRemoveButtons() {
-                const rows = document.querySelectorAll('.email-recipient-row');
-                rows.forEach((row, index) => {
-                    const removeBtn = row.querySelector('.remove-email-btn');
-                    if (rows.length > 1) {
-                        removeBtn.style.display = 'block';
-                    } else {
-                        removeBtn.style.display = 'none';
-                    }
-                });
-            }
-            
-            // Add email recipient button
-            const addEmailRecipientBtn = document.getElementById('add-email-recipient-btn');
-            if (addEmailRecipientBtn) {
-                addEmailRecipientBtn.addEventListener('click', function() {
-                    addEmailRecipientField();
-                });
-            }
-            
-            // Initial update of remove buttons
-            updateRemoveButtons();
-            
-            // Handle file attachments
-            const emailAttachmentInput = document.getElementById('email-attachment');
-            const attachmentListDiv = document.getElementById('attachment-list');
-            
-            if (emailAttachmentInput && attachmentListDiv) {
-                emailAttachmentInput.addEventListener('change', function() {
-                    const files = Array.from(this.files);
-                    attachmentListDiv.innerHTML = '';
-                    
-                    if (files.length > 0) {
-                        files.forEach((file, index) => {
-                            if (file.type === 'application/pdf') {
-                                const fileItem = document.createElement('div');
-                                fileItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #f3f4f6; border-radius: 4px; margin-top: 0.5rem;';
-                                fileItem.innerHTML = `
-                                    <span style="font-size: 0.875rem; color: #374151;">${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
-                                    <button type="button" class="remove-attachment-btn" data-index="${index}" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">Remove</button>
-                                `;
-                                attachmentListDiv.appendChild(fileItem);
-                            }
-                        });
-                        
-                        // Add remove button handlers
-                        attachmentListDiv.querySelectorAll('.remove-attachment-btn').forEach(btn => {
-                            btn.addEventListener('click', function() {
-                                const index = parseInt(this.getAttribute('data-index'));
-                                const dt = new DataTransfer();
-                                const files = Array.from(emailAttachmentInput.files);
-                                files.splice(index, 1);
-                                files.forEach(file => dt.items.add(file));
-                                emailAttachmentInput.files = dt.files;
-                                emailAttachmentInput.dispatchEvent(new Event('change'));
-                            });
-                        });
-                    }
-                });
-            }
-            
-            // Send email to user form handler
-            const sendEmailToUserForm = document.getElementById('send-email-to-user-form');
-            if (sendEmailToUserForm) {
-                sendEmailToUserForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const emailInputs = document.querySelectorAll('.email-recipient-input');
-                    const emails = Array.from(emailInputs)
-                        .map(input => input.value.trim())
-                        .filter(email => email !== '');
-                    
-                    if (emails.length === 0) {
-                        alert('Please enter at least one email address.');
-                        return;
-                    }
-                    
-                    const subject = document.getElementById('email-subject-input').value;
-                    const message = document.getElementById('email-message-input').value;
-                    const attachments = document.getElementById('email-attachment').files;
-                    
-                    let attachmentInfo = '';
-                    if (attachments.length > 0) {
-                        const fileNames = Array.from(attachments).map(f => f.name).join(', ');
-                        attachmentInfo = `\n\nAttachments: ${fileNames}`;
-                    }
-                    
-                    const recipientsList = emails.join(', ');
-                    
-                    // In a real application, this would send an email via a backend service
-                    alert(`Email would be sent to: ${recipientsList}\n\nSubject: ${subject}\n\nMessage:\n${message}${attachmentInfo}\n\nNote: This is a demo. In production, this would send an actual email with attachments.`);
-                });
-            }
-            
-            // Clear email form button
-            const clearEmailFormBtn = document.getElementById('clear-email-form');
-            if (clearEmailFormBtn) {
-                clearEmailFormBtn.addEventListener('click', function() {
-                    document.getElementById('send-email-to-user-form').reset();
-                    document.getElementById('attachment-list').innerHTML = '';
-                    
-                    // Reset to single email field
-                    const container = document.getElementById('email-recipients-container');
-                    container.innerHTML = `
-                        <div class="email-recipient-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <input type="email" class="admin-form-input email-recipient-input" placeholder="Enter email address" required style="flex: 1;">
-                            <button type="button" class="remove-email-btn" style="display: none; background: #ef4444; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Remove</button>
-                        </div>
-                    `;
-                    updateRemoveButtons();
-                });
-            }
-            
             // Close modal handlers - set up after DOM is ready
             setTimeout(function() {
-                const newsModal = document.getElementById('news-edit-modal');
-                if (newsModal) {
-                    newsModal.querySelector('.admin-modal-close')?.addEventListener('click', closeNewsEditModal);
-                    newsModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeNewsEditModal);
-                    document.getElementById('cancel-news-edit')?.addEventListener('click', closeNewsEditModal);
-                }
                 
                 const investorModal = document.getElementById('investor-edit-modal');
                 if (investorModal) {
