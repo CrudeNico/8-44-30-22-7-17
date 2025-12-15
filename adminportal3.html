@@ -286,6 +286,9 @@
                 <a href="#" class="sidebar-nav-item">
                     <span>Emails</span>
                 </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Learning</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <a href="index.html" class="sidebar-footer-item">
@@ -952,6 +955,86 @@
                 </div>
             </div>
 
+            <!-- Learning View -->
+            <div class="learning-view" id="learning-view" style="display: none;">
+                <div class="learning-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Learning Modules</h2>
+                        <button class="admin-btn-save" id="add-module-btn" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
+                            + Add New Module
+                        </button>
+                    </div>
+                    
+                    <div class="modules-grid" id="modules-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Modules will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Module View/Edit Modal -->
+            <div id="module-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="module-modal-title">Add New Module</h2>
+                        <form id="module-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="module-title">Module Title</label>
+                                <input type="text" id="module-title" class="admin-form-input" placeholder="Enter module title" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="module-description">Description</label>
+                                <textarea id="module-description" class="admin-form-input" rows="3" placeholder="Enter module description"></textarea>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="module-image">Module Image</label>
+                                <input type="file" id="module-image" class="admin-form-input" accept="image/*">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Upload an image for this module</span>
+                                <div id="module-image-preview" style="margin-top: 1rem; display: none;">
+                                    <img id="module-image-preview-img" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #e5e7eb;">
+                                </div>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="module-content">Content</label>
+                                <textarea id="module-content" class="admin-form-input" rows="10" placeholder="Enter module content (supports HTML)"></textarea>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">You can use HTML tags for formatting</span>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="module-additional-images">Additional Images</label>
+                                <input type="file" id="module-additional-images" class="admin-form-input" accept="image/*" multiple>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">You can select multiple images</span>
+                                <div id="module-additional-images-preview" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                                    <!-- Additional images preview will be shown here -->
+                                </div>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="module-order">Display Order</label>
+                                <input type="number" id="module-order" class="admin-form-input" min="0" value="0" placeholder="Lower numbers appear first">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Modules are sorted by this number (ascending)</span>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label>
+                                    <input type="checkbox" id="module-published" style="margin-right: 0.5rem;">
+                                    Published (visible to users)
+                                </label>
+                            </div>
+                            
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-module">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save Module</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Market News View -->
             <div class="market-news-view" id="market-news-view" style="display: none;">
                 <div class="market-news-content">
@@ -1092,6 +1175,7 @@
                     const reportsView = document.getElementById('reports-view');
                     const consultationsView = document.getElementById('consultations-view');
                     const emailsView = document.getElementById('emails-view');
+                    const learningView = document.getElementById('learning-view');
                     
                     // Hide all views
                     if (dashboardView) dashboardView.style.display = 'none';
@@ -1101,6 +1185,7 @@
                     if (reportsView) reportsView.style.display = 'none';
                     if (consultationsView) consultationsView.style.display = 'none';
                     if (emailsView) emailsView.style.display = 'none';
+                    if (learningView) learningView.style.display = 'none';
                     
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
@@ -1124,6 +1209,9 @@
                         loadConsultationsList();
                     } else if (navText === 'Emails' && emailsView) {
                         emailsView.style.display = 'block';
+                    } else if (navText === 'Learning' && learningView) {
+                        learningView.style.display = 'block';
+                        loadModulesList();
                     }
                 });
             });
@@ -2315,6 +2403,415 @@
                 });
                 */
             }
+            
+            // Learning Modules Section
+            let modulesData = [
+                {
+                    id: 1,
+                    title: 'Introduction to Crude Oil Trading',
+                    description: 'Learn the fundamentals of crude oil trading, including market basics, key terminology, and trading strategies.',
+                    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+                    content: '<h3>Understanding Crude Oil Markets</h3><p>Crude oil is one of the most important commodities in the global economy. This module covers:</p><ul><li>Market fundamentals</li><li>Trading terminology</li><li>Price factors</li><li>Risk management</li></ul>',
+                    additionalImages: [],
+                    order: 1,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    title: 'Technical Analysis Fundamentals',
+                    description: 'Master the art of technical analysis with charts, indicators, and patterns used by professional traders.',
+                    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+                    content: '<h3>Chart Patterns and Indicators</h3><p>Technical analysis is crucial for successful trading. This module teaches:</p><ul><li>Reading price charts</li><li>Common patterns</li><li>Technical indicators</li><li>Entry and exit signals</li></ul>',
+                    additionalImages: [],
+                    order: 2,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            function loadModulesList() {
+                const container = document.getElementById('modules-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Sort modules by order
+                const sortedModules = [...modulesData].sort((a, b) => a.order - b.order);
+                
+                sortedModules.forEach(module => {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.style.background = 'white';
+                    moduleCard.style.borderRadius = '8px';
+                    moduleCard.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    moduleCard.style.overflow = 'hidden';
+                    moduleCard.style.display = 'flex';
+                    moduleCard.style.flexDirection = 'column';
+                    
+                    const imageContainer = document.createElement('div');
+                    imageContainer.style.width = '100%';
+                    imageContainer.style.height = '200px';
+                    imageContainer.style.overflow = 'hidden';
+                    imageContainer.style.background = '#f3f4f6';
+                    
+                    const img = document.createElement('img');
+                    img.src = module.image || 'https://via.placeholder.com/400x200?text=No+Image';
+                    img.alt = module.title;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    
+                    imageContainer.appendChild(img);
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.style.padding = '1.5rem';
+                    cardBody.style.flex = '1';
+                    cardBody.style.display = 'flex';
+                    cardBody.style.flexDirection = 'column';
+                    
+                    const title = document.createElement('h3');
+                    title.textContent = module.title;
+                    title.style.margin = '0 0 0.5rem 0';
+                    title.style.fontSize = '1.25rem';
+                    title.style.color = '#1f2937';
+                    title.style.fontWeight = '600';
+                    
+                    const description = document.createElement('p');
+                    description.textContent = module.description || 'No description available.';
+                    description.style.margin = '0 0 1rem 0';
+                    description.style.color = '#6b7280';
+                    description.style.fontSize = '0.875rem';
+                    description.style.lineHeight = '1.5';
+                    
+                    const status = document.createElement('div');
+                    status.style.marginBottom = '1rem';
+                    const statusBadge = document.createElement('span');
+                    statusBadge.textContent = module.published ? 'Published' : 'Draft';
+                    statusBadge.style.padding = '0.25rem 0.75rem';
+                    statusBadge.style.borderRadius = '12px';
+                    statusBadge.style.fontSize = '0.75rem';
+                    statusBadge.style.fontWeight = '600';
+                    statusBadge.style.background = module.published ? '#d1fae5' : '#fef3c7';
+                    statusBadge.style.color = module.published ? '#065f46' : '#92400e';
+                    status.appendChild(statusBadge);
+                    
+                    cardBody.appendChild(title);
+                    cardBody.appendChild(description);
+                    cardBody.appendChild(status);
+                    
+                    const cardActions = document.createElement('div');
+                    cardActions.style.display = 'flex';
+                    cardActions.style.gap = '0.5rem';
+                    cardActions.style.marginTop = 'auto';
+                    cardActions.style.paddingTop = '1rem';
+                    cardActions.style.borderTop = '1px solid #e5e7eb';
+                    
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View';
+                    viewBtn.className = 'admin-btn-view';
+                    viewBtn.style.padding = '0.5rem 1rem';
+                    viewBtn.style.fontSize = '0.875rem';
+                    viewBtn.onclick = function() {
+                        viewModule(module.id);
+                    };
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.textContent = 'Edit';
+                    editBtn.className = 'admin-btn-save';
+                    editBtn.style.padding = '0.5rem 1rem';
+                    editBtn.style.fontSize = '0.875rem';
+                    editBtn.onclick = function() {
+                        editModule(module.id);
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.className = 'admin-btn-cancel';
+                    deleteBtn.style.padding = '0.5rem 1rem';
+                    deleteBtn.style.fontSize = '0.875rem';
+                    deleteBtn.onclick = function() {
+                        if (confirm('Are you sure you want to delete this module?')) {
+                            deleteModule(module.id);
+                        }
+                    };
+                    
+                    cardActions.appendChild(viewBtn);
+                    cardActions.appendChild(editBtn);
+                    cardActions.appendChild(deleteBtn);
+                    
+                    cardBody.appendChild(cardActions);
+                    
+                    moduleCard.appendChild(imageContainer);
+                    moduleCard.appendChild(cardBody);
+                    container.appendChild(moduleCard);
+                });
+            }
+            
+            function viewModule(moduleId) {
+                const module = modulesData.find(m => m.id === moduleId);
+                if (!module) return;
+                
+                // Create a simple view modal
+                const modal = document.createElement('div');
+                modal.className = 'admin-modal';
+                modal.style.display = 'block';
+                modal.innerHTML = `
+                    <div class="admin-modal-overlay"></div>
+                    <div class="admin-modal-container" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+                        <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                        <div class="admin-modal-content">
+                            <h2 class="admin-modal-title">${module.title}</h2>
+                            ${module.image ? `<img src="${module.image}" alt="${module.title}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 6px; margin-bottom: 1.5rem;">` : ''}
+                            ${module.description ? `<p style="color: #6b7280; margin-bottom: 1.5rem;">${module.description}</p>` : ''}
+                            <div style="border-top: 1px solid #e5e7eb; padding-top: 1.5rem;">
+                                ${module.content || '<p>No content available.</p>'}
+                            </div>
+                            ${module.additionalImages && module.additionalImages.length > 0 ? `
+                                <div style="margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                                    ${module.additionalImages.map(img => `<img src="${img}" alt="Additional image" style="width: 100%; border-radius: 6px;">`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+                
+                modal.querySelector('.admin-modal-close').addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                    document.body.style.overflow = '';
+                });
+                modal.querySelector('.admin-modal-overlay').addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            function editModule(moduleId) {
+                const module = modulesData.find(m => m.id === moduleId);
+                if (!module) return;
+                
+                const modal = document.getElementById('module-modal');
+                const form = document.getElementById('module-form');
+                
+                document.getElementById('module-modal-title').textContent = 'Edit Module';
+                document.getElementById('module-title').value = module.title;
+                document.getElementById('module-description').value = module.description || '';
+                document.getElementById('module-content').value = module.content || '';
+                document.getElementById('module-order').value = module.order || 0;
+                document.getElementById('module-published').checked = module.published || false;
+                
+                // Show existing image if available
+                const imagePreview = document.getElementById('module-image-preview');
+                const imagePreviewImg = document.getElementById('module-image-preview-img');
+                if (module.image) {
+                    imagePreviewImg.src = module.image;
+                    imagePreview.style.display = 'block';
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+                
+                // Show existing additional images
+                const additionalImagesPreview = document.getElementById('module-additional-images-preview');
+                additionalImagesPreview.innerHTML = '';
+                if (module.additionalImages && module.additionalImages.length > 0) {
+                    module.additionalImages.forEach(imgUrl => {
+                        const imgDiv = document.createElement('div');
+                        imgDiv.style.position = 'relative';
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.style.width = '100%';
+                        img.style.height = '150px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '6px';
+                        img.style.border = '1px solid #e5e7eb';
+                        imgDiv.appendChild(img);
+                        additionalImagesPreview.appendChild(imgDiv);
+                    });
+                }
+                
+                modal.setAttribute('data-edit-id', moduleId);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function deleteModule(moduleId) {
+                modulesData = modulesData.filter(m => m.id !== moduleId);
+                loadModulesList();
+            }
+            
+            window.viewModule = viewModule;
+            window.editModule = editModule;
+            window.deleteModule = deleteModule;
+            
+            // Add module button
+            const addModuleBtn = document.getElementById('add-module-btn');
+            if (addModuleBtn) {
+                addModuleBtn.addEventListener('click', function() {
+                    const modal = document.getElementById('module-modal');
+                    const form = document.getElementById('module-form');
+                    
+                    document.getElementById('module-modal-title').textContent = 'Add New Module';
+                    form.reset();
+                    document.getElementById('module-order').value = modulesData.length + 1;
+                    document.getElementById('module-published').checked = true;
+                    document.getElementById('module-image-preview').style.display = 'none';
+                    document.getElementById('module-additional-images-preview').innerHTML = '';
+                    
+                    modal.removeAttribute('data-edit-id');
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            // Module image preview
+            const moduleImageInput = document.getElementById('module-image');
+            if (moduleImageInput) {
+                moduleImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const preview = document.getElementById('module-image-preview');
+                            const previewImg = document.getElementById('module-image-preview-img');
+                            previewImg.src = e.target.result;
+                            preview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Additional images preview
+            const moduleAdditionalImagesInput = document.getElementById('module-additional-images');
+            if (moduleAdditionalImagesInput) {
+                moduleAdditionalImagesInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    const preview = document.getElementById('module-additional-images-preview');
+                    preview.innerHTML = '';
+                    
+                    files.forEach(file => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '150px';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '6px';
+                                img.style.border = '1px solid #e5e7eb';
+                                imgDiv.appendChild(img);
+                                preview.appendChild(imgDiv);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Module form handler
+            const moduleForm = document.getElementById('module-form');
+            if (moduleForm) {
+                moduleForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const modal = document.getElementById('module-modal');
+                    const isEditMode = modal.hasAttribute('data-edit-id');
+                    const editId = isEditMode ? parseInt(modal.getAttribute('data-edit-id')) : null;
+                    
+                    const title = document.getElementById('module-title').value;
+                    const description = document.getElementById('module-description').value;
+                    const content = document.getElementById('module-content').value;
+                    const order = parseInt(document.getElementById('module-order').value) || 0;
+                    const published = document.getElementById('module-published').checked;
+                    
+                    // Handle main image
+                    let imageUrl = '';
+                    const imageInput = document.getElementById('module-image');
+                    if (imageInput.files && imageInput.files.length > 0) {
+                        const file = imageInput.files[0];
+                        imageUrl = URL.createObjectURL(file);
+                    } else if (isEditMode) {
+                        const existingModule = modulesData.find(m => m.id === editId);
+                        imageUrl = existingModule ? existingModule.image : '';
+                    }
+                    
+                    // Handle additional images
+                    const additionalImages = [];
+                    const additionalImagesInput = document.getElementById('module-additional-images');
+                    if (additionalImagesInput.files && additionalImagesInput.files.length > 0) {
+                        Array.from(additionalImagesInput.files).forEach(file => {
+                            if (file.type.startsWith('image/')) {
+                                additionalImages.push(URL.createObjectURL(file));
+                            }
+                        });
+                    } else if (isEditMode) {
+                        const existingModule = modulesData.find(m => m.id === editId);
+                        if (existingModule && existingModule.additionalImages) {
+                            additionalImages.push(...existingModule.additionalImages);
+                        }
+                    }
+                    
+                    if (isEditMode) {
+                        // Update existing module
+                        const moduleIndex = modulesData.findIndex(m => m.id === editId);
+                        if (moduleIndex !== -1) {
+                            modulesData[moduleIndex] = {
+                                ...modulesData[moduleIndex],
+                                title,
+                                description,
+                                content,
+                                image: imageUrl || modulesData[moduleIndex].image,
+                                additionalImages: additionalImages.length > 0 ? additionalImages : modulesData[moduleIndex].additionalImages,
+                                order,
+                                published
+                            };
+                        }
+                    } else {
+                        // Create new module
+                        const newId = Math.max(...modulesData.map(m => m.id), 0) + 1;
+                        modulesData.push({
+                            id: newId,
+                            title,
+                            description,
+                            content,
+                            image: imageUrl,
+                            additionalImages,
+                            order,
+                            published,
+                            createdAt: new Date().toISOString()
+                        });
+                    }
+                    
+                    loadModulesList();
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    form.reset();
+                    alert(isEditMode ? 'Module updated successfully!' : 'Module created successfully!');
+                });
+            }
+            
+            // Close module modal handlers
+            setTimeout(function() {
+                const moduleModal = document.getElementById('module-modal');
+                if (moduleModal) {
+                    moduleModal.querySelector('.admin-modal-close')?.addEventListener('click', function() {
+                        moduleModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    });
+                    moduleModal.querySelector('.admin-modal-overlay')?.addEventListener('click', function() {
+                        moduleModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    });
+                    document.getElementById('cancel-module')?.addEventListener('click', function() {
+                        moduleModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    });
+                }
+            }, 100);
             
             // News Edit Functions
             let newsData = [
