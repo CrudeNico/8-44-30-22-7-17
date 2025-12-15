@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Admin Modal Styles */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+        }
+        .admin-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .admin-modal-container {
+            position: relative;
+            background: white;
+            max-width: 500px;
+            margin: 50px auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .admin-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            z-index: 1;
+        }
+        .admin-modal-close:hover {
+            color: #1f2937;
+        }
+        .admin-modal-content {
+            padding: 2rem;
+        }
+        .admin-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+        .admin-form-group {
+            margin-bottom: 1.25rem;
+        }
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        .admin-form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .admin-form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .admin-form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+        .admin-btn-save, .admin-btn-cancel, .admin-btn-add, .admin-edit-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn-save {
+            background: #2563eb;
+            color: white;
+        }
+        .admin-btn-save:hover {
+            background: #1d4ed8;
+        }
+        .admin-btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .admin-btn-cancel:hover {
+            background: #d1d5db;
+        }
+        .admin-btn-add {
+            background: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn-add:hover {
+            background: #059669;
+        }
+        .admin-edit-btn {
+            background: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        .admin-edit-btn:hover {
+            background: #4b5563;
+        }
+        .admin-btn-view {
+            background: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn-view:hover {
+            background: #4b5563;
+        }
+        
+        /* Investors/Users Grid */
+        .investors-grid, .users-grid, .reports-users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .investor-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .investor-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .investor-card-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #1f2937;
+        }
+        .investor-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .investor-status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .investor-status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .investor-card-body p {
+            margin: 0.5rem 0;
+            color: #6b7280;
+        }
+        .investor-card-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .return-positive {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        /* News Edit Button */
+        .news-card-wrapper {
+            position: relative;
+        }
+        .news-edit-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(37, 99, 235, 0.9);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            z-index: 10;
+        }
+        .news-edit-btn:hover {
+            background: rgba(37, 99, 235, 1);
+        }
+        
+        /* Transactions table edit button */
+        .transactions-table th:last-child,
+        .transactions-table td:last-child {
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="dashboard-active">
+    <section class="user-dashboard" id="user-dashboard">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-profile">
+                <img src="images/diegorequena.JPG" alt="Admin Profile" class="sidebar-profile-image" />
+                <div class="sidebar-profile-name">Admin</div>
+            </div>
+            <nav class="sidebar-navigation">
+                <a href="#" class="sidebar-nav-item active">
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Portfolio</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Transactions</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Performance</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Market News</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Account Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Reports</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="sidebar-footer-item">
+                    <span>Return to Home</span>
+                </a>
+                <a href="login.html" class="sidebar-footer-item" id="logout-btn">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <!-- Dashboard View -->
+            <div class="dashboard-view" id="dashboard-view" style="display: block;">
+                <div class="dashboard-widgets-grid">
+                    <!-- Crude Oil Price - Top Left -->
+                    <div class="dashboard-widget dashboard-widget-oil" style="grid-column: 1; grid-row: 1;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Crude Oil Price</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                                {
+                                    "symbol": "USOIL",
+                                    "width": "100%",
+                                    "height": "160",
+                                    "locale": "en",
+                                    "dateRange": "1D",
+                                    "colorTheme": "light",
+                                    "trendLineColor": "rgba(37, 99, 235, 1)",
+                                    "underLineColor": "rgba(37, 99, 235, 0.3)",
+                                    "isTransparent": false,
+                                    "autosize": true,
+                                    "largeChartUrl": ""
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Balance - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 1;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Current Balance</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-main-metric" id="dashboard-current-balance">€287,450</div>
+                            <div class="dashboard-sub-metric">Capital Invested: €230,000</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Gain - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 3; grid-row: 1;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Total Gain</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-main-metric dashboard-metric-positive" id="dashboard-total-gain">+24.98%</div>
+                            <div class="dashboard-sub-metric">€57,450 profit</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 12 Month Projection - Top Right Row 1 -->
+                    <div class="dashboard-widget" style="grid-column: 4; grid-row: 1;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">12 Month Projection</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-projection-value" id="dashboard-projection-value">€355,108</div>
+                            <div class="dashboard-sub-metric">Projected ending capital</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latest News - Second Row -->
+                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget" style="grid-column: 1; grid-row: 2;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Latest News</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">OPEC+ Maintains Production Cuts</div>
+                            </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">Crude Oil Prices Rally on Middle East Tensions</div>
+                            </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">US Shale Production Hits Record High</div>
+                            </div>
+                            <div class="dashboard-news-item">
+                                <div class="dashboard-news-title">China's Oil Demand Growth Slows in Q4</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latest Report - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 2;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Latest Report</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">November 2024</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+17.39%</span>
+                                    <span class="dashboard-report-balance">€270,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2024-11">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">December 2024</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+19.57%</span>
+                                    <span class="dashboard-report-balance">€275,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2024-12">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">January 2025</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">+21.74%</span>
+                                    <span class="dashboard-report-balance">€280,000</span>
+                                </div>
+                                <button class="dashboard-report-download" data-month="2025-01">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Investors Payment Tracking Widget - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 3 / 5; grid-row: 2 / 3;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Investors Payment Tracking</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div id="investors-payment-list">
+                                <!-- Investors will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Stories -->
+                    <div class="dashboard-widget">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Top Stories</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                                {
+                                    "feedMode": "all_symbols",
+                                    "colorTheme": "light",
+                                    "isTransparent": false,
+                                    "displayMode": "regular",
+                                    "width": "100%",
+                                    "height": "300",
+                                    "locale": "en"
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Economic Calendar - Third Row, spans 3 columns -->
+                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 3;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Economic Calendar</h3>
+                            <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div class="tradingview-widget-container-dashboard">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                                {
+                                    "colorTheme": "light",
+                                    "isTransparent": false,
+                                    "width": "100%",
+                                    "height": "300",
+                                    "locale": "en",
+                                    "importanceFilter": "-1,0,1"
+                                }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio View -->
+            <div class="portfolio-view" id="portfolio-view" style="display: none;">
+                <div class="portfolio-balance-cards">
+                    <div class="balance-card">
+                        <div class="balance-label">Total Fund Capital Invested</div>
+                        <div class="balance-amount" id="capital-invested">€8,500,000</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Total Fund Balance</div>
+                        <div class="balance-amount" id="current-balance">€10,625,000</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Total Fund Gain</div>
+                        <div class="balance-amount balance-amount-gain" id="total-gain">+25.00%</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">12 Month Projection</div>
+                        <div class="balance-amount" id="portfolio-projection">€13,150,000</div>
+                    </div>
+                </div>
+                <div class="portfolio-chart-container">
+                    <div class="portfolio-chart-card">
+                        <h3 class="portfolio-chart-title">Fund Performance & Projection</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="portfolio-chart" width="800" height="400"></canvas>
+                            <div id="chart-tooltip" class="chart-tooltip" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions View -->
+            <div class="transactions-view" id="transactions-view" style="display: none;">
+                <div class="transactions-add-section" style="background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; color: #1f2937;">Add Fund Performance</h3>
+                    <form id="fund-performance-form" class="admin-modal-form" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; align-items: end;">
+                        <div class="admin-form-group">
+                            <label for="fund-month">Month</label>
+                            <select id="fund-month" class="admin-form-input" required>
+                                <option value="">Select Month</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-year">Year</label>
+                            <input type="number" id="fund-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-starting-balance">Starting Balance (€)</label>
+                            <input type="number" id="fund-starting-balance" class="admin-form-input" step="0.01" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-ending-balance">Ending Balance (€)</label>
+                            <input type="number" id="fund-ending-balance" class="admin-form-input" step="0.01" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-growth">Growth %</label>
+                            <input type="number" id="fund-growth" class="admin-form-input" step="0.01" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-deposits">Deposits (€)</label>
+                            <input type="number" id="fund-deposits" class="admin-form-input" step="0.01" value="0" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-deposit-date">Deposit Date</label>
+                            <input type="date" id="fund-deposit-date" class="admin-form-input">
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-withdrawals">Withdrawals (€)</label>
+                            <input type="number" id="fund-withdrawals" class="admin-form-input" step="0.01" value="0" required>
+                        </div>
+                        <div class="admin-form-group">
+                            <label for="fund-withdrawal-date">Withdrawal Date</label>
+                            <input type="date" id="fund-withdrawal-date" class="admin-form-input">
+                        </div>
+                        <div class="admin-form-group">
+                            <button type="submit" class="admin-btn-save" style="width: 100%;">Add Performance</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="transactions-table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Starting Balance</th>
+                                <th>Ending Balance</th>
+                                <th>Growth %</th>
+                                <th>Deposits</th>
+                                <th>Withdrawals</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Transaction Edit Modal -->
+            <div id="transaction-edit-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title">Edit Transaction</h2>
+                        <form id="transaction-edit-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="edit-starting-balance">Starting Balance (€)</label>
+                                <input type="number" id="edit-starting-balance" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-ending-balance">Ending Balance (€)</label>
+                                <input type="number" id="edit-ending-balance" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-growth">Growth %</label>
+                                <input type="number" id="edit-growth" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-deposits">Deposits (€)</label>
+                                <input type="number" id="edit-deposits" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-deposit-date">Deposit Date</label>
+                                <input type="date" id="edit-deposit-date" class="admin-form-input">
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-withdrawals">Withdrawals (€)</label>
+                                <input type="number" id="edit-withdrawals" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-withdrawal-date">Withdrawal Date</label>
+                                <input type="date" id="edit-withdrawal-date" class="admin-form-input">
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-transaction-edit">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance View - Investors List -->
+            <div class="performance-view" id="performance-view" style="display: none;">
+                <div class="investors-list-container">
+                    <div class="investors-grid" id="investors-grid">
+                        <!-- Investors will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Investor Performance Modal -->
+            <div id="investor-performance-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="investor-performance-modal-title">Add Performance</h2>
+                        <form id="investor-performance-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="performance-month">Month</label>
+                                <select id="performance-month" class="admin-form-input" required>
+                                    <option value="">Select Month</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-year">Year</label>
+                                <input type="number" id="performance-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-growth">Growth Rate (%)</label>
+                                <input type="number" id="performance-growth" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-deposits">Deposits (€)</label>
+                                <input type="number" id="performance-deposits" class="admin-form-input" step="0.01" value="0" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-deposit-date">Deposit Date</label>
+                                <input type="date" id="performance-deposit-date" class="admin-form-input">
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-withdrawals">Withdrawals (€)</label>
+                                <input type="number" id="performance-withdrawals" class="admin-form-input" step="0.01" value="0" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="performance-withdrawal-date">Withdrawal Date</label>
+                                <input type="date" id="performance-withdrawal-date" class="admin-form-input">
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-investor-performance">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Add Performance</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Investor Performance Table Modal -->
+            <div id="investor-performance-table-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 900px;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="investor-performance-table-title">Performance History</h2>
+                        <div class="performance-table-container">
+                            <table class="transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Month</th>
+                                        <th>Starting Balance</th>
+                                        <th>Ending Balance</th>
+                                        <th>Growth %</th>
+                                        <th>Deposits</th>
+                                        <th>Withdrawals</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="investor-performance-table-body">
+                                    <!-- Table rows will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investor Edit/Add Modal -->
+            <div id="investor-edit-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 600px;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="investor-modal-title">Edit Investor</h2>
+                        <form id="investor-edit-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="edit-investor-name">Full Name</label>
+                                <input type="text" id="edit-investor-name" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-email">Email Address</label>
+                                <input type="email" id="edit-investor-email" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-phone">Phone Number</label>
+                                <input type="tel" id="edit-investor-phone" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-account">Account Number</label>
+                                <input type="text" id="edit-investor-account" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-initial">Initial Investment (€)</label>
+                                <input type="number" id="edit-investor-initial" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-balance">Current Balance (€)</label>
+                                <input type="number" id="edit-investor-balance" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-investor-status">Account Status</label>
+                                <select id="edit-investor-status" class="admin-form-input" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Suspended">Suspended</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-investor-edit">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Settings View -->
+            <div class="account-settings-view" id="account-settings-view" style="display: none;">
+                <div class="account-settings-content">
+                    <div class="users-list-container">
+                        <div class="users-grid" id="users-grid">
+                            <!-- Users will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Edit Modal -->
+            <div id="user-edit-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 700px;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="user-modal-title">Edit User</h2>
+                        <form id="user-edit-form" class="admin-modal-form">
+                            <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Account Information</h3>
+                            <div class="admin-form-group">
+                                <label for="edit-user-name">Full Name</label>
+                                <input type="text" id="edit-user-name" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-email">Email Address</label>
+                                <input type="email" id="edit-user-email" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-phone">Phone Number</label>
+                                <input type="tel" id="edit-user-phone" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-account">Account Number</label>
+                                <input type="text" id="edit-user-account" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-status">Account Status</label>
+                                <select id="edit-user-status" class="admin-form-input" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Suspended">Suspended</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-country">Country</label>
+                                <input type="text" id="edit-user-country" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-member-since">Initiation Date</label>
+                                <input type="text" id="edit-user-member-since" class="admin-form-input" required>
+                            </div>
+
+                            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Investment Details</h3>
+                            <div class="admin-form-group">
+                                <label for="edit-user-initial">Initial Investment (€)</label>
+                                <input type="number" id="edit-user-initial" class="admin-form-input" step="0.01" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-strategy">Investment Strategy</label>
+                                <input type="text" id="edit-user-strategy" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-operator">Assigned Operator Email</label>
+                                <input type="email" id="edit-user-operator" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group" style="padding: 1rem; background: #f3f4f6; border-radius: 6px; margin-top: 1rem;">
+                                <p style="margin: 0; color: #6b7280; font-size: 0.875rem;"><strong>Note:</strong> Current Balance and Total Return are calculated automatically based on performance entries.</p>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-user-edit">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div class="reports-view" id="reports-view" style="display: none;">
+                <div class="reports-content">
+                    <div class="reports-users-grid" id="reports-users-grid">
+                        <!-- Users will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Reports Widget Modal -->
+            <div id="admin-reports-widget-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 800px;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title">Admin Account Reports</h2>
+                        <div class="reports-widgets-container" id="admin-reports-widgets-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <!-- Report widgets will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Upload Modal -->
+            <div id="report-upload-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="report-upload-modal-title">Upload Monthly Report</h2>
+                        <form id="report-upload-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="report-month">Month</label>
+                                <select id="report-month" class="admin-form-input" required>
+                                    <option value="">Select Month</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="report-year">Year</label>
+                                <input type="number" id="report-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="report-file">Upload PDF Report</label>
+                                <input type="file" id="report-file" class="admin-form-input" accept=".pdf" required>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 10MB</span>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-report-upload">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Upload Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Viewer Modal (for Admin) -->
+            <div id="report-viewer-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 90%; max-height: 90vh;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content" style="padding: 0;">
+                        <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                            <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0;">Monthly Report</h2>
+                        </div>
+                        <div style="padding: 2rem; overflow: auto; max-height: calc(90vh - 100px);">
+                            <iframe id="report-viewer-iframe" style="width: 100%; height: 800px; border: 1px solid #e5e7eb; border-radius: 6px;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market News View -->
+            <div class="market-news-view" id="market-news-view" style="display: none;">
+                <div class="market-news-content">
+                    <div class="market-news-chart-section">
+                        <div class="tradingview-widget-container market-news-chart">
+                            <div id="market_news_chart"></div>
+                            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                            <script type="text/javascript">
+                                new TradingView.widget({
+                                    "width": "100%",
+                                    "height": 500,
+                                    "symbol": "USOIL",
+                                    "interval": "60",
+                                    "theme": "light",
+                                    "style": "1",
+                                    "timezone": "Europe/Amsterdam",
+                                    "locale": "en",
+                                    "allow_symbol_change": true,
+                                    "withdateranges": true,
+                                    "container_id": "market_news_chart",
+                                    "hide_volume": true,
+                                    "studies": [
+                                        {
+                                            "id": "MASimple@tv-basicstudies",
+                                            "inputs": {
+                                                "length": 200,
+                                                "source": "close",
+                                                "maType": "EMA"
+                                            },
+                                            "overrides": {
+                                                "plot.color": "#FFFF00",
+                                                "plot.linewidth": 3
+                                            }
+                                        }
+                                    ]
+                                });
+                            </script>
+                        </div>
+                    </div>
+                    <div class="market-news-articles-section">
+                        <div class="news-grid">
+                            <div class="news-card-wrapper" data-news-index="0">
+                                <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
+                                    <div class="news-image-container">
+                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
+                                        <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
+                                    </div>
+                                </a>
+                                <button class="news-edit-btn" data-news-index="0">Edit</button>
+                            </div>
+                            <div class="news-card-wrapper" data-news-index="1">
+                                <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
+                                    <div class="news-image-container">
+                                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
+                                        <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
+                                    </div>
+                                </a>
+                                <button class="news-edit-btn" data-news-index="1">Edit</button>
+                            </div>
+                            <div class="news-card-wrapper" data-news-index="2">
+                                <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
+                                    <div class="news-image-container">
+                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
+                                        <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
+                                    </div>
+                                </a>
+                                <button class="news-edit-btn" data-news-index="2">Edit</button>
+                            </div>
+                            <div class="news-card-wrapper" data-news-index="3">
+                                <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
+                                    <div class="news-image-container">
+                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
+                                        <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
+                                    </div>
+                                </a>
+                                <button class="news-edit-btn" data-news-index="3">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- News Edit Modal -->
+            <div id="news-edit-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title">Edit News Article</h2>
+                        <form id="news-edit-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="edit-news-title">Title</label>
+                                <input type="text" id="edit-news-title" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-news-link">Link URL</label>
+                                <input type="url" id="edit-news-link" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-news-image">Image URL</label>
+                                <input type="url" id="edit-news-image" class="admin-form-input" required>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation handling
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+            const dashboardView = document.getElementById('dashboard-view');
+            const portfolioView = document.getElementById('portfolio-view');
+            const transactionsView = document.getElementById('transactions-view');
+            const performanceView = document.getElementById('performance-view');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get text from span element
+                    const span = this.querySelector('span');
+                    const navText = span ? span.textContent.trim() : this.textContent.trim();
+                    
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get all views
+                    const marketNewsView = document.getElementById('market-news-view');
+                    const accountSettingsView = document.getElementById('account-settings-view');
+                    const reportsView = document.getElementById('reports-view');
+                    
+                    // Hide all views
+                    if (dashboardView) dashboardView.style.display = 'none';
+                    if (portfolioView) portfolioView.style.display = 'none';
+                    if (transactionsView) transactionsView.style.display = 'none';
+                    if (performanceView) performanceView.style.display = 'none';
+                    if (marketNewsView) marketNewsView.style.display = 'none';
+                    if (accountSettingsView) accountSettingsView.style.display = 'none';
+                    if (reportsView) reportsView.style.display = 'none';
+                    
+                    // Show selected view
+                    if (navText === 'Dashboard' && dashboardView) {
+                        dashboardView.style.display = 'block';
+                        loadInvestorsPaymentList();
+                    } else if (navText === 'Portfolio' && portfolioView) {
+                        portfolioView.style.display = 'block';
+                        setTimeout(function() {
+                            drawPortfolioChart();
+                            calculateProjectionValue();
+                        }, 100);
+                    } else if (navText === 'Transactions' && transactionsView) {
+                        transactionsView.style.display = 'block';
+                        populateTransactionsTable();
+                    } else if (navText === 'Performance' && performanceView) {
+                        performanceView.style.display = 'block';
+                        loadInvestorsList();
+                    } else if (navText === 'Market News' && marketNewsView) {
+                        marketNewsView.style.display = 'block';
+                    } else if (navText === 'Account Settings' && accountSettingsView) {
+                        accountSettingsView.style.display = 'block';
+                        loadUsersList();
+                    } else if (navText === 'Reports' && reportsView) {
+                        reportsView.style.display = 'block';
+                        loadReportsUsersList();
+                    }
+                });
+            });
+
+            // Portfolio Chart Function
+            let chartDataPoints = [];
+            
+            function drawPortfolioChart() {
+                const canvas = document.getElementById('portfolio-chart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const container = canvas.parentElement;
+                const width = container ? container.clientWidth - 64 : 800;
+                const height = 480;
+                
+                // Set canvas size
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Chart configuration
+                const padding = { top: 40, right: 40, bottom: 60, left: 80 };
+                const chartWidth = width - padding.left - padding.right;
+                const chartHeight = height - padding.top - padding.bottom;
+                
+                // Sample data: Historical (12 months) + Projection (12 months) = 24 months total
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                // Historical data (past 12 months) - starting from initial fund investment
+                const initialInvestment = 8500000; // Fund total
+                const historicalData = [
+                    8500000, 8700000, 8800000, 8950000, 9100000, 9250000, 9400000, 9550000, 9750000, 9950000, 10150000, 10350000
+                ];
+                
+                // Projection data continues seamlessly from last historical value
+                const lastHistoricalValue = historicalData[historicalData.length - 1];
+                const projectionData = [
+                    10550000, 10750000, 10950000, 11150000, 11350000, 11550000, 11750000, 11950000, 12150000, 12350000, 12550000, 12750000
+                ];
+                
+                // Combine data
+                const allData = [...historicalData, ...projectionData];
+                const maxValue = Math.max(...allData) * 1.1;
+                const minValue = Math.min(...allData) * 0.9;
+                const valueRange = maxValue - minValue;
+                
+                // Store data points for hover interaction
+                chartDataPoints = [];
+                
+                // Calculate x and y positions for all points
+                allData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    chartDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        growthPercent: growthPercent,
+                        isHistorical: index < 12
+                    });
+                });
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                // Draw area fill below the line (only historical section with gradient)
+                const gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / 24) * 12, 
+                    padding.top + chartHeight
+                );
+                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                
+                ctx.beginPath();
+                const firstX = padding.left + (chartWidth / 24) / 2;
+                const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(firstX, height - padding.bottom);
+                ctx.lineTo(firstX, firstY);
+                
+                // Historical area only
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                // Close at the last historical point
+                const lastHistoricalX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
+                ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw historical line
+                ctx.beginPath();
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 2.5;
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw projection line (dashed, green, continuing from historical)
+                ctx.beginPath();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * (12 + index) + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
+                        const lastHistY = padding.top + chartHeight - ((historicalData[11] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw smaller, more formal data points (blue for historical, green for projection)
+                allData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 12;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+                
+                // Draw Y-axis labels
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i <= 5; i++) {
+                    const value = minValue + (valueRange / 5) * (5 - i);
+                    const y = padding.top + (chartHeight / 5) * i;
+                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
+                    ctx.fillText(formattedValue, padding.left - 10, y);
+                }
+                
+                // Draw X-axis labels
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                for (let i = 0; i < 24; i += 2) {
+                    const x = padding.left + (chartWidth / 24) * i + (chartWidth / 24) / 2;
+                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                }
+            }
+            
+            // Add hover tooltip functionality
+            function setupChartHover() {
+                const canvas = document.getElementById('portfolio-chart');
+                const tooltip = document.getElementById('chart-tooltip');
+                if (!canvas || !tooltip) return;
+                
+                canvas.addEventListener('mousemove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find nearest data point
+                    let nearestPoint = null;
+                    let minDistance = Infinity;
+                    
+                    chartDataPoints.forEach(point => {
+                        const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+                        if (distance < 30 && distance < minDistance) {
+                            minDistance = distance;
+                            nearestPoint = point;
+                        }
+                    });
+                    
+                    if (nearestPoint) {
+                        const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
+                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        tooltip.innerHTML = `
+                            <div class="tooltip-balance">${formattedValue}</div>
+                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                        `;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (nearestPoint.x + 10) + 'px';
+                        tooltip.style.top = (nearestPoint.y - 40) + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                });
+                
+                canvas.addEventListener('mouseleave', function() {
+                    if (tooltip) tooltip.style.display = 'none';
+                });
+            }
+            
+            // Setup hover after chart is drawn
+            setTimeout(setupChartHover, 150);
+
+            // Store transaction data globally for editing
+            let transactionData = [];
+            
+            // Transactions Table Population
+            function populateTransactionsTable() {
+                const tableBody = document.getElementById('transactions-table-body');
+                if (!tableBody) return;
+
+                // Initialize transaction data if empty
+                if (transactionData.length === 0) {
+                    const initialInvestment = 8500000;
+                    transactionData = [
+                        { month: 'January', year: 2024, starting: 8500000, ending: 8500000, growth: 0, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'February', year: 2024, starting: 8500000, ending: 8700000, growth: 2.35, deposits: 200000, withdrawals: 0, depositDate: '2024-02-15', withdrawalDate: null },
+                        { month: 'March', year: 2024, starting: 8700000, ending: 8800000, growth: 1.15, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'April', year: 2024, starting: 8800000, ending: 8950000, growth: 1.70, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'May', year: 2024, starting: 8950000, ending: 9100000, growth: 1.68, deposits: 150000, withdrawals: 0, depositDate: '2024-05-10', withdrawalDate: null },
+                        { month: 'June', year: 2024, starting: 9100000, ending: 9250000, growth: 1.65, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'July', year: 2024, starting: 9250000, ending: 9400000, growth: 1.62, deposits: 200000, withdrawals: 0, depositDate: '2024-07-20', withdrawalDate: null },
+                        { month: 'August', year: 2024, starting: 9400000, ending: 9550000, growth: 1.60, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'September', year: 2024, starting: 9550000, ending: 9750000, growth: 2.09, deposits: 200000, withdrawals: 0, depositDate: '2024-09-05', withdrawalDate: null },
+                        { month: 'October', year: 2024, starting: 9750000, ending: 9950000, growth: 2.05, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'November', year: 2024, starting: 9950000, ending: 10150000, growth: 2.01, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
+                        { month: 'December', year: 2024, starting: 10150000, ending: 10350000, growth: 1.97, deposits: 0, withdrawals: 200000, depositDate: null, withdrawalDate: '2024-12-18' }
+                    ];
+                }
+
+                tableBody.innerHTML = '';
+
+                transactionData.forEach((data, index) => {
+                    const startingBalance = data.starting;
+                    const endingBalance = data.ending;
+                    const growth = data.growth;
+                    const growthValue = parseFloat(growth);
+                    const monthYear = `${data.month} ${data.year}`;
+                    
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-index', index);
+                    
+                    // Format dates
+                    const depositDisplay = data.deposits > 0 && data.depositDate 
+                        ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
+                        : data.deposits > 0 ? `€${data.deposits.toLocaleString('en-US')}` : '-';
+                    
+                    const withdrawalDisplay = data.withdrawals > 0 && data.withdrawalDate 
+                        ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
+                        : data.withdrawals > 0 ? `€${data.withdrawals.toLocaleString('en-US')}` : '-';
+
+                    row.innerHTML = `
+                        <td>${monthYear}</td>
+                        <td>€${startingBalance.toLocaleString('en-US')}</td>
+                        <td>€${endingBalance.toLocaleString('en-US')}</td>
+                        <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
+                        <td class="transaction-cell">${depositDisplay}</td>
+                        <td class="transaction-cell">${withdrawalDisplay}</td>
+                        <td><button class="admin-edit-btn" data-index="${index}">Edit</button></td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add edit button handlers
+                document.querySelectorAll('.admin-edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        openTransactionEditModal(index);
+                    });
+                });
+            }
+            
+            // Transaction Edit Modal Functions
+            function openTransactionEditModal(index) {
+                const data = transactionData[index];
+                const modal = document.getElementById('transaction-edit-modal');
+                document.getElementById('edit-starting-balance').value = data.starting;
+                document.getElementById('edit-ending-balance').value = data.ending;
+                document.getElementById('edit-growth').value = data.growth;
+                document.getElementById('edit-deposits').value = data.deposits || 0;
+                document.getElementById('edit-withdrawals').value = data.withdrawals || 0;
+                document.getElementById('edit-deposit-date').value = data.depositDate || '';
+                document.getElementById('edit-withdrawal-date').value = data.withdrawalDate || '';
+                modal.setAttribute('data-edit-index', index);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeTransactionEditModal() {
+                const modal = document.getElementById('transaction-edit-modal');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            // Transaction edit form handler
+            const transactionEditForm = document.getElementById('transaction-edit-form');
+            if (transactionEditForm) {
+                transactionEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const index = parseInt(document.getElementById('transaction-edit-modal').getAttribute('data-edit-index'));
+                    transactionData[index].starting = parseFloat(document.getElementById('edit-starting-balance').value);
+                    transactionData[index].ending = parseFloat(document.getElementById('edit-ending-balance').value);
+                    transactionData[index].growth = parseFloat(document.getElementById('edit-growth').value);
+                    transactionData[index].deposits = parseFloat(document.getElementById('edit-deposits').value);
+                    transactionData[index].withdrawals = parseFloat(document.getElementById('edit-withdrawals').value);
+                    transactionData[index].depositDate = document.getElementById('edit-deposit-date').value || null;
+                    transactionData[index].withdrawalDate = document.getElementById('edit-withdrawal-date').value || null;
+                    populateTransactionsTable();
+                    closeTransactionEditModal();
+                });
+            }
+            
+            // Close transaction modal handlers
+            const transactionModal = document.getElementById('transaction-edit-modal');
+            if (transactionModal) {
+                transactionModal.querySelector('.admin-modal-close')?.addEventListener('click', closeTransactionEditModal);
+                transactionModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeTransactionEditModal);
+                document.getElementById('cancel-transaction-edit')?.addEventListener('click', closeTransactionEditModal);
+            }
+            
+            // Fund Performance Form Handler
+            const fundPerformanceForm = document.getElementById('fund-performance-form');
+            if (fundPerformanceForm) {
+                fundPerformanceForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const month = document.getElementById('fund-month').value;
+                    const year = parseInt(document.getElementById('fund-year').value);
+                    const starting = parseFloat(document.getElementById('fund-starting-balance').value);
+                    const ending = parseFloat(document.getElementById('fund-ending-balance').value);
+                    const growth = parseFloat(document.getElementById('fund-growth').value);
+                    const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
+                    const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
+                    
+                    // Check if entry for this month/year already exists
+                    const existingIndex = transactionData.findIndex(t => t.month === month && t.year === year);
+                    
+                    const depositDate = document.getElementById('fund-deposit-date').value || (deposits > 0 ? new Date().toISOString().split('T')[0] : null);
+                    const withdrawalDate = document.getElementById('fund-withdrawal-date').value || (withdrawals > 0 ? new Date().toISOString().split('T')[0] : null);
+                    
+                    const newEntry = {
+                        month: month,
+                        year: year,
+                        starting: starting,
+                        ending: ending,
+                        growth: growth,
+                        deposits: deposits,
+                        withdrawals: withdrawals,
+                        depositDate: depositDate,
+                        withdrawalDate: withdrawalDate
+                    };
+                    
+                    if (existingIndex >= 0) {
+                        transactionData[existingIndex] = newEntry;
+                    } else {
+                        transactionData.push(newEntry);
+                    }
+                    
+                    // Sort by year and month
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    transactionData.sort((a, b) => {
+                        const yearDiff = a.year - b.year;
+                        if (yearDiff !== 0) return yearDiff;
+                        return months.indexOf(a.month) - months.indexOf(b.month);
+                    });
+                    
+                    populateTransactionsTable();
+                    fundPerformanceForm.reset();
+                    alert('Fund performance added successfully!');
+                });
+            }
+
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+
+            // Performance Chart Function
+            let performanceDataPoints = [];
+            
+            function drawPerformanceChart() {
+                const canvas = document.getElementById('performance-chart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const container = canvas.parentElement;
+                const width = container ? container.clientWidth - 64 : 800;
+                const height = 700;
+                
+                // Set canvas size
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                // Chart configuration
+                const padding = { top: 80, right: 40, bottom: 60, left: 80 };
+                const chartWidth = width - padding.left - padding.right;
+                const chartHeight = height - padding.top - padding.bottom;
+                
+                const months = ['Start', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+                              'Jan', 'Feb', 'Mar', 'Apr'];
+                
+                // Use actual account balance values (not normalized)
+                const initialInvestment = 230000;
+                
+                // Historical data (12 months) - actual account balances - with Month 0
+                // All lines start from the exact same initial investment
+                const opessociusHistorical = [
+                    initialInvestment,  // Month 0 - exact same starting balance as S&P 500 and Banks
+                    235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000, 280000
+                ];
+                
+                // Projection data (4 months) - fixed values (2% compound growth per month for Opessocius)
+                const lastHistoricalValue = opessociusHistorical[12];
+                const projectionData = [
+                    lastHistoricalValue * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02 * 1.02,
+                    lastHistoricalValue * 1.02 * 1.02 * 1.02 * 1.02
+                ];
+                
+                // S&P 500 monthly returns (%): +2.3%, −1.4%, +3.1%, +0.6%, −2.8%, +4.5%, +1.2%, −3.6%, +2.9%, +0.4%, +5.1%, −1.9%, +1.7%, +3.8%, −0.7%, +2.5%
+                const sp500MonthlyReturns = [
+                    2.3, -1.4, 3.1, 0.6, -2.8, 4.5, 1.2, -3.6, 2.9, 0.4, 5.1, -1.9,  // 12 historical
+                    1.7, 3.8, -0.7, 2.5  // 4 projection
+                ];
+                
+                // Calculate S&P 500 values - SIMPLE INTEREST (no compound, each return based on initial investment)
+                const sp500DataRaw = [initialInvestment]; // Month 0
+                let cumulativeReturn = 0;
+                sp500MonthlyReturns.forEach((returnPercent) => {
+                    cumulativeReturn += returnPercent;
+                    const monthValue = initialInvestment * (1 + cumulativeReturn / 100);
+                    sp500DataRaw.push(monthValue);
+                });
+                
+                // Light smoothing for S&P 500 (2-point average) to reduce sharp peaks but keep volatility visible
+                function lightSmooth(data) {
+                    const smoothed = [data[0]]; // Keep month 0 unchanged
+                    for (let i = 1; i < data.length; i++) {
+                        if (i === data.length - 1) {
+                            smoothed.push(data[i]);
+                        } else {
+                            // Average with adjacent points (60% current, 20% each adjacent)
+                            smoothed.push(data[i] * 0.6 + data[i - 1] * 0.2 + data[i + 1] * 0.2);
+                        }
+                    }
+                    return smoothed;
+                }
+                
+                const sp500Data = lightSmooth(sp500DataRaw);
+                
+                // Split S&P 500 data into historical and projection (Month 0 + 12 historical, 4 projection)
+                const sp500Historical = sp500Data.slice(0, 13); // Month 0 + 12 months
+                const sp500Projection = sp500Data.slice(13, 17); // 4 months
+                
+                // Banks: constant 0.20% monthly growth - SIMPLE INTEREST (no compound)
+                // Ensure it starts from exact same initial investment
+                const banksMonthlyGrowth = 0.20; // 0.20% per month
+                const banksData = [initialInvestment]; // Month 0 - exact same starting balance
+                for (let i = 1; i <= 16; i++) {
+                    // Simple interest: add 0.20% of initial investment each month
+                    const monthValue = initialInvestment * (1 + (banksMonthlyGrowth * i) / 100);
+                    banksData.push(monthValue);
+                }
+                
+                // Split Banks data into historical and projection
+                const banksHistorical = banksData.slice(0, 13); // Month 0 + 12 months
+                const banksProjection = banksData.slice(13, 17); // 4 months
+                
+                
+                // Combine all data for max/min calculation
+                const allData = [...opessociusHistorical, ...projectionData, ...sp500Data, ...banksData];
+                const maxValue = Math.max(...allData) * 1.1;
+                const minValue = Math.min(...allData) * 0.9;
+                const valueRange = maxValue - minValue;
+                
+                // Store data points for hover
+                performanceDataPoints = [];
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding.top + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding.left, y);
+                    ctx.lineTo(width - padding.right, y);
+                    ctx.stroke();
+                }
+                
+                // Total months: 17 (Month 0 + 12 historical + 4 projection)
+                const totalMonths = 17;
+                
+                // Draw area fill for user investment historical section only (Month 0 + 12 months)
+                const gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                
+                ctx.beginPath();
+                const firstX = padding.left + (chartWidth / totalMonths) / 2;
+                const firstY = padding.top + chartHeight - ((opessociusHistorical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(firstX, height - padding.bottom);
+                ctx.lineTo(firstX, firstY);
+                
+                opessociusHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const lastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Draw area fill for S&P 500 historical section only - orange shade (Month 0 + 12 months)
+                const sp500Gradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                sp500Gradient.addColorStop(0, 'rgba(249, 115, 22, 0.25)');
+                sp500Gradient.addColorStop(1, 'rgba(249, 115, 22, 0.05)');
+                
+                ctx.beginPath();
+                const sp500FirstX = padding.left + (chartWidth / totalMonths) / 2;
+                const sp500FirstY = padding.top + chartHeight - ((sp500Historical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(sp500FirstX, height - padding.bottom);
+                ctx.lineTo(sp500FirstX, sp500FirstY);
+                
+                sp500Historical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const sp500LastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(sp500LastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = sp500Gradient;
+                ctx.fill();
+                
+                // Draw area fill for Banks historical section only - grey shade (Month 0 + 12 months)
+                const banksGradient = ctx.createLinearGradient(
+                    padding.left, 
+                    padding.top, 
+                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.top + chartHeight
+                );
+                banksGradient.addColorStop(0, 'rgba(107, 114, 128, 0.25)');
+                banksGradient.addColorStop(1, 'rgba(107, 114, 128, 0.05)');
+                
+                ctx.beginPath();
+                const banksFirstX = padding.left + (chartWidth / totalMonths) / 2;
+                const banksFirstY = padding.top + chartHeight - ((banksHistorical[0] - minValue) / valueRange) * chartHeight;
+                ctx.moveTo(banksFirstX, height - padding.bottom);
+                ctx.lineTo(banksFirstX, banksFirstY);
+                
+                banksHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                const banksLastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                ctx.lineTo(banksLastHistoricalX, height - padding.bottom);
+                ctx.closePath();
+                ctx.fillStyle = banksGradient;
+                ctx.fill();
+                
+                // Draw Opessocius historical line
+                ctx.beginPath();
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 2.5;
+                opessociusHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw Opessocius projection line (dashed, green)
+                ctx.beginPath();
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((opessociusHistorical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw S&P 500 historical line (orange) - straight lines to show ups and downs
+                ctx.beginPath();
+                ctx.strokeStyle = '#f97316';
+                ctx.lineWidth = 2.5;
+                sp500Historical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw S&P 500 projection line (dashed, orange)
+                ctx.beginPath();
+                ctx.strokeStyle = '#f97316';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                sp500Projection.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((sp500Historical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw Banks historical line (grey) - constant growth
+                ctx.beginPath();
+                ctx.strokeStyle = '#6b7280';
+                ctx.lineWidth = 2.5;
+                banksHistorical.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // Draw Banks projection line (dashed, grey)
+                ctx.beginPath();
+                ctx.strokeStyle = '#6b7280';
+                ctx.lineWidth = 2.5;
+                ctx.setLineDash([6, 4]);
+                banksProjection.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    if (index === 0) {
+                        // Connect to last historical point
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((banksHistorical[12] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(lastHistX, lastHistY);
+                    }
+                    ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw data points for Opessocius investment
+                [...opessociusHistorical, ...projectionData].forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'Investment',
+                        color: isHistorical ? '#2563eb' : '#10b981',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw data points for S&P 500
+                sp500Data.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#f97316';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'S&P 500',
+                        color: '#f97316',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw data points for Banks
+                banksData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const isHistorical = index < 13; // Month 0 + 12 months
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#6b7280';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Store for hover
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    performanceDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index],
+                        name: 'Banks',
+                        color: '#6b7280',
+                        growthPercent: growthPercent,
+                        isHistorical: isHistorical
+                    });
+                });
+                
+                // Draw Y-axis labels (in euros)
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i <= 5; i++) {
+                    const value = minValue + (valueRange / 5) * (5 - i);
+                    const y = padding.top + (chartHeight / 5) * i;
+                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
+                    ctx.fillText(formattedValue, padding.left - 10, y);
+                }
+                
+                // Draw X-axis labels (17 months total: Month 0 + 12 historical + 4 projection)
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                for (let i = 0; i < totalMonths; i += 2) {
+                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
+                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                }
+                
+                // Draw legend at the top
+                const legendY = padding.top - 50;
+                const legendX = padding.left;
+                const legendItems = [
+                    { name: 'Opessocius', color: '#2563eb', risk: '0%' },
+                    { name: 'Savings Account', color: '#6b7280', risk: '0%' },
+                    { name: 'S&P 500', color: '#f97316', risk: '100%' }
+                ];
+                
+                let currentX = legendX;
+                const legendSpacing = 180;
+                
+                legendItems.forEach((item) => {
+                    // Draw colored line
+                    ctx.strokeStyle = item.color;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, legendY);
+                    ctx.lineTo(currentX + 30, legendY);
+                    ctx.stroke();
+                    
+                    // Draw name
+                    ctx.fillStyle = '#1f2937';
+                    ctx.font = 'bold 13px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(item.name, currentX + 35, legendY + 5);
+                    
+                    // Draw risk percentage below
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '11px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.fillText(`Risk: ${item.risk}`, currentX + 35, legendY + 20);
+                    
+                    // Move to next position
+                    currentX += legendSpacing;
+                });
+            }
+            
+            // Setup performance chart hover
+            function setupPerformanceChartHover() {
+                const canvas = document.getElementById('performance-chart');
+                const tooltip = document.getElementById('performance-tooltip');
+                if (!canvas || !tooltip) return;
+                
+                canvas.addEventListener('mousemove', function(e) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Find nearest data point
+                    let nearestPoint = null;
+                    let minDistance = Infinity;
+                    
+                    performanceDataPoints.forEach(point => {
+                        const distance = Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2));
+                        if (distance < 30 && distance < minDistance) {
+                            minDistance = distance;
+                            nearestPoint = point;
+                        }
+                    });
+                    
+                    if (nearestPoint) {
+                        const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
+                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        tooltip.innerHTML = `
+                            <div class="tooltip-name" style="color: ${nearestPoint.color}; font-weight: 600;">${nearestPoint.name}</div>
+                            <div class="tooltip-balance">${formattedValue}</div>
+                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                        `;
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (nearestPoint.x + 10) + 'px';
+                        tooltip.style.top = (nearestPoint.y - 40) + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                });
+                
+                canvas.addEventListener('mouseleave', function() {
+                    if (tooltip) tooltip.style.display = 'none';
+                });
+            }
+            
+            // Setup performance hover after chart is drawn
+            setTimeout(setupPerformanceChartHover, 150);
+
+            // Reports Section - Store reports data
+            let reportsData = {}; // Structure: { userId: { '2024-01': { file: File, month: 'January', year: 2024 }, ... } }
+            
+            function loadReportsUsersList() {
+                const container = document.getElementById('reports-users-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Get all users (admin + investors)
+                const allUsers = [...usersData];
+                
+                allUsers.forEach(user => {
+                    const card = document.createElement('div');
+                    card.className = 'investor-card';
+                    const userReports = reportsData[user.id] || {};
+                    const reportCount = Object.keys(userReports).length;
+                    const isAdmin = user.type === 'admin';
+                    
+                    // Get list of reports for this user
+                    const reportsList = Object.values(userReports).sort((a, b) => {
+                        const yearDiff = a.year - b.year;
+                        if (yearDiff !== 0) return yearDiff;
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        return months.indexOf(a.month) - months.indexOf(b.month);
+                    });
+                    
+                    let reportsHtml = '';
+                    if (reportsList.length > 0) {
+                        reportsHtml = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><strong style="font-size: 0.875rem; color: #374151;">Uploaded Reports:</strong><ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem; color: #6b7280;">';
+                        reportsList.forEach(report => {
+                            reportsHtml += `<li>${report.month} ${report.year}</li>`;
+                        });
+                        reportsHtml += '</ul></div>';
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="investor-card-header">
+                            <h3>${user.name}</h3>
+                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
+                        </div>
+                        <div class="investor-card-body">
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Account:</strong> ${user.account}</p>
+                            <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
+                            ${reportsHtml}
+                        </div>
+                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="admin-btn-save" onclick="openReportUploadModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
+                            ${isAdmin ? `<button class="admin-btn-view" onclick="viewAdminReportsWidget()">View Admin Reports</button>` : ''}
+                            ${isAdmin && reportCount > 0 ? `<button class="admin-btn-view" onclick="viewAdminReport(${user.id})">View Report</button>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            
+            function openReportUploadModal(userId) {
+                const user = usersData.find(u => u.id === userId);
+                if (!user) return;
+                
+                const modal = document.getElementById('report-upload-modal');
+                document.getElementById('report-upload-modal-title').textContent = `Upload Report - ${user.name}`;
+                document.getElementById('report-upload-form').reset();
+                modal.setAttribute('data-user-id', userId);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeReportUploadModal() {
+                document.getElementById('report-upload-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            function viewAdminReport(userId) {
+                const userReports = reportsData[userId] || {};
+                const reportsList = Object.values(userReports).sort((a, b) => {
+                    const yearDiff = a.year - b.year;
+                    if (yearDiff !== 0) return yearDiff;
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    return months.indexOf(a.month) - months.indexOf(b.month);
+                });
+                
+                if (reportsList.length === 0) {
+                    alert('No reports available for this account.');
+                    return;
+                }
+                
+                // Get the most recent report
+                const latestReport = reportsList[reportsList.length - 1];
+                const modal = document.getElementById('report-viewer-modal');
+                const iframe = document.getElementById('report-viewer-iframe');
+                const title = document.getElementById('report-viewer-title');
+                
+                title.textContent = `Monthly Report - ${latestReport.month} ${latestReport.year}`;
+                
+                // Create object URL from the file
+                if (latestReport.file) {
+                    const fileUrl = URL.createObjectURL(latestReport.file);
+                    iframe.src = fileUrl;
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } else if (latestReport.url) {
+                    // If stored as URL (for demo purposes)
+                    iframe.src = latestReport.url;
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            function closeReportViewerModal() {
+                const modal = document.getElementById('report-viewer-modal');
+                const iframe = document.getElementById('report-viewer-iframe');
+                iframe.src = '';
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            window.openReportUploadModal = openReportUploadModal;
+            window.viewAdminReport = viewAdminReport;
+            
+            // Report upload form handler
+            const reportUploadForm = document.getElementById('report-upload-form');
+            if (reportUploadForm) {
+                reportUploadForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const userId = parseInt(document.getElementById('report-upload-modal').getAttribute('data-user-id'));
+                    const month = document.getElementById('report-month').value;
+                    const year = parseInt(document.getElementById('report-year').value);
+                    const fileInput = document.getElementById('report-file');
+                    const file = fileInput.files[0];
+                    
+                    if (!file) {
+                        alert('Please select a PDF file to upload.');
+                        return;
+                    }
+                    
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('File size exceeds 10MB limit.');
+                        return;
+                    }
+                    
+                    if (!file.type.includes('pdf')) {
+                        alert('Please upload a PDF file.');
+                        return;
+                    }
+                    
+                    if (!reportsData[userId]) {
+                        reportsData[userId] = {};
+                    }
+                    
+                    const reportKey = `${year}-${String(month).padStart(2, '0')}`;
+                    reportsData[userId][reportKey] = {
+                        file: file,
+                        month: month,
+                        year: year,
+                        fileName: file.name,
+                        uploadDate: new Date().toISOString()
+                    };
+                    
+                    loadReportsUsersList();
+                    closeReportUploadModal();
+                    alert(`Report for ${month} ${year} uploaded successfully!`);
+                });
+            }
+            
+            // Admin Reports Widget Functions
+            function viewAdminReportsWidget() {
+                const adminId = 1; // Admin user ID
+                const adminReports = reportsData[adminId] || {};
+                const reportsList = Object.values(adminReports).sort((a, b) => {
+                    const yearDiff = a.year - b.year;
+                    if (yearDiff !== 0) return yearDiff;
+                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    return months.indexOf(a.month) - months.indexOf(b.month);
+                });
+                
+                const container = document.getElementById('admin-reports-widgets-container');
+                const modal = document.getElementById('admin-reports-widget-modal');
+                
+                if (reportsList.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 2rem;">No reports uploaded yet.</p>';
+                } else {
+                    container.innerHTML = '';
+                    reportsList.forEach(report => {
+                        const widget = document.createElement('div');
+                        widget.className = 'report-widget';
+                        widget.style.cssText = 'background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);';
+                        widget.innerHTML = `
+                            <div style="margin-bottom: 1rem;">
+                                <h4 style="margin: 0; font-size: 1.1rem; color: #1f2937;">${report.month} ${report.year}</h4>
+                                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: #6b7280;">${report.fileName || 'Report.pdf'}</p>
+                            </div>
+                            <button class="admin-btn-save" onclick="downloadAdminReport(${adminId}, '${report.month}', ${report.year})" style="width: 100%;">
+                                Download
+                            </button>
+                        `;
+                        container.appendChild(widget);
+                    });
+                }
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeAdminReportsWidget() {
+                document.getElementById('admin-reports-widget-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            function downloadAdminReport(userId, month, year) {
+                const reportKey = `${year}-${String(month).padStart(2, '0')}`;
+                const report = reportsData[userId]?.[reportKey];
+                if (report && report.file) {
+                    const url = URL.createObjectURL(report.file);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = report.fileName || `Report_${month}_${year}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            }
+            
+            window.downloadAdminReport = downloadAdminReport;
+            
+            
+            // Close modal handlers for reports
+            setTimeout(function() {
+                const reportUploadModal = document.getElementById('report-upload-modal');
+                if (reportUploadModal) {
+                    reportUploadModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportUploadModal);
+                    reportUploadModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportUploadModal);
+                    document.getElementById('cancel-report-upload')?.addEventListener('click', closeReportUploadModal);
+                }
+                
+                const reportViewerModal = document.getElementById('report-viewer-modal');
+                if (reportViewerModal) {
+                    reportViewerModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportViewerModal);
+                    reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
+                }
+                
+                const adminReportsWidgetModal = document.getElementById('admin-reports-widget-modal');
+                if (adminReportsWidgetModal) {
+                    adminReportsWidgetModal.querySelector('.admin-modal-close')?.addEventListener('click', closeAdminReportsWidget);
+                    adminReportsWidgetModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeAdminReportsWidget);
+                }
+            }, 100);
+            
+            // Investors Payment Tracking
+            let investorsPaymentStatus = {}; // Store payment status: { investorId: { paid: true/false } }
+            
+            function loadInvestorsPaymentList() {
+                const container = document.getElementById('investors-payment-list');
+                if (!container) return;
+                
+                // Get all investors (exclude admin)
+                const investors = usersData.filter(user => user.type === 'investor');
+                
+                if (investors.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No investors found.</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                investors.forEach(investor => {
+                    // Determine growth rate (2% or 4%) - default to 2% if not specified
+                    const growthRate = investor.growthRate || 2; // Can be 2 or 4
+                    const growthPercent = growthRate;
+                    const paymentAmount = (investor.balance * (growthRate / 100)).toFixed(2);
+                    const isPaid = investorsPaymentStatus[investor.id]?.paid || false;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'investor-payment-item';
+                    item.style.cssText = 'display: grid; grid-template-columns: 2fr 1.5fr 0.8fr 1.5fr 0.8fr; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb; gap: 1rem;';
+                    if (isPaid) {
+                        item.style.opacity = '0.6';
+                        item.style.textDecoration = 'line-through';
+                    }
+                    
+                    item.innerHTML = `
+                        <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem;">${investor.name}</div>
+                        <div style="color: #374151; font-size: 0.875rem; text-align: right;">€${investor.balance.toLocaleString('en-US')}</div>
+                        <div style="color: #374151; font-size: 0.875rem; text-align: center;">${growthPercent}%</div>
+                        <div style="color: #2563eb; font-weight: 600; font-size: 0.875rem; text-align: right;">€${parseFloat(paymentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        <div style="text-align: center;">
+                            <input type="checkbox" 
+                                   class="payment-checkbox" 
+                                   data-investor-id="${investor.id}"
+                                   ${isPaid ? 'checked' : ''}
+                                   style="width: 18px; height: 18px; cursor: pointer;">
+                        </div>
+                    `;
+                    
+                    container.appendChild(item);
+                });
+                
+                // Add event listeners to checkboxes
+                container.querySelectorAll('.payment-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const investorId = parseInt(this.getAttribute('data-investor-id'));
+                        if (!investorsPaymentStatus[investorId]) {
+                            investorsPaymentStatus[investorId] = {};
+                        }
+                        investorsPaymentStatus[investorId].paid = this.checked;
+                        loadInvestorsPaymentList(); // Reload to update styling
+                    });
+                });
+            }
+            
+            // Load investors payment list when dashboard view is shown
+            // Use the dashboardView already declared in navigation handler
+            if (dashboardView) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (dashboardView.style.display !== 'none') {
+                                loadInvestorsPaymentList();
+                            }
+                        }
+                    });
+                });
+                observer.observe(dashboardView, { attributes: true, attributeFilter: ['style'] });
+                
+                // Also load on initial page load if dashboard is visible
+                if (dashboardView.style.display !== 'none') {
+                    setTimeout(loadInvestorsPaymentList, 100);
+                }
+            }
+            
+            // Dashboard navigation links
+            const dashboardNewsLink = document.getElementById('dashboard-news-link');
+            
+            if (dashboardNewsLink) {
+                dashboardNewsLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const navItems = document.querySelectorAll('.sidebar-nav-item');
+                    navItems.forEach(item => {
+                        const span = item.querySelector('span');
+                        if (span && span.textContent.trim() === 'Market News') {
+                            item.click();
+                        }
+                    });
+                });
+            }
+            
+            // Dashboard report download buttons
+            const dashboardReportDownloads = document.querySelectorAll('.dashboard-report-download');
+            dashboardReportDownloads.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const month = this.getAttribute('data-month');
+                    const monthNames = {
+                        '2024-10': 'October_2024',
+                        '2024-11': 'November_2024',
+                        '2024-12': 'December_2024',
+                        '2025-01': 'January_2025'
+                    };
+                    const filename = `Monthly_Report_${monthNames[month]}.pdf`;
+                    alert(`Downloading ${filename}\n\nNote: This is a demo. In production, this would generate and download the actual PDF report.`);
+                });
+            });
+            
+            
+            // Dashboard news widget click handler
+            const dashboardNewsWidget = document.getElementById('dashboard-news-widget');
+            if (dashboardNewsWidget) {
+                dashboardNewsWidget.style.cursor = 'pointer';
+                dashboardNewsWidget.addEventListener('click', function() {
+                    const navItems = document.querySelectorAll('.sidebar-nav-item');
+                    navItems.forEach(item => {
+                        const span = item.querySelector('span');
+                        if (span && span.textContent.trim() === 'Market News') {
+                            item.click();
+                        }
+                    });
+                });
+            }
+            
+            // Draw dashboard charts when dashboard is shown
+            const dashboardViewEl = document.getElementById('dashboard-view');
+            if (dashboardViewEl) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (dashboardViewEl.style.display !== 'none') {
+                                setTimeout(function() {
+                                    calculateProjectionValue();
+                                }, 100);
+                            }
+                        }
+                    });
+                });
+                observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Calculate 12-month projection value
+            function calculateProjectionValue() {
+                const projectionValueEl = document.getElementById('dashboard-projection-value');
+                const portfolioProjectionEl = document.getElementById('portfolio-projection');
+                
+                // Use same calculation as portfolio chart (2% compound growth per month)
+                const monthlyGrowthRate = 0.02; // 2% per month
+                let balance = 10350000; // Current fund balance (month 12)
+                
+                // Calculate 12 months forward
+                for (let i = 0; i < 12; i++) {
+                    balance = balance * (1 + monthlyGrowthRate);
+                }
+                
+                // Round to whole number and format
+                const projectedValue = Math.round(balance);
+                const formattedValue = '€' + projectedValue.toLocaleString('en-US');
+                
+                if (projectionValueEl) {
+                    projectionValueEl.textContent = formattedValue;
+                }
+                if (portfolioProjectionEl) {
+                    portfolioProjectionEl.textContent = formattedValue;
+                }
+            }
+            
+            // Investors List Functions
+            let investorsData = [
+                { id: 1, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', initial: 230000, balance: 287450, status: 'Active' },
+                { id: 2, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', initial: 150000, balance: 187500, status: 'Active' },
+                { id: 3, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', initial: 500000, balance: 625000, status: 'Active' },
+                { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' }
+            ];
+            
+            // Investor Performance Data - stores performance entries for each investor
+            let investorPerformanceData = {};
+            
+            function loadInvestorsList() {
+                const container = document.getElementById('investors-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                investorsData.forEach(investor => {
+                    const card = document.createElement('div');
+                    card.className = 'investor-card';
+                    const returnPercent = ((investor.balance - investor.initial) / investor.initial * 100).toFixed(2);
+                    const performanceCount = investorPerformanceData[investor.id] ? investorPerformanceData[investor.id].length : 0;
+                    card.innerHTML = `
+                        <div class="investor-card-header">
+                            <h3>${investor.name}</h3>
+                            <span class="investor-status investor-status-${investor.status.toLowerCase()}">${investor.status}</span>
+                        </div>
+                        <div class="investor-card-body">
+                            <p><strong>Email:</strong> ${investor.email}</p>
+                            <p><strong>Account:</strong> ${investor.account}</p>
+                            <p><strong>Initial Investment:</strong> €${investor.initial.toLocaleString('en-US')}</p>
+                            <p><strong>Current Balance:</strong> €${investor.balance.toLocaleString('en-US')}</p>
+                            <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
+                            <p><strong>Performance Entries:</strong> ${performanceCount}</p>
+                        </div>
+                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
+                            <button class="admin-btn-save" onclick="openInvestorPerformanceModal(${investor.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
+                            <button class="admin-btn-view" onclick="viewInvestorPerformance(${investor.id})">View History</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            
+            function openInvestorPerformanceModal(investorId) {
+                const investor = investorsData.find(inv => inv.id === investorId);
+                if (!investor) return;
+                
+                const modal = document.getElementById('investor-performance-modal');
+                document.getElementById('investor-performance-modal-title').textContent = `Add Performance - ${investor.name}`;
+                document.getElementById('investor-performance-form').reset();
+                modal.setAttribute('data-investor-id', investorId);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeInvestorPerformanceModal() {
+                document.getElementById('investor-performance-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            function viewInvestorPerformance(investorId) {
+                const investor = investorsData.find(inv => inv.id === investorId);
+                if (!investor) return;
+                
+                const modal = document.getElementById('investor-performance-table-modal');
+                document.getElementById('investor-performance-table-title').textContent = `Performance History - ${investor.name}`;
+                
+                const tableBody = document.getElementById('investor-performance-table-body');
+                const performanceEntries = investorPerformanceData[investorId] || [];
+                
+                if (performanceEntries.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
+                } else {
+                    tableBody.innerHTML = '';
+                    let currentBalance = investor.initial;
+                    
+                    performanceEntries.sort((a, b) => {
+                        const yearDiff = a.year - b.year;
+                        if (yearDiff !== 0) return yearDiff;
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        return months.indexOf(a.month) - months.indexOf(b.month);
+                    });
+                    
+                    performanceEntries.forEach((entry, index) => {
+                        const startingBalance = index === 0 ? investor.initial : currentBalance;
+                        const endingBalance = startingBalance * (1 + entry.growth / 100) + (entry.deposits || 0) - (entry.withdrawals || 0);
+                        currentBalance = endingBalance;
+                        
+                        const row = document.createElement('tr');
+                        const depositDisplay = entry.deposits > 0 && entry.depositDate
+                            ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate)}</span>`
+                            : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
+                        const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
+                            ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate)}</span>`
+                            : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
+                        
+                        row.innerHTML = `
+                            <td>${entry.month} ${entry.year}</td>
+                            <td>€${startingBalance.toLocaleString('en-US')}</td>
+                            <td>€${endingBalance.toLocaleString('en-US')}</td>
+                            <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
+                            <td class="transaction-cell">${depositDisplay}</td>
+                            <td class="transaction-cell">${withdrawalDisplay}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeInvestorPerformanceTableModal() {
+                document.getElementById('investor-performance-table-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            window.openInvestorPerformanceModal = openInvestorPerformanceModal;
+            window.viewInvestorPerformance = viewInvestorPerformance;
+            
+            // Investor performance form handler
+            const investorPerformanceForm = document.getElementById('investor-performance-form');
+            if (investorPerformanceForm) {
+                investorPerformanceForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const investorId = parseInt(document.getElementById('investor-performance-modal').getAttribute('data-investor-id'));
+                    
+                    if (!investorPerformanceData[investorId]) {
+                        investorPerformanceData[investorId] = [];
+                    }
+                    
+                    const entry = {
+                        month: document.getElementById('performance-month').value,
+                        year: parseInt(document.getElementById('performance-year').value),
+                        growth: parseFloat(document.getElementById('performance-growth').value),
+                        deposits: parseFloat(document.getElementById('performance-deposits').value) || 0,
+                        withdrawals: parseFloat(document.getElementById('performance-withdrawals').value) || 0,
+                        depositDate: document.getElementById('performance-deposit-date').value || null,
+                        withdrawalDate: document.getElementById('performance-withdrawal-date').value || null
+                    };
+                    
+                    investorPerformanceData[investorId].push(entry);
+                    loadInvestorsList();
+                    closeInvestorPerformanceModal();
+                    alert('Performance entry added successfully!');
+                });
+            }
+            
+            function openInvestorEditModal(id) {
+                const investor = investorsData.find(inv => inv.id === id);
+                if (!investor) return;
+                
+                const modal = document.getElementById('investor-edit-modal');
+                document.getElementById('edit-investor-name').value = investor.name;
+                document.getElementById('edit-investor-email').value = investor.email;
+                document.getElementById('edit-investor-phone').value = investor.phone;
+                document.getElementById('edit-investor-account').value = investor.account;
+                document.getElementById('edit-investor-initial').value = investor.initial;
+                document.getElementById('edit-investor-balance').value = investor.balance;
+                document.getElementById('edit-investor-status').value = investor.status;
+                modal.setAttribute('data-edit-id', id);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeInvestorEditModal() {
+                document.getElementById('investor-edit-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            // Make function global
+            window.openInvestorEditModal = openInvestorEditModal;
+            
+            // Investor edit form handler
+            const investorEditForm = document.getElementById('investor-edit-form');
+            if (investorEditForm) {
+                investorEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const id = parseInt(document.getElementById('investor-edit-modal').getAttribute('data-edit-id'));
+                    const investor = investorsData.find(inv => inv.id === id);
+                    if (investor) {
+                        investor.name = document.getElementById('edit-investor-name').value;
+                        investor.email = document.getElementById('edit-investor-email').value;
+                        investor.phone = document.getElementById('edit-investor-phone').value;
+                        investor.account = document.getElementById('edit-investor-account').value;
+                        investor.initial = parseFloat(document.getElementById('edit-investor-initial').value);
+                        investor.balance = parseFloat(document.getElementById('edit-investor-balance').value);
+                        investor.status = document.getElementById('edit-investor-status').value;
+                        loadInvestorsList();
+                        closeInvestorEditModal();
+                    }
+                });
+            }
+            
+            // Add investor button
+            if (document.getElementById('add-investor-btn')) {
+                document.getElementById('add-investor-btn').addEventListener('click', function() {
+                    const modal = document.getElementById('investor-edit-modal');
+                    document.getElementById('investor-modal-title').textContent = 'Add New Investor';
+                    document.getElementById('investor-edit-form').reset();
+                    modal.removeAttribute('data-edit-id');
+                    modal.setAttribute('data-add-mode', 'true');
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            
+            // Users List Functions
+            let usersData = [
+                { id: 1, name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
+                { id: 2, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
+                { id: 3, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
+                { id: 4, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 }
+            ];
+            
+            function loadUsersList() {
+                const container = document.getElementById('users-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                usersData.forEach(user => {
+                    const card = document.createElement('div');
+                    card.className = 'investor-card';
+                    const returnPercent = user.initial > 0 ? ((user.balance - user.initial) / user.initial * 100).toFixed(2) : '0.00';
+                    const isAdmin = user.type === 'admin';
+                    card.innerHTML = `
+                        <div class="investor-card-header">
+                            <h3>${user.name}</h3>
+                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
+                        </div>
+                        <div class="investor-card-body">
+                            <p><strong>Type:</strong> ${user.type === 'admin' ? 'Admin' : 'Investor'}</p>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Account:</strong> ${user.account}</p>
+                            ${user.type === 'admin' ? `
+                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
+                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
+                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
+                            ` : `
+                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
+                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
+                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
+                            `}
+                        </div>
+                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            <button class="admin-edit-btn" onclick="openUserEditModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
+                            ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New User</button>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            
+            function openAddUserModal() {
+                const modal = document.getElementById('user-edit-modal');
+                document.getElementById('user-modal-title').textContent = 'Add New User';
+                document.getElementById('user-edit-form').reset();
+                modal.removeAttribute('data-edit-id');
+                modal.setAttribute('data-add-mode', 'true');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            window.openAddUserModal = openAddUserModal;
+            
+            function openUserEditModal(id) {
+                const user = usersData.find(u => u.id === id);
+                if (!user) return;
+                
+                const modal = document.getElementById('user-edit-modal');
+                document.getElementById('edit-user-name').value = user.name;
+                document.getElementById('edit-user-email').value = user.email;
+                document.getElementById('edit-user-phone').value = user.phone;
+                document.getElementById('edit-user-account').value = user.account;
+                document.getElementById('edit-user-status').value = user.status;
+                document.getElementById('edit-user-country').value = user.country;
+                document.getElementById('edit-user-member-since').value = user.memberSince;
+                document.getElementById('edit-user-initial').value = user.initial;
+                document.getElementById('edit-user-strategy').value = user.strategy;
+                document.getElementById('edit-user-operator').value = user.operator;
+                modal.setAttribute('data-edit-id', id);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeUserEditModal() {
+                document.getElementById('user-edit-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            window.openUserEditModal = openUserEditModal;
+            
+            // User edit form handler
+            const userEditForm = document.getElementById('user-edit-form');
+            if (userEditForm) {
+                userEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const modal = document.getElementById('user-edit-modal');
+                    const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                    
+                    if (isAddMode) {
+                        // Add new user
+                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
+                        const newUser = {
+                            id: newId,
+                            name: document.getElementById('edit-user-name').value,
+                            email: document.getElementById('edit-user-email').value,
+                            phone: document.getElementById('edit-user-phone').value,
+                            account: document.getElementById('edit-user-account').value,
+                            status: document.getElementById('edit-user-status').value,
+                            country: document.getElementById('edit-user-country').value,
+                            memberSince: document.getElementById('edit-user-member-since').value,
+                            initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
+                            balance: parseFloat(document.getElementById('edit-user-initial').value) || 0, // Start with initial investment
+                            return: 0,
+                            strategy: document.getElementById('edit-user-strategy').value,
+                            operator: document.getElementById('edit-user-operator').value,
+                            type: 'investor'
+                        };
+                        usersData.push(newUser);
+                        // Also add to investorsData if it exists
+                        if (typeof investorsData !== 'undefined') {
+                            investorsData.push({
+                                id: newId,
+                                name: newUser.name,
+                                email: newUser.email,
+                                phone: newUser.phone,
+                                account: newUser.account,
+                                initial: newUser.initial,
+                                balance: newUser.balance,
+                                status: newUser.status
+                            });
+                        }
+                        loadUsersList();
+                        closeUserEditModal();
+                        alert('New user added successfully!');
+                    } else {
+                        // Edit existing user
+                        const id = parseInt(modal.getAttribute('data-edit-id'));
+                        const user = usersData.find(u => u.id === id);
+                        if (user) {
+                            user.name = document.getElementById('edit-user-name').value;
+                            user.email = document.getElementById('edit-user-email').value;
+                            user.phone = document.getElementById('edit-user-phone').value;
+                            user.account = document.getElementById('edit-user-account').value;
+                            user.status = document.getElementById('edit-user-status').value;
+                            user.country = document.getElementById('edit-user-country').value;
+                            user.memberSince = document.getElementById('edit-user-member-since').value;
+                            user.initial = parseFloat(document.getElementById('edit-user-initial').value);
+                            // Balance and return are calculated automatically - don't update them here
+                            user.strategy = document.getElementById('edit-user-strategy').value;
+                            user.operator = document.getElementById('edit-user-operator').value;
+                            loadUsersList();
+                            closeUserEditModal();
+                        }
+                    }
+                });
+            }
+            
+            // News Edit Functions
+            let newsData = [
+                { title: 'OPEC+ Maintains Production Cuts Amid Global Demand Concerns', link: 'https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
+                { title: 'Crude Oil Prices Rally on Middle East Tensions', link: 'https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop' },
+                { title: 'US Shale Production Hits Record High Despite Lower Prices', link: 'https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
+                { title: "China's Oil Demand Growth Slows in Q4 2024", link: 'https://www.ft.com/content/china-oil-demand-slowdown-q4-2024', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop' }
+            ];
+            
+            function updateNewsDisplay() {
+                newsData.forEach((news, index) => {
+                    const wrapper = document.querySelector(`[data-news-index="${index}"]`);
+                    if (wrapper) {
+                        const link = wrapper.querySelector('.news-card');
+                        const img = wrapper.querySelector('.news-image');
+                        const title = wrapper.querySelector('.news-title');
+                        link.href = news.link;
+                        img.src = news.image;
+                        img.alt = news.title;
+                        title.textContent = news.title;
+                    }
+                });
+            }
+            
+            // News edit button handlers - initialize after DOM is ready
+            function initNewsEditButtons() {
+                document.querySelectorAll('.news-edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const index = parseInt(this.getAttribute('data-news-index'));
+                        openNewsEditModal(index);
+                    });
+                });
+            }
+            
+            // Initialize news edit buttons when market news view is shown
+            const marketNewsView = document.getElementById('market-news-view');
+            if (marketNewsView) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (marketNewsView.style.display !== 'none') {
+                                setTimeout(initNewsEditButtons, 100);
+                            }
+                        }
+                    });
+                });
+                observer.observe(marketNewsView, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Also initialize on page load if view is visible
+            if (marketNewsView && marketNewsView.style.display !== 'none') {
+                setTimeout(initNewsEditButtons, 100);
+            }
+            
+            function openNewsEditModal(index) {
+                const news = newsData[index];
+                const modal = document.getElementById('news-edit-modal');
+                document.getElementById('edit-news-title').value = news.title;
+                document.getElementById('edit-news-link').value = news.link;
+                document.getElementById('edit-news-image').value = news.image;
+                modal.setAttribute('data-edit-index', index);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeNewsEditModal() {
+                document.getElementById('news-edit-modal').style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            // News edit form handler
+            const newsEditForm = document.getElementById('news-edit-form');
+            if (newsEditForm) {
+                newsEditForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const index = parseInt(document.getElementById('news-edit-modal').getAttribute('data-edit-index'));
+                    newsData[index].title = document.getElementById('edit-news-title').value;
+                    newsData[index].link = document.getElementById('edit-news-link').value;
+                    newsData[index].image = document.getElementById('edit-news-image').value;
+                    updateNewsDisplay();
+                    closeNewsEditModal();
+                });
+            }
+            
+            // Close modal handlers - set up after DOM is ready
+            setTimeout(function() {
+                const newsModal = document.getElementById('news-edit-modal');
+                if (newsModal) {
+                    newsModal.querySelector('.admin-modal-close')?.addEventListener('click', closeNewsEditModal);
+                    newsModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeNewsEditModal);
+                    document.getElementById('cancel-news-edit')?.addEventListener('click', closeNewsEditModal);
+                }
+                
+                const investorModal = document.getElementById('investor-edit-modal');
+                if (investorModal) {
+                    investorModal.querySelector('.admin-modal-close')?.addEventListener('click', closeInvestorEditModal);
+                    investorModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeInvestorEditModal);
+                    document.getElementById('cancel-investor-edit')?.addEventListener('click', closeInvestorEditModal);
+                }
+                
+                const investorPerformanceModal = document.getElementById('investor-performance-modal');
+                if (investorPerformanceModal) {
+                    investorPerformanceModal.querySelector('.admin-modal-close')?.addEventListener('click', closeInvestorPerformanceModal);
+                    investorPerformanceModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeInvestorPerformanceModal);
+                    document.getElementById('cancel-investor-performance')?.addEventListener('click', closeInvestorPerformanceModal);
+                }
+                
+                const investorPerformanceTableModal = document.getElementById('investor-performance-table-modal');
+                if (investorPerformanceTableModal) {
+                    investorPerformanceTableModal.querySelector('.admin-modal-close')?.addEventListener('click', closeInvestorPerformanceTableModal);
+                    investorPerformanceTableModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeInvestorPerformanceTableModal);
+                }
+                
+                const userModal = document.getElementById('user-edit-modal');
+                if (userModal) {
+                    userModal.querySelector('.admin-modal-close')?.addEventListener('click', closeUserEditModal);
+                    userModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeUserEditModal);
+                    document.getElementById('cancel-user-edit')?.addEventListener('click', closeUserEditModal);
+                }
+            }, 100);
+            
+            // Initial draw if dashboard is visible
+            if (dashboardViewEl && dashboardViewEl.style.display !== 'none') {
+                setTimeout(function() {
+                    calculateProjectionValue();
+                }, 100);
+            }
+
+            // Redraw chart on window resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (portfolioView && portfolioView.style.display !== 'none') {
+                        drawPortfolioChart();
+                    }
+                    if (performanceView && performanceView.style.display !== 'none') {
+                        drawPerformanceChart();
+                        setTimeout(setupPerformanceChartHover, 150);
+                    }
+                    // Dashboard widgets resized
+                }, 250);
+            });
+    });
+    </script>
+</body>
+</html>
+

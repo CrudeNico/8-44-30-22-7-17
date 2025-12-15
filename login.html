@@ -224,10 +224,13 @@
                     const username = usernameInput.value.trim();
                     const password = passwordInput.value.trim();
                     
-                    // Check credentials (username: 1, password: 1)
+                    // Check credentials
                     if (username === '1' && password === '1') {
                         // Redirect to investor portal
                         window.location.href = 'investorsportal.html';
+                    } else if (username === '2' && password === '2') {
+                        // Redirect to admin portal
+                        window.location.href = 'adminportal.html';
                     } else {
                         // Show error
                         if (loginError) loginError.style.display = 'block';
