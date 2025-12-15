@@ -250,11 +250,11 @@
             background: rgba(37, 99, 235, 1);
         }
         
-        /* Transactions table edit button */
-        .transactions-table th:last-child,
+        /* Transactions table edit button - removed */
+        /* .transactions-table th:last-child,
         .transactions-table td:last-child {
             text-align: center;
-        }
+        } */
     </style>
 </head>
 <body class="dashboard-active">
@@ -363,132 +363,93 @@
                         </div>
                     </div>
                     
-                    <!-- Latest News - Second Row -->
-                    <div class="dashboard-widget dashboard-widget-clickable" id="dashboard-news-widget" style="grid-column: 1; grid-row: 2;">
+                    <!-- Members & Revenue - Second Row -->
+                    <div class="dashboard-widget" style="grid-column: 1; grid-row: 2;">
                         <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Latest News</h3>
+                            <h3 class="dashboard-widget-title">Members & Revenue</h3>
                         </div>
-                        <div class="dashboard-widget-content">
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">OPEC+ Maintains Production Cuts</div>
+                        <div class="dashboard-widget-content" style="padding-bottom: calc(1rem);">
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Current Monthly Revenue</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: #10b981;" id="monthly-revenue">€0</div>
                             </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">Crude Oil Prices Rally on Middle East Tensions</div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">Total Revenue</div>
+                                <div style="font-size: 1.75rem; font-weight: 700; color: #2563eb;" id="total-revenue">€0</div>
                             </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">US Shale Production Hits Record High</div>
-                            </div>
-                            <div class="dashboard-news-item">
-                                <div class="dashboard-news-title">China's Oil Demand Growth Slows in Q4</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Latest Report - Second Row -->
-                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 2;">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Latest Report</h3>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">November 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+17.39%</span>
-                                    <span class="dashboard-report-balance">€270,000</span>
+                            
+                            <div style="border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <span style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">Total</span>
+                                    <span style="font-size: 1rem; font-weight: 700; color: #1f2937;" id="total-members-count">0</span>
                                 </div>
-                                <button class="dashboard-report-download" data-month="2024-11">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">December 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+19.57%</span>
-                                    <span class="dashboard-report-balance">€275,000</span>
+                                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem; font-weight: 500;">Members by Plan</div>
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Basic</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;" id="basic-members">0</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Premium</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;" id="premium-members">0</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Plus</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #1f2937;" id="plus-members">0</span>
+                                    </div>
                                 </div>
-                                <button class="dashboard-report-download" data-month="2024-12">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
                             </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">January 2025</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+21.74%</span>
-                                    <span class="dashboard-report-balance">€280,000</span>
+                            
+                            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem; font-weight: 500;">Monthly Members</div>
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Members In</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #10b981;" id="monthly-members-in">0</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Members Out</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #ef4444;" id="monthly-members-out">0</span>
+                                    </div>
                                 </div>
-                                <button class="dashboard-report-download" data-month="2025-01">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Investors Payment Tracking Widget - Second Row -->
-                    <div class="dashboard-widget" style="grid-column: 3 / 5; grid-row: 2 / 3;">
+                    <!-- Group Chat - Second Row, spans 3 columns -->
+                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 2 / 4; display: flex; flex-direction: column;">
                         <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Investors Payment Tracking</h3>
+                            <h3 class="dashboard-widget-title">Group Chat</h3>
                         </div>
-                        <div class="dashboard-widget-content">
-                            <div id="investors-payment-list">
-                                <!-- Investors will be populated by JavaScript -->
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0;">
+                            <!-- Chat Messages Area -->
+                            <div id="chat-messages-container" style="flex: 1; overflow-y: auto; padding: 1rem; background: #f9fafb; min-height: 400px; display: flex; flex-direction: column; gap: 0.75rem;">
+                                <!-- Messages will be populated by JavaScript -->
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Top Stories -->
-                    <div class="dashboard-widget">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Top Stories</h3>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-                                {
-                                    "feedMode": "all_symbols",
-                                    "colorTheme": "light",
-                                    "isTransparent": false,
-                                    "displayMode": "regular",
-                                    "width": "100%",
-                                    "height": "300",
-                                    "locale": "en"
-                                }
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Economic Calendar - Third Row, spans 3 columns -->
-                    <div class="dashboard-widget dashboard-widget-wide" style="grid-column: 2 / 5; grid-row: 3;">
-                        <div class="dashboard-widget-header">
-                            <h3 class="dashboard-widget-title">Economic Calendar</h3>
-                            <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
-                        </div>
-                        <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-                                {
-                                    "colorTheme": "light",
-                                    "isTransparent": false,
-                                    "width": "100%",
-                                    "height": "300",
-                                    "locale": "en",
-                                    "importanceFilter": "-1,0,1"
-                                }
-                                </script>
+                            
+                            <!-- Chat Input Area -->
+                            <div style="border-top: 1px solid #e5e7eb; padding: 1rem; background: white;">
+                                <div id="chat-images-preview" style="display: none; margin-bottom: 0.75rem; padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="chat-images-preview-container">
+                                        <!-- Image previews will be shown here -->
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                                    <textarea id="chat-message-input" placeholder="Type your message..." style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: none; font-family: inherit; font-size: 0.875rem; min-height: 40px; max-height: 80px;" rows="1"></textarea>
+                                    <label for="chat-image-input" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                        Add Image
+                                    </label>
+                                    <input type="file" id="chat-image-input" accept="image/*" multiple style="display: none;">
+                                    <button type="button" id="chat-send-btn" class="admin-btn-save" style="padding: 0.5rem 1.5rem; font-size: 0.875rem; white-space: nowrap; height: fit-content;">
+                                        Send
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -528,64 +489,6 @@
 
             <!-- Transactions View -->
             <div class="transactions-view" id="transactions-view" style="display: none;">
-                <div class="transactions-add-section" style="background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.25rem; color: #1f2937;">Add Fund Performance</h3>
-                    <form id="fund-performance-form" class="admin-modal-form" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; align-items: end;">
-                        <div class="admin-form-group">
-                            <label for="fund-month">Month</label>
-                            <select id="fund-month" class="admin-form-input" required>
-                                <option value="">Select Month</option>
-                                <option value="January">January</option>
-                                <option value="February">February</option>
-                                <option value="March">March</option>
-                                <option value="April">April</option>
-                                <option value="May">May</option>
-                                <option value="June">June</option>
-                                <option value="July">July</option>
-                                <option value="August">August</option>
-                                <option value="September">September</option>
-                                <option value="October">October</option>
-                                <option value="November">November</option>
-                                <option value="December">December</option>
-                            </select>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-year">Year</label>
-                            <input type="number" id="fund-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-starting-balance">Starting Balance (€)</label>
-                            <input type="number" id="fund-starting-balance" class="admin-form-input" step="0.01" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-ending-balance">Ending Balance (€)</label>
-                            <input type="number" id="fund-ending-balance" class="admin-form-input" step="0.01" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-growth">Growth %</label>
-                            <input type="number" id="fund-growth" class="admin-form-input" step="0.01" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-deposits">Deposits (€)</label>
-                            <input type="number" id="fund-deposits" class="admin-form-input" step="0.01" value="0" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-deposit-date">Deposit Date</label>
-                            <input type="date" id="fund-deposit-date" class="admin-form-input">
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-withdrawals">Withdrawals (€)</label>
-                            <input type="number" id="fund-withdrawals" class="admin-form-input" step="0.01" value="0" required>
-                        </div>
-                        <div class="admin-form-group">
-                            <label for="fund-withdrawal-date">Withdrawal Date</label>
-                            <input type="date" id="fund-withdrawal-date" class="admin-form-input">
-                        </div>
-                        <div class="admin-form-group">
-                            <button type="submit" class="admin-btn-save" style="width: 100%;">Add Performance</button>
-                        </div>
-                    </form>
-                </div>
                 <div class="transactions-table-container">
                     <table class="transactions-table">
                         <thead>
@@ -596,7 +499,6 @@
                                 <th>Growth %</th>
                                 <th>Deposits</th>
                                 <th>Withdrawals</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="transactions-table-body">
@@ -1190,7 +1092,8 @@
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
                         dashboardView.style.display = 'block';
-                        loadInvestorsPaymentList();
+                        loadChatMessages();
+                        loadMembersAndRevenue();
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
                         setTimeout(function() {
@@ -1494,18 +1397,9 @@
                         <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
                         <td class="transaction-cell">${depositDisplay}</td>
                         <td class="transaction-cell">${withdrawalDisplay}</td>
-                        <td><button class="admin-edit-btn" data-index="${index}">Edit</button></td>
                     `;
                     
                     tableBody.appendChild(row);
-                });
-                
-                // Add edit button handlers
-                document.querySelectorAll('.admin-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        openTransactionEditModal(index);
-                    });
                 });
             }
             
@@ -1557,56 +1451,6 @@
                 document.getElementById('cancel-transaction-edit')?.addEventListener('click', closeTransactionEditModal);
             }
             
-            // Fund Performance Form Handler
-            const fundPerformanceForm = document.getElementById('fund-performance-form');
-            if (fundPerformanceForm) {
-                fundPerformanceForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const month = document.getElementById('fund-month').value;
-                    const year = parseInt(document.getElementById('fund-year').value);
-                    const starting = parseFloat(document.getElementById('fund-starting-balance').value);
-                    const ending = parseFloat(document.getElementById('fund-ending-balance').value);
-                    const growth = parseFloat(document.getElementById('fund-growth').value);
-                    const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
-                    const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
-                    
-                    // Check if entry for this month/year already exists
-                    const existingIndex = transactionData.findIndex(t => t.month === month && t.year === year);
-                    
-                    const depositDate = document.getElementById('fund-deposit-date').value || (deposits > 0 ? new Date().toISOString().split('T')[0] : null);
-                    const withdrawalDate = document.getElementById('fund-withdrawal-date').value || (withdrawals > 0 ? new Date().toISOString().split('T')[0] : null);
-                    
-                    const newEntry = {
-                        month: month,
-                        year: year,
-                        starting: starting,
-                        ending: ending,
-                        growth: growth,
-                        deposits: deposits,
-                        withdrawals: withdrawals,
-                        depositDate: depositDate,
-                        withdrawalDate: withdrawalDate
-                    };
-                    
-                    if (existingIndex >= 0) {
-                        transactionData[existingIndex] = newEntry;
-                    } else {
-                        transactionData.push(newEntry);
-                    }
-                    
-                    // Sort by year and month
-                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    transactionData.sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
-                    
-                    populateTransactionsTable();
-                    fundPerformanceForm.reset();
-                    alert('Fund performance added successfully!');
-                });
-            }
 
             function formatDate(dateString) {
                 const date = new Date(dateString);
@@ -1864,6 +1708,348 @@
                     adminReportsWidgetModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeAdminReportsWidget);
                 }
             }, 100);
+            
+            // Group Chat Section
+            let chatMessages = [
+                {
+                    id: 1,
+                    sender: 'Admin',
+                    message: 'Welcome to the group chat! Feel free to ask questions and share insights.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+                },
+                {
+                    id: 2,
+                    sender: 'John Investor',
+                    message: 'Thanks! Looking forward to learning more about the market trends.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3300000).toISOString() // 55 minutes ago
+                }
+            ];
+            
+            function loadChatMessages() {
+                const container = document.getElementById('chat-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (chatMessages.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages yet. Start the conversation!</p>';
+                    return;
+                }
+                
+                chatMessages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.flexDirection = 'column';
+                    messageDiv.style.gap = '0.25rem';
+                    messageDiv.style.maxWidth = '80%';
+                    messageDiv.style.marginLeft = msg.sender === 'Admin' ? 'auto' : '0';
+                    
+                    const senderName = document.createElement('div');
+                    senderName.style.fontSize = '0.75rem';
+                    senderName.style.fontWeight = '600';
+                    senderName.style.color = msg.sender === 'Admin' ? '#2563eb' : '#6b7280';
+                    senderName.textContent = msg.sender;
+                    
+                    const messageBubble = document.createElement('div');
+                    messageBubble.style.padding = '0.75rem 1rem';
+                    messageBubble.style.borderRadius = '12px';
+                    messageBubble.style.background = msg.sender === 'Admin' ? '#2563eb' : 'white';
+                    messageBubble.style.color = msg.sender === 'Admin' ? 'white' : '#1f2937';
+                    messageBubble.style.border = msg.sender === 'Admin' ? 'none' : '1px solid #e5e7eb';
+                    messageBubble.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                    
+                    if (msg.message) {
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.lineHeight = '1.5';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message;
+                        messageBubble.appendChild(messageText);
+                    }
+                    
+                    if (msg.images && msg.images.length > 0) {
+                        const imagesContainer = document.createElement('div');
+                        imagesContainer.style.display = 'grid';
+                        imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                        imagesContainer.style.gap = '0.5rem';
+                        imagesContainer.style.marginTop = msg.message ? '0.5rem' : '0';
+                        
+                        msg.images.forEach(imgUrl => {
+                            const img = document.createElement('img');
+                            img.src = imgUrl;
+                            img.style.width = '100%';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+                            img.style.cursor = 'pointer';
+                            img.onclick = function() {
+                                // Open image in new window/modal
+                                window.open(imgUrl, '_blank');
+                            };
+                            imagesContainer.appendChild(img);
+                        });
+                        messageBubble.appendChild(imagesContainer);
+                    }
+                    
+                    const timestamp = document.createElement('div');
+                    timestamp.style.fontSize = '0.625rem';
+                    timestamp.style.color = '#9ca3af';
+                    timestamp.style.marginTop = '0.25rem';
+                    timestamp.style.textAlign = msg.sender === 'Admin' ? 'right' : 'left';
+                    const date = new Date(msg.timestamp);
+                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.appendChild(senderName);
+                    messageDiv.appendChild(messageBubble);
+                    messageDiv.appendChild(timestamp);
+                    container.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // Chat image preview
+            let selectedChatImages = [];
+            const chatImageInput = document.getElementById('chat-image-input');
+            const chatImagesPreview = document.getElementById('chat-images-preview');
+            const chatImagesPreviewContainer = document.getElementById('chat-images-preview-container');
+            
+            if (chatImageInput && chatImagesPreview && chatImagesPreviewContainer) {
+                chatImageInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    selectedChatImages = files;
+                    chatImagesPreviewContainer.innerHTML = '';
+                    
+                    if (files.length > 0) {
+                        chatImagesPreview.style.display = 'block';
+                    } else {
+                        chatImagesPreview.style.display = 'none';
+                    }
+                    
+                    files.forEach((file, index) => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                imgDiv.style.width = '80px';
+                                imgDiv.style.height = '80px';
+                                
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '6px';
+                                img.style.border = '1px solid #e5e7eb';
+                                
+                                const removeBtn = document.createElement('button');
+                                removeBtn.textContent = '×';
+                                removeBtn.style.position = 'absolute';
+                                removeBtn.style.top = '-8px';
+                                removeBtn.style.right = '-8px';
+                                removeBtn.style.background = '#ef4444';
+                                removeBtn.style.color = 'white';
+                                removeBtn.style.border = 'none';
+                                removeBtn.style.borderRadius = '50%';
+                                removeBtn.style.width = '20px';
+                                removeBtn.style.height = '20px';
+                                removeBtn.style.cursor = 'pointer';
+                                removeBtn.style.fontSize = '14px';
+                                removeBtn.style.lineHeight = '1';
+                                removeBtn.onclick = function() {
+                                    selectedChatImages.splice(index, 1);
+                                    const dt = new DataTransfer();
+                                    selectedChatImages.forEach(f => dt.items.add(f));
+                                    chatImageInput.files = dt.files;
+                                    if (selectedChatImages.length === 0) {
+                                        chatImagesPreview.style.display = 'none';
+                                    } else {
+                                        chatImageInput.dispatchEvent(new Event('change'));
+                                    }
+                                };
+                                
+                                imgDiv.appendChild(img);
+                                imgDiv.appendChild(removeBtn);
+                                chatImagesPreviewContainer.appendChild(imgDiv);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Send chat message
+            const chatSendBtn = document.getElementById('chat-send-btn');
+            const chatMessageInput = document.getElementById('chat-message-input');
+            
+            function sendChatMessage() {
+                const messageText = chatMessageInput.value.trim();
+                const images = selectedChatImages;
+                
+                if (!messageText && images.length === 0) {
+                    return; // Don't send empty messages
+                }
+                
+                // Process images
+                const imageUrls = [];
+                images.forEach(file => {
+                    imageUrls.push(URL.createObjectURL(file));
+                });
+                
+                // Add message
+                const newMessage = {
+                    id: chatMessages.length + 1,
+                    sender: 'Admin',
+                    message: messageText,
+                    images: imageUrls,
+                    timestamp: new Date().toISOString()
+                };
+                
+                chatMessages.push(newMessage);
+                loadChatMessages();
+                
+                // Clear inputs
+                chatMessageInput.value = '';
+                selectedChatImages = [];
+                chatImageInput.value = '';
+                chatImagesPreview.style.display = 'none';
+                chatImagesPreviewContainer.innerHTML = '';
+            }
+            
+            if (chatSendBtn) {
+                chatSendBtn.addEventListener('click', sendChatMessage);
+            }
+            
+            if (chatMessageInput) {
+                chatMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendChatMessage();
+                    }
+                });
+            }
+            
+            // Load chat messages when dashboard is shown
+            if (dashboardView) {
+                loadChatMessages();
+            }
+            
+            // Members & Revenue Widget
+            // Sample members data with plans (in a real app, this would come from a database)
+            let membersData = [
+                { id: 1, name: 'John Investor', plan: 'Premium', email: 'john.investor@example.com', subscriptionType: 'monthly' },
+                { id: 2, name: 'Sarah Smith', plan: 'Plus', email: 'sarah.smith@example.com', subscriptionType: 'annual' },
+                { id: 3, name: 'Michael Brown', plan: 'Basic', email: 'michael.brown@example.com', subscriptionType: 'monthly' },
+                { id: 4, name: 'Emma Wilson', plan: 'Premium', email: 'emma.wilson@example.com', subscriptionType: 'annual' },
+                { id: 5, name: 'David Lee', plan: 'Basic', email: 'david.lee@example.com', subscriptionType: 'annual' },
+                { id: 6, name: 'Lisa Anderson', plan: 'Plus', email: 'lisa.anderson@example.com', subscriptionType: 'monthly' },
+                { id: 7, name: 'Robert Taylor', plan: 'Basic', email: 'robert.taylor@example.com', subscriptionType: 'monthly' },
+                { id: 8, name: 'Maria Garcia', plan: 'Premium', email: 'maria.garcia@example.com', subscriptionType: 'annual' },
+                { id: 9, name: 'James Wilson', plan: 'Plus', email: 'james.wilson@example.com', subscriptionType: 'annual' },
+                { id: 10, name: 'Sophia Martinez', plan: 'Basic', email: 'sophia.martinez@example.com', subscriptionType: 'annual' }
+            ];
+            
+            // Monthly members tracking (in a real app, this would come from a database)
+            let monthlyMembersTracking = {
+                membersIn: 12,  // Number of new members this month
+                membersOut: 3   // Number of members who left this month
+            };
+            
+            // Store total revenue accumulated over time
+            let accumulatedTotalRevenue = 125000; // Starting total revenue
+            
+            function loadMembersAndRevenue() {
+                // Plan pricing (monthly in euros)
+                const planPricing = {
+                    'Basic': 49,
+                    'Premium': 99,
+                    'Plus': 199
+                };
+                
+                // Annual pricing (typically 10 months worth for annual subscriptions)
+                const annualPlanPricing = {
+                    'Basic': 490,
+                    'Premium': 990,
+                    'Plus': 1990
+                };
+                
+                // Count members by plan
+                let basicCount = 0;
+                let premiumCount = 0;
+                let plusCount = 0;
+                let monthlyRevenue = 0;
+                let annualMembersCount = 0;
+                
+                membersData.forEach(member => {
+                    const plan = member.plan || 'Basic'; // Default to Basic if no plan specified
+                    const subscriptionType = member.subscriptionType || 'monthly';
+                    
+                    if (plan === 'Basic') {
+                        basicCount++;
+                        if (subscriptionType === 'annual') {
+                            annualMembersCount++;
+                            monthlyRevenue += annualPlanPricing.Basic / 12; // Annual revenue divided by 12 for monthly equivalent
+                        } else {
+                            monthlyRevenue += planPricing.Basic;
+                        }
+                    } else if (plan === 'Premium') {
+                        premiumCount++;
+                        if (subscriptionType === 'annual') {
+                            annualMembersCount++;
+                            monthlyRevenue += annualPlanPricing.Premium / 12;
+                        } else {
+                            monthlyRevenue += planPricing.Premium;
+                        }
+                    } else if (plan === 'Plus') {
+                        plusCount++;
+                        if (subscriptionType === 'annual') {
+                            annualMembersCount++;
+                            monthlyRevenue += annualPlanPricing.Plus / 12;
+                        } else {
+                            monthlyRevenue += planPricing.Plus;
+                        }
+                    } else {
+                        // Default to Basic if plan is unknown
+                        basicCount++;
+                        if (subscriptionType === 'annual') {
+                            annualMembersCount++;
+                            monthlyRevenue += annualPlanPricing.Basic / 12;
+                        } else {
+                            monthlyRevenue += planPricing.Basic;
+                        }
+                    }
+                });
+                
+                // Calculate total revenue (accumulated + current monthly)
+                const totalRevenue = accumulatedTotalRevenue + monthlyRevenue;
+                
+                // Calculate total members count
+                const totalMembersCount = basicCount + premiumCount + plusCount;
+                
+                // Update the UI
+                const monthlyRevenueEl = document.getElementById('monthly-revenue');
+                const totalRevenueEl = document.getElementById('total-revenue');
+                const totalMembersCountEl = document.getElementById('total-members-count');
+                const basicMembersEl = document.getElementById('basic-members');
+                const premiumMembersEl = document.getElementById('premium-members');
+                const plusMembersEl = document.getElementById('plus-members');
+                const monthlyMembersInEl = document.getElementById('monthly-members-in');
+                const monthlyMembersOutEl = document.getElementById('monthly-members-out');
+                
+                if (monthlyRevenueEl) monthlyRevenueEl.textContent = '€' + Math.round(monthlyRevenue).toLocaleString('en-US');
+                if (totalRevenueEl) totalRevenueEl.textContent = '€' + Math.round(totalRevenue).toLocaleString('en-US');
+                if (totalMembersCountEl) totalMembersCountEl.textContent = totalMembersCount;
+                if (basicMembersEl) basicMembersEl.textContent = basicCount;
+                if (premiumMembersEl) premiumMembersEl.textContent = premiumCount;
+                if (plusMembersEl) plusMembersEl.textContent = plusCount;
+                if (monthlyMembersInEl) monthlyMembersInEl.textContent = monthlyMembersTracking.membersIn;
+                if (monthlyMembersOutEl) monthlyMembersOutEl.textContent = monthlyMembersTracking.membersOut;
+            }
             
             // Investors Payment Tracking
             let investorsPaymentStatus = {}; // Store payment status: { investorId: { paid: true/false } }
@@ -3232,6 +3418,7 @@
             if (dashboardViewEl && dashboardViewEl.style.display !== 'none') {
                 setTimeout(function() {
                     calculateProjectionValue();
+                    loadMembersAndRevenue();
                 }, 100);
             }
 
