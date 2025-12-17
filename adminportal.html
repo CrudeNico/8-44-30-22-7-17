@@ -3378,7 +3378,12 @@
                             // Sort transactions by year, then monthIndex
                             const transactions = [];
                             transactionsSnapshot.forEach((doc) => {
-                                transactions.push(doc.data());
+                                const data = doc.data();
+                                // When editing, exclude the current transaction being edited
+                                if (isEditMode && transactionId && doc.id === transactionId) {
+                                    return; // Skip the transaction being edited
+                                }
+                                transactions.push(data);
                             });
                             
                             transactions.sort((a, b) => {
@@ -3388,10 +3393,36 @@
                                 return (a.monthIndex || 0) - (b.monthIndex || 0);
                             });
                             
-                            // Get the last transaction (most recent)
-                            if (transactions.length > 0) {
-                                const lastTransaction = transactions[transactions.length - 1];
-                                startingBalance = lastTransaction.endingBalance || startingBalance;
+                            // Find the previous month's transaction
+                            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                           'July', 'August', 'September', 'October', 'November', 'December'];
+                            const currentMonthIndex = months.indexOf(month);
+                            
+                            let previousTransaction = null;
+                            
+                            if (isEditMode) {
+                                // When editing, find the transaction that comes before this month/year
+                                for (let i = transactions.length - 1; i >= 0; i--) {
+                                    const trans = transactions[i];
+                                    const transMonthIndex = months.indexOf(trans.month);
+                                    
+                                    // Check if this transaction is before the current one
+                                    if (trans.year < year || (trans.year === year && transMonthIndex < currentMonthIndex)) {
+                                        previousTransaction = trans;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                // When adding new, get the last transaction (most recent)
+                                if (transactions.length > 0) {
+                                    previousTransaction = transactions[transactions.length - 1];
+                                }
+                            }
+                            
+                            if (previousTransaction) {
+                                // Starting balance = previous month's ending balance - withdrawals
+                                // (as per user requirement: starting balance should be previous month's ending balance minus withdrawals)
+                                startingBalance = (previousTransaction.endingBalance || 0) - (previousTransaction.withdrawals || 0);
                             }
                         }
                         
@@ -3431,17 +3462,22 @@
                             endingBalance = endingBalance + deposits;
                         }
                         
-                        // Subtract withdrawals
+                        // Calculate the growth percentage BEFORE subtracting withdrawals
+                        // Return (%) = (Ending balance - (Starting balance + Deposits)) / (Starting balance + Deposits) × 100
+                        // Note: Withdrawals do NOT affect the growth percentage calculation
+                        const denominator = startingBalance + deposits;
+                        const endingBalanceBeforeWithdrawals = endingBalance;
+                        const effectiveGrowthPercent = denominator > 0 
+                            ? ((endingBalanceBeforeWithdrawals - denominator) / denominator * 100) 
+                            : 0;
+                        
+                        // Subtract withdrawals (this affects ending balance but NOT growth %)
                         endingBalance = endingBalance - withdrawals;
                         
-                        // Calculate the effective growth percentage for display
-                        const totalGrowthAmount = existingBalanceGrowth + depositGrowth;
-                        const effectiveGrowthPercent = startingBalance > 0 ? (totalGrowthAmount / startingBalance * 100) : 0;
-                        
                         // Month index for sorting (0-11)
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                       'July', 'August', 'September', 'October', 'November', 'December'];
-                        const monthIndex = months.indexOf(month);
+                        // Reuse months array already defined above
+                        const monthIndex = (['January', 'February', 'March', 'April', 'May', 'June', 
+                                            'July', 'August', 'September', 'October', 'November', 'December']).indexOf(month);
                         
                         // Create transaction entry
                         const transactionData = {
@@ -3519,9 +3555,19 @@
                         }
                         
                         // Update user's current balance and total return
-                        const totalReturn = userData.initialInvestment > 0 
-                            ? ((endingBalance - userData.initialInvestment) / userData.initialInvestment * 100) 
-                            : 0;
+                        // Total Return = sum of all months' growth percentages
+                        const allTransactionsForReturn = await db.collection('users').doc(investorId)
+                            .collection('transactions')
+                            .get();
+                        
+                        let totalReturn = 0;
+                        if (!allTransactionsForReturn.empty) {
+                            allTransactionsForReturn.forEach((doc) => {
+                                const transData = doc.data();
+                                const growthPercent = transData.growth || 0;
+                                totalReturn += growthPercent;
+                            });
+                        }
                         
                         await db.collection('users').doc(investorId).update({
                             currentBalance: endingBalance,
