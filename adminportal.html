@@ -802,6 +802,12 @@
             <!-- Account Settings View -->
             <div class="account-settings-view" id="account-settings-view" style="display: none;">
                 <div class="account-settings-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">User Management</h2>
+                        <button class="admin-btn-save" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                            + Add New User
+                        </button>
+                    </div>
                     <div class="users-list-container">
                         <div class="users-grid" id="users-grid">
                             <!-- Users will be populated by JavaScript -->
@@ -825,8 +831,8 @@
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-password">Password</label>
-                                <input type="password" id="edit-user-password" class="admin-form-input" placeholder="Enter password for login">
-                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Leave blank to keep current password when editing</span>
+                                <input type="text" id="edit-user-password" class="admin-form-input" placeholder="Enter password for login" minlength="6">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Password must be at least 6 characters. Enter new password to change it.</span>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-name">Full Name</label>
@@ -839,10 +845,6 @@
                             <div class="admin-form-group">
                                 <label for="edit-user-phone">Phone Number</label>
                                 <input type="tel" id="edit-user-phone" class="admin-form-input" required>
-                            </div>
-                            <div class="admin-form-group">
-                                <label for="edit-user-account">Account Number</label>
-                                <input type="text" id="edit-user-account" class="admin-form-input" required>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-status">Account Status</label>
@@ -858,7 +860,7 @@
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-member-since">Initiation Date</label>
-                                <input type="text" id="edit-user-member-since" class="admin-form-input" required>
+                                <input type="date" id="edit-user-member-since" class="admin-form-input" required>
                             </div>
 
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Investment Details</h3>
@@ -878,6 +880,7 @@
                                 <p style="margin: 0; color: #6b7280; font-size: 0.875rem;"><strong>Note:</strong> Current Balance and Total Return are calculated automatically based on performance entries.</p>
                             </div>
                             <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="delete-user-btn" style="background: #dc2626; color: white; font-size: 0.875rem; padding: 0.5rem 1rem; display: none;">Delete</button>
                                 <button type="button" class="admin-btn-cancel" id="cancel-user-edit">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
                             </div>
@@ -1058,6 +1061,12 @@
             <!-- Market News View -->
             <div class="market-news-view" id="market-news-view" style="display: none;">
                 <div class="market-news-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Market News</h2>
+                        <button class="admin-btn-save" onclick="openAddNewsModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                            + Add New Article
+                        </button>
+                    </div>
                     <div class="market-news-chart-section">
                         <div class="tradingview-widget-container market-news-chart">
                             <div id="market_news_chart"></div>
@@ -1095,43 +1104,8 @@
                         </div>
                     </div>
                     <div class="market-news-articles-section">
-                        <div class="news-grid">
-                            <div class="news-card-wrapper" data-news-index="0">
-                                <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
-                                        <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="0">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="1">
-                                <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
-                                        <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="1">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="2">
-                                <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
-                                        <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="2">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="3">
-                                <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
-                                        <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="3">Edit</button>
-                            </div>
+                        <div class="news-grid" id="news-grid">
+                            <!-- News articles will be loaded from Firestore -->
                         </div>
                     </div>
             </div>
@@ -1142,7 +1116,7 @@
                 <div class="admin-modal-container">
                     <button class="admin-modal-close" aria-label="Close modal">&times;</button>
                     <div class="admin-modal-content">
-                        <h2 class="admin-modal-title">Edit News Article</h2>
+                        <h2 class="admin-modal-title" id="news-modal-title">Edit News Article</h2>
                         <form id="news-edit-form" class="admin-modal-form">
                             <div class="admin-form-group">
                                 <label for="edit-news-title">Title</label>
@@ -1156,8 +1130,14 @@
                                 <label for="edit-news-image">Image URL</label>
                                 <input type="url" id="edit-news-image" class="admin-form-input" required>
                             </div>
+                            <div class="admin-form-group">
+                                <label for="edit-news-order">Display Order</label>
+                                <input type="number" id="edit-news-order" class="admin-form-input" min="0" value="0">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Lower numbers appear first</span>
+                            </div>
                             <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit">Cancel</button>
+                                <button type="button" class="admin-btn-cancel" id="delete-news-btn" onclick="deleteNews()" style="background: #dc2626; color: white; font-size: 0.875rem; padding: 0.5rem 1rem; display: none;">Delete</button>
+                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit" onclick="closeNewsEditModal()">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
                             </div>
                         </form>
@@ -1169,8 +1149,329 @@
     </section>
     
     <script src="script.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const analytics = firebase.analytics();
+        
+        // Make available globally
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseAnalytics = analytics;
+        window.firebase = firebase;
+        
+        // Firestore Service Functions (using CDN API)
+        window.firestoreService = {
+            USERS_COLLECTION: 'users',
+            
+            // Convert HTML date to Firestore Timestamp
+            convertToFirestoreDate: function(dateString) {
+                if (!dateString) return null;
+                try {
+                    const date = new Date(dateString);
+                    return firebase.firestore.Timestamp.fromDate(date);
+                } catch (error) {
+                    console.error('Error converting date:', error);
+                    return null;
+                }
+            },
+            
+            // Convert Firestore Timestamp to HTML date format
+            convertFromFirestoreDate: function(firestoreDate) {
+                if (!firestoreDate) return '';
+                try {
+                    let date;
+                    if (firestoreDate.toDate) {
+                        date = firestoreDate.toDate();
+                    } else if (firestoreDate instanceof Date) {
+                        date = firestoreDate;
+                    } else {
+                        date = new Date(firestoreDate);
+                    }
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                } catch (error) {
+                    console.error('Error converting Firestore date:', error);
+                    return '';
+                }
+            },
+            
+            // Create user
+            createUser: async function(userData) {
+                try {
+                    console.log('createUser called with data:', userData);
+                    const userDoc = {
+                        username: userData.username,
+                        email: userData.email,
+                        password: userData.password || '', // Store password in Firestore (for admin viewing/editing)
+                        phone: userData.phone || '',
+                        accountStatus: userData.status || 'Active',
+                        country: userData.country || '',
+                        memberSince: userData.memberSince ? this.convertToFirestoreDate(userData.memberSince) : null,
+                        fullName: userData.name || '',
+                        initialInvestment: userData.initial || 0,
+                        currentBalance: userData.initial || 0,
+                        totalReturn: 0,
+                        investmentStrategy: userData.strategy || '',
+                        assignedOperatorEmail: userData.operator || '',
+                        type: userData.type || 'investor',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    console.log('User document to save:', userDoc);
+                    const docRef = await db.collection(this.USERS_COLLECTION).add(userDoc);
+                    console.log('User created successfully with ID: ', docRef.id);
+                    return docRef.id;
+                } catch (error) {
+                    console.error('Error creating user:', error);
+                    throw error;
+                }
+            },
+            
+            // Update user
+            updateUser: async function(userId, userData) {
+                try {
+                    const updateData = {
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if (userData.username !== undefined) updateData.username = userData.username;
+                    if (userData.email !== undefined) updateData.email = userData.email;
+                    if (userData.password !== undefined && userData.password !== '') updateData.password = userData.password;
+                    if (userData.name !== undefined) updateData.fullName = userData.name;
+                    if (userData.phone !== undefined) updateData.phone = userData.phone;
+                    if (userData.status !== undefined) updateData.accountStatus = userData.status;
+                    if (userData.country !== undefined) updateData.country = userData.country;
+                    if (userData.memberSince !== undefined) {
+                        updateData.memberSince = userData.memberSince ? this.convertToFirestoreDate(userData.memberSince) : null;
+                    }
+                    if (userData.initial !== undefined) updateData.initialInvestment = userData.initial;
+                    if (userData.strategy !== undefined) updateData.investmentStrategy = userData.strategy;
+                    if (userData.operator !== undefined) updateData.assignedOperatorEmail = userData.operator;
+                    await db.collection(this.USERS_COLLECTION).doc(userId).update(updateData);
+                    console.log('User updated successfully');
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    throw error;
+                }
+            },
+            
+            // Delete user
+            deleteUser: async function(userId) {
+                try {
+                    await db.collection(this.USERS_COLLECTION).doc(userId).delete();
+                    console.log('User deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    throw error;
+                }
+            },
+            
+            // Get user by ID
+            getUserById: async function(userId) {
+                try {
+                    const doc = await db.collection(this.USERS_COLLECTION).doc(userId).get();
+                    if (doc.exists) {
+                        return { id: doc.id, ...doc.data() };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error getting user:', error);
+                    throw error;
+                }
+            },
+            
+            // Get user by username
+            getUserByUsername: async function(username) {
+                try {
+                    const snapshot = await db.collection(this.USERS_COLLECTION)
+                        .where('username', '==', username)
+                        .limit(1)
+                        .get();
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        return { id: doc.id, ...doc.data() };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error getting user by username:', error);
+                    throw error;
+                }
+            },
+            
+            // Get user by email
+            getUserByEmail: async function(email) {
+                try {
+                    const snapshot = await db.collection(this.USERS_COLLECTION)
+                        .where('email', '==', email)
+                        .limit(1)
+                        .get();
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        return { id: doc.id, ...doc.data() };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error getting user by email:', error);
+                    throw error;
+                }
+            },
+            
+            // Get all users
+            getAllUsers: async function(userType = null) {
+                try {
+                    let query = db.collection(this.USERS_COLLECTION).orderBy('createdAt', 'desc');
+                    if (userType) {
+                        query = query.where('type', '==', userType);
+                    }
+                    const snapshot = await query.get();
+                    const users = [];
+                    snapshot.forEach((doc) => {
+                        users.push({ id: doc.id, ...doc.data() });
+                    });
+                    return users;
+                } catch (error) {
+                    console.error('Error getting all users:', error);
+                    throw error;
+                }
+            },
+            
+            // Format user for admin portal
+            formatUserForAdminPortal: function(firestoreUser) {
+                return {
+                    id: firestoreUser.id,
+                    username: firestoreUser.username || '',
+                    email: firestoreUser.email || '',
+                    password: firestoreUser.password || '', // Include password from Firestore
+                    name: firestoreUser.fullName || '',
+                    phone: firestoreUser.phone || '',
+                    status: firestoreUser.accountStatus || 'Active',
+                    country: firestoreUser.country || '',
+                    memberSince: this.convertFromFirestoreDate(firestoreUser.memberSince) || '',
+                    initial: firestoreUser.initialInvestment || 0,
+                    balance: firestoreUser.currentBalance || 0,
+                    return: firestoreUser.totalReturn || 0,
+                    strategy: firestoreUser.investmentStrategy || '',
+                    operator: firestoreUser.assignedOperatorEmail || '',
+                    type: firestoreUser.type || 'investor',
+                    createdAt: firestoreUser.createdAt,
+                    updatedAt: firestoreUser.updatedAt
+                };
+            },
+            
+            // Market News Functions
+            NEWS_COLLECTION: 'marketNews',
+            
+            // Create news article
+            createNews: async function(newsData) {
+                try {
+                    const newsDoc = {
+                        title: newsData.title,
+                        link: newsData.link,
+                        image: newsData.image,
+                        order: newsData.order || 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    const docRef = await db.collection(this.NEWS_COLLECTION).add(newsDoc);
+                    return docRef.id;
+                } catch (error) {
+                    console.error('Error creating news:', error);
+                    throw error;
+                }
+            },
+            
+            // Update news article
+            updateNews: async function(newsId, newsData) {
+                try {
+                    const updateData = {
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if (newsData.title !== undefined) updateData.title = newsData.title;
+                    if (newsData.link !== undefined) updateData.link = newsData.link;
+                    if (newsData.image !== undefined) updateData.image = newsData.image;
+                    if (newsData.order !== undefined) updateData.order = newsData.order;
+                    await db.collection(this.NEWS_COLLECTION).doc(newsId).update(updateData);
+                } catch (error) {
+                    console.error('Error updating news:', error);
+                    throw error;
+                }
+            },
+            
+            // Delete news article
+            deleteNews: async function(newsId) {
+                try {
+                    await db.collection(this.NEWS_COLLECTION).doc(newsId).delete();
+                } catch (error) {
+                    console.error('Error deleting news:', error);
+                    throw error;
+                }
+            },
+            
+            // Get all news articles
+            getAllNews: async function() {
+                try {
+                    const snapshot = await db.collection(this.NEWS_COLLECTION)
+                        .orderBy('order', 'asc')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    const news = [];
+                    snapshot.forEach((doc) => {
+                        news.push({ id: doc.id, ...doc.data() });
+                    });
+                    return news;
+                } catch (error) {
+                    console.error('Error getting news:', error);
+                    // If orderBy fails (no index), try without order
+                    try {
+                        const snapshot = await db.collection(this.NEWS_COLLECTION)
+                            .orderBy('createdAt', 'desc')
+                            .get();
+                        const news = [];
+                        snapshot.forEach((doc) => {
+                            news.push({ id: doc.id, ...doc.data() });
+                        });
+                        // Sort by order manually
+                        news.sort((a, b) => (a.order || 0) - (b.order || 0));
+                        return news;
+                    } catch (fallbackError) {
+                        console.error('Error getting news (fallback):', fallbackError);
+                        throw fallbackError;
+                    }
+                }
+            }
+        };
+        
+        // Dispatch event when services are ready
+        window.dispatchEvent(new CustomEvent('firestoreReady'));
+        
+        console.log('Firebase and Firestore services loaded from CDN');
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
             // Navigation handling
             const navItems = document.querySelectorAll('.sidebar-nav-item');
             const dashboardView = document.getElementById('dashboard-view');
@@ -1227,9 +1528,23 @@
                         loadInvestorsList();
                     } else if (navText === 'Market News' && marketNewsView) {
                         marketNewsView.style.display = 'block';
+                        loadMarketNews();
                     } else if (navText === 'Account Settings' && accountSettingsView) {
                         accountSettingsView.style.display = 'block';
-                        loadUsersList();
+                        // Wait for Firestore service if needed
+                        if (window.firestoreService) {
+                            loadUsersList();
+                        } else {
+                            // Wait for service to load
+                            const checkService = setInterval(() => {
+                                if (window.firestoreService) {
+                                    clearInterval(checkService);
+                                    loadUsersList();
+                                }
+                            }, 100);
+                            // Timeout after 5 seconds
+                            setTimeout(() => clearInterval(checkService), 5000);
+                        }
                     } else if (navText === 'Reports' && reportsView) {
                         reportsView.style.display = 'block';
                         loadReportsUsersList();
@@ -2182,7 +2497,6 @@
                         </div>
                         <div class="investor-card-body">
                             <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Account:</strong> ${user.account}</p>
                             <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
                             ${reportsHtml}
                         </div>
@@ -2772,24 +3086,48 @@
             
             
             // Users List Functions
-            let usersData = [
-                { id: 1, username: 'admin', password: 'admin123', name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
-                { id: 2, username: 'john_investor', password: 'password123', name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 3, username: 'sarah_smith', password: 'password123', name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 4, username: 'michael_brown', password: 'password123', name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                // Additional investors for Payment Tracking widget
-                { id: 5, username: 'elena_martinez', password: 'password123', name: 'Elena Martínez', email: 'elena.martinez@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', status: 'Active', country: 'Spain', memberSince: 'April 2024', initial: 120000, balance: 144000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 6, username: 'david_wilson', password: 'password123', name: 'David Wilson', email: 'david.wilson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', status: 'Active', country: 'Spain', memberSince: 'May 2024', initial: 160000, balance: 192000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 7, username: 'isabella_rossi', password: 'password123', name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+39 345 678 901', account: 'ACC-2024-001239', status: 'Active', country: 'Italy', memberSince: 'June 2024', initial: 200000, balance: 210000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 8, username: 'lukas_schneider', password: 'password123', name: 'Lukas Schneider', email: 'lukas.schneider@example.com', phone: '+49 160 123 4567', account: 'ACC-2024-001240', status: 'Active', country: 'Germany', memberSince: 'July 2024', initial: 175000, balance: 189000, return: 8.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 9, username: 'sofia_novak', password: 'password123', name: 'Sofia Novak', email: 'sofia.novak@example.com', phone: '+420 777 123 456', account: 'ACC-2024-001241', status: 'Active', country: 'Czech Republic', memberSince: 'August 2024', initial: 140000, balance: 147000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 }
-            ];
+            // Note: usersData is now loaded from Firestore
+            let usersData = [];
             
-            function loadUsersList() {
+            async function loadUsersList() {
                 const container = document.getElementById('users-grid');
                 if (!container) return;
                 
+                // Show loading state
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading users...</div>';
+                
+                try {
+                    // Load users from Firestore
+                    if (window.firestoreService) {
+                        console.log('Loading users from Firestore...');
+                        const firestoreUsers = await window.firestoreService.getAllUsers();
+                        console.log('Users loaded from Firestore:', firestoreUsers.length);
+                        // Convert Firestore format to admin portal format
+                        usersData = firestoreUsers.map(user => 
+                            window.firestoreService.formatUserForAdminPortal(user)
+                        );
+                        console.log('Users formatted for display:', usersData.length);
+                    } else {
+                        console.warn('Firestore service not available, using empty array');
+                        usersData = [];
+                    }
+                } catch (error) {
+                    console.error('Error loading users from Firestore:', error);
+                    console.error('Error details:', {
+                        code: error.code,
+                        message: error.message
+                    });
+                    alert('Error loading users: ' + (error.message || 'Unknown error. Please check console for details.'));
+                    usersData = [];
+                }
+                
                 container.innerHTML = '';
+                
+                if (usersData.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No users found.</p><p style="margin: 0; font-size: 0.875rem;">Click "Add New User" button above to create your first user.</p></div>';
+                    return;
+                }
+                
                 usersData.forEach(user => {
                     const card = document.createElement('div');
                     card.className = 'investor-card';
@@ -2803,7 +3141,6 @@
                         <div class="investor-card-body">
                             <p><strong>Type:</strong> ${user.type === 'admin' ? 'Admin' : 'Investor'}</p>
                             <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Account:</strong> ${user.account}</p>
                             ${user.type === 'admin' ? `
                                 <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
                                 <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
@@ -2815,7 +3152,7 @@
                             `}
                         </div>
                         <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                            <button class="admin-edit-btn" onclick="openUserEditModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
+                            <button class="admin-edit-btn" onclick="openUserEditModal('${user.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
                             ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New User</button>` : ''}
                         </div>
                     `;
@@ -2828,8 +3165,12 @@
                 document.getElementById('user-modal-title').textContent = 'Add New User';
                 document.getElementById('user-edit-form').reset();
                 document.getElementById('edit-user-password').required = true;
-                document.getElementById('user-password-hint').textContent = 'Password is required for new users';
+                document.getElementById('user-password-hint').textContent = 'Password must be at least 6 characters.';
+                // Hide delete button when adding new user
+                const deleteBtn = document.getElementById('delete-user-btn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
                 modal.removeAttribute('data-edit-id');
+                modal.removeAttribute('data-user-id-for-delete');
                 modal.setAttribute('data-add-mode', 'true');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
@@ -2843,23 +3184,60 @@
                 
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('edit-user-username').value = user.username || '';
-                document.getElementById('edit-user-password').value = '';
+                // Display current password from Firestore
+                document.getElementById('edit-user-password').value = user.password || '';
                 document.getElementById('edit-user-password').required = false;
-                document.getElementById('user-password-hint').textContent = 'Leave blank to keep current password';
+                document.getElementById('user-password-hint').textContent = 'Password must be at least 6 characters. You can modify it here.';
+                // Show delete button when editing
+                document.getElementById('delete-user-btn').style.display = 'inline-block';
                 document.getElementById('edit-user-name').value = user.name;
                 document.getElementById('edit-user-email').value = user.email;
                 document.getElementById('edit-user-phone').value = user.phone;
-                document.getElementById('edit-user-account').value = user.account;
                 document.getElementById('edit-user-status').value = user.status;
                 document.getElementById('edit-user-country').value = user.country;
-                document.getElementById('edit-user-member-since').value = user.memberSince;
+                // Handle date field - convert from Firestore format if needed
+                const memberSinceValue = user.memberSince || '';
+                document.getElementById('edit-user-member-since').value = memberSinceValue;
                 document.getElementById('edit-user-initial').value = user.initial;
                 document.getElementById('edit-user-strategy').value = user.strategy;
                 document.getElementById('edit-user-operator').value = user.operator;
                 modal.setAttribute('data-edit-id', id);
+                modal.setAttribute('data-user-id-for-delete', id);
                 modal.removeAttribute('data-add-mode');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
+            }
+            
+            // Delete user function
+            async function deleteUser() {
+                const modal = document.getElementById('user-edit-modal');
+                const userId = modal.getAttribute('data-user-id-for-delete') || modal.getAttribute('data-edit-id');
+                
+                if (!userId) {
+                    console.error('User ID not found for deletion');
+                    return;
+                }
+                
+                // Confirm deletion
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    if (window.firestoreService) {
+                        // Delete from Firestore
+                        await window.firestoreService.deleteUser(userId);
+                        
+                        // Close modal and reload list
+                        closeUserEditModal();
+                        await loadUsersList();
+                    } else {
+                        alert('Firestore service not available. Please refresh the page.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user: ' + error.message);
+                }
             }
             
             function closeUserEditModal() {
@@ -2872,185 +3250,404 @@
             // User edit form handler
             const userEditForm = document.getElementById('user-edit-form');
             if (userEditForm) {
-                userEditForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const modal = document.getElementById('user-edit-modal');
-                    const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                // Wait for Firestore service to be ready
+                function setupFormHandler() {
+                    if (!window.firestoreService) {
+                        // Wait a bit and try again
+                        setTimeout(setupFormHandler, 100);
+                        return;
+                    }
                     
-                    if (isAddMode) {
-                        // Add new user
-                        const username = document.getElementById('edit-user-username').value;
-                        const password = document.getElementById('edit-user-password').value;
+                    userEditForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const modal = document.getElementById('user-edit-modal');
+                        const isAddMode = modal.getAttribute('data-add-mode') === 'true';
                         
-                        // Validate password for new users
-                        if (!password) {
-                            alert('Password is required for new users');
+                        // Check if service is available
+                        if (!window.firestoreService) {
+                            alert('Firestore service is still loading. Please wait a moment and try again.');
                             return;
                         }
                         
-                        // Check if username already exists
-                        if (usersData.some(u => u.username === username)) {
-                            alert('Username already exists. Please choose a different username.');
-                            return;
-                        }
+                        // Disable submit button during processing
+                        const submitBtn = userEditForm.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = isAddMode ? 'Creating...' : 'Saving...';
                         
-                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
-                        const newUser = {
-                            id: newId,
-                            username: username,
-                            password: password,
-                            name: document.getElementById('edit-user-name').value,
-                            email: document.getElementById('edit-user-email').value,
-                            phone: document.getElementById('edit-user-phone').value,
-                            account: document.getElementById('edit-user-account').value,
-                            status: document.getElementById('edit-user-status').value,
-                            country: document.getElementById('edit-user-country').value,
-                            memberSince: document.getElementById('edit-user-member-since').value,
-                            initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
-                            balance: parseFloat(document.getElementById('edit-user-initial').value) || 0, // Start with initial investment
-                            return: 0,
-                            strategy: document.getElementById('edit-user-strategy').value,
-                            operator: document.getElementById('edit-user-operator').value,
-                            type: 'investor'
-                        };
-                        usersData.push(newUser);
-                        // Also add to investorsData if it exists
-                        if (typeof investorsData !== 'undefined') {
-                            investorsData.push({
-                                id: newId,
-                                name: newUser.name,
-                                email: newUser.email,
-                                phone: newUser.phone,
-                                account: newUser.account,
-                                initial: newUser.initial,
-                                balance: newUser.balance,
-                                status: newUser.status
-                            });
-                        }
-                        loadUsersList();
-                        closeUserEditModal();
-                        alert('New user added successfully!');
-                    } else {
-                        // Edit existing user
-                        const id = parseInt(modal.getAttribute('data-edit-id'));
-                        const user = usersData.find(u => u.id === id);
-                        if (user) {
-                            const username = document.getElementById('edit-user-username').value;
-                            const password = document.getElementById('edit-user-password').value;
+                        try {
+                            // Collect form data
+                            const formData = {
+                                username: document.getElementById('edit-user-username').value.trim(),
+                                password: document.getElementById('edit-user-password').value,
+                                name: document.getElementById('edit-user-name').value.trim(),
+                                email: document.getElementById('edit-user-email').value.trim(),
+                                phone: document.getElementById('edit-user-phone').value.trim(),
+                                status: document.getElementById('edit-user-status').value,
+                                country: document.getElementById('edit-user-country').value.trim(),
+                                memberSince: document.getElementById('edit-user-member-since').value,
+                                initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
+                                strategy: document.getElementById('edit-user-strategy').value.trim(),
+                                operator: document.getElementById('edit-user-operator').value.trim(),
+                                type: 'investor'
+                            };
                             
-                            // Check if username is being changed and if new username already exists
-                            if (username !== user.username && usersData.some(u => u.username === username && u.id !== id)) {
-                                alert('Username already exists. Please choose a different username.');
+                            // Validate password if provided (for editing)
+                            if (!isAddMode && formData.password && formData.password.length < 6) {
+                                alert('Password must be at least 6 characters long');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        
+                        if (isAddMode) {
+                            // Add new user
+                            if (!formData.password) {
+                                alert('Password is required for new users');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
                                 return;
                             }
                             
-                            user.username = username;
-                            // Only update password if provided
-                            if (password) {
-                                user.password = password;
+                            // Validate password length
+                            if (formData.password.length < 6) {
+                                alert('Password must be at least 6 characters long');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
                             }
-                            user.name = document.getElementById('edit-user-name').value;
-                            user.email = document.getElementById('edit-user-email').value;
-                            user.phone = document.getElementById('edit-user-phone').value;
-                            user.account = document.getElementById('edit-user-account').value;
-                            user.status = document.getElementById('edit-user-status').value;
-                            user.country = document.getElementById('edit-user-country').value;
-                            user.memberSince = document.getElementById('edit-user-member-since').value;
-                            user.initial = parseFloat(document.getElementById('edit-user-initial').value);
-                            // Balance and return are calculated automatically - don't update them here
-                            user.strategy = document.getElementById('edit-user-strategy').value;
-                            user.operator = document.getElementById('edit-user-operator').value;
-                            loadUsersList();
-                            closeUserEditModal();
+                            
+                            if (window.firestoreService) {
+                                // Check username uniqueness
+                                const existingUser = await window.firestoreService.getUserByUsername(formData.username);
+                                if (existingUser) {
+                                    alert('Username already exists. Please choose a different username.');
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = originalText;
+                                    return;
+                                }
+                                
+                                // Check email uniqueness
+                                const existingEmail = await window.firestoreService.getUserByEmail(formData.email);
+                                if (existingEmail) {
+                                    alert('Email already exists. Please use a different email address.');
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = originalText;
+                                    return;
+                                }
+                                
+                                // Create user in Firestore
+                                console.log('Creating user in Firestore...', formData);
+                                const userId = await window.firestoreService.createUser(formData);
+                                console.log('User created in Firestore with ID:', userId);
+                                
+                                // Create Firebase Auth user
+                                if (formData.password && window.firebaseAuth) {
+                                    try {
+                                        const authUser = await window.firebaseAuth.createUserWithEmailAndPassword(
+                                            formData.email, 
+                                            formData.password
+                                        );
+                                        console.log('Firebase Auth user created:', authUser.user.uid);
+                                    } catch (authError) {
+                                        console.error('Could not create Firebase Auth user:', authError);
+                                        // Continue anyway - user is created in Firestore
+                                        alert('User created in database, but Firebase Auth creation failed: ' + authError.message);
+                                    }
+                                }
+                                
+                                // Close modal first
+                                closeUserEditModal();
+                                
+                                // Reload users list
+                                console.log('Reloading users list...');
+                                await loadUsersList();
+                                
+                                // User added successfully - no alert needed
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        } else {
+                            // Edit existing user
+                            const userId = modal.getAttribute('data-edit-id');
+                            if (!userId) {
+                                alert('Error: User ID not found');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                            
+                            // Check for conflicts
+                            const currentUser = usersData.find(u => u.id === userId);
+                            if (currentUser && window.firestoreService) {
+                                if (formData.username !== currentUser.username) {
+                                    const existingUser = await window.firestoreService.getUserByUsername(formData.username);
+                                    if (existingUser && existingUser.id !== userId) {
+                                        alert('Username already exists. Please choose a different username.');
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                        return;
+                                    }
+                                }
+                                
+                                if (formData.email !== currentUser.email) {
+                                    const existingEmail = await window.firestoreService.getUserByEmail(formData.email);
+                                    if (existingEmail && existingEmail.id !== userId) {
+                                        alert('Email already exists. Please use a different email address.');
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                        return;
+                                    }
+                                }
+                            }
+                            
+                            // Update user in Firestore
+                            if (window.firestoreService) {
+                                // Include password in update (will only update if provided and not empty)
+                                await window.firestoreService.updateUser(userId, formData);
+                                
+                                // Update password in Firebase Auth if provided
+                                if (formData.password && formData.password.length >= 6 && window.firebaseAuth) {
+                                    try {
+                                        const user = usersData.find(u => u.id === userId);
+                                        if (user && user.email) {
+                                            // Note: To update password in Firebase Auth, the user needs to be signed in
+                                            // For admin password updates, you may need to use Admin SDK
+                                            console.log('Password updated in Firestore. Firebase Auth password update requires user to be signed in.');
+                                        }
+                                    } catch (authError) {
+                                        console.warn('Could not update Firebase Auth password:', authError);
+                                    }
+                                }
+                                // User updated successfully - no alert needed
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
                         }
-                    }
-                });
+                        
+                        // Close modal first
+                        closeUserEditModal();
+                        
+                        // Reload users list
+                        console.log('Reloading users list...');
+                        await loadUsersList();
+                        
+                        } catch (error) {
+                            console.error('Error saving user:', error);
+                            console.error('Error details:', {
+                                code: error.code,
+                                message: error.message,
+                                stack: error.stack
+                            });
+                            
+                            let errorMessage = 'Error saving user: ';
+                            if (error.code) {
+                                errorMessage += `[${error.code}] `;
+                            }
+                            errorMessage += error.message || 'Unknown error occurred';
+                            
+                            alert(errorMessage);
+                        } finally {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                        }
+                    });
+                }
+                
+                // Try to set up immediately, or wait for service
+                if (window.firestoreService) {
+                    setupFormHandler();
+                } else {
+                    window.addEventListener('firestoreReady', setupFormHandler);
+                    // Also try after a delay as fallback
+                    setTimeout(setupFormHandler, 500);
+                }
             }
             
             // News Edit Functions
-            let newsData = [
-                { title: 'OPEC+ Maintains Production Cuts Amid Global Demand Concerns', link: 'https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: 'Crude Oil Prices Rally on Middle East Tensions', link: 'https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop' },
-                { title: 'US Shale Production Hits Record High Despite Lower Prices', link: 'https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: "China's Oil Demand Growth Slows in Q4 2024", link: 'https://www.ft.com/content/china-oil-demand-slowdown-q4-2024', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop' }
-            ];
+            // Market News Functions - Now using Firestore
+            let newsData = [];
             
-            function updateNewsDisplay() {
-                newsData.forEach((news, index) => {
-                    const wrapper = document.querySelector(`[data-news-index="${index}"]`);
-                    if (wrapper) {
-                        const link = wrapper.querySelector('.news-card');
-                        const img = wrapper.querySelector('.news-image');
-                        const title = wrapper.querySelector('.news-title');
-                        link.href = news.link;
-                        img.src = news.image;
-                        img.alt = news.title;
-                        title.textContent = news.title;
+            async function loadMarketNews() {
+                const container = document.getElementById('news-grid');
+                if (!container) return;
+                
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading news...</div>';
+                
+                try {
+                    if (window.firestoreService) {
+                        newsData = await window.firestoreService.getAllNews();
+                        console.log('News loaded from Firestore:', newsData.length);
+                    } else {
+                        console.warn('Firestore service not available');
+                        newsData = [];
                     }
+                } catch (error) {
+                    console.error('Error loading news:', error);
+                    newsData = [];
+                }
+                
+                container.innerHTML = '';
+                
+                if (newsData.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No news articles found.</p><p style="margin: 0; font-size: 0.875rem;">Click "Add New Article" button above to create your first article.</p></div>';
+                    return;
+                }
+                
+                newsData.forEach((news, index) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'news-card-wrapper';
+                    wrapper.setAttribute('data-news-id', news.id);
+                    wrapper.innerHTML = `
+                        <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-card">
+                            <div class="news-image-container">
+                                <img src="${news.image}" alt="${news.title}" class="news-image" />
+                                <h3 class="news-title">${news.title}</h3>
+                            </div>
+                        </a>
+                        <button class="news-edit-btn" onclick="openNewsEditModal('${news.id}')">Edit</button>
+                    `;
+                    container.appendChild(wrapper);
                 });
             }
             
-            // News edit button handlers - initialize after DOM is ready
-            function initNewsEditButtons() {
-                document.querySelectorAll('.news-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const index = parseInt(this.getAttribute('data-news-index'));
-                        openNewsEditModal(index);
-                    });
-                });
-            }
-            
-            // Initialize news edit buttons when market news view is shown
-            const marketNewsView = document.getElementById('market-news-view');
-            if (marketNewsView) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            if (marketNewsView.style.display !== 'none') {
-                                setTimeout(initNewsEditButtons, 100);
-                            }
-                        }
-                    });
-                });
-                observer.observe(marketNewsView, { attributes: true, attributeFilter: ['style'] });
-            }
-            
-            // Also initialize on page load if view is visible
-            if (marketNewsView && marketNewsView.style.display !== 'none') {
-                setTimeout(initNewsEditButtons, 100);
-            }
-            
-            function openNewsEditModal(index) {
-                const news = newsData[index];
+            function openNewsEditModal(newsId) {
+                const news = newsData.find(n => n.id === newsId);
+                if (!news) return;
+                
                 const modal = document.getElementById('news-edit-modal');
+                document.getElementById('news-modal-title').textContent = 'Edit News Article';
                 document.getElementById('edit-news-title').value = news.title;
                 document.getElementById('edit-news-link').value = news.link;
                 document.getElementById('edit-news-image').value = news.image;
-                modal.setAttribute('data-edit-index', index);
+                document.getElementById('edit-news-order').value = news.order || 0;
+                // Show delete button
+                document.getElementById('delete-news-btn').style.display = 'inline-block';
+                modal.setAttribute('data-edit-id', newsId);
+                modal.removeAttribute('data-add-mode');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
+            
+            function openAddNewsModal() {
+                const modal = document.getElementById('news-edit-modal');
+                document.getElementById('news-modal-title').textContent = 'Add New Article';
+                document.getElementById('news-edit-form').reset();
+                document.getElementById('edit-news-order').value = newsData.length;
+                // Hide delete button
+                document.getElementById('delete-news-btn').style.display = 'none';
+                modal.removeAttribute('data-edit-id');
+                modal.setAttribute('data-add-mode', 'true');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            window.openAddNewsModal = openAddNewsModal;
             
             function closeNewsEditModal() {
                 document.getElementById('news-edit-modal').style.display = 'none';
                 document.body.style.overflow = '';
             }
             
+            // Delete news function
+            async function deleteNews() {
+                const modal = document.getElementById('news-edit-modal');
+                const newsId = modal.getAttribute('data-edit-id');
+                
+                if (!newsId) {
+                    console.error('News ID not found for deletion');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to delete this news article? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    if (window.firestoreService) {
+                        await window.firestoreService.deleteNews(newsId);
+                        closeNewsEditModal();
+                        await loadMarketNews();
+                    } else {
+                        alert('Firestore service not available. Please refresh the page.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting news:', error);
+                    alert('Error deleting news: ' + error.message);
+                }
+            }
+            
             // News edit form handler
             const newsEditForm = document.getElementById('news-edit-form');
             if (newsEditForm) {
-                newsEditForm.addEventListener('submit', function(e) {
+                newsEditForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const index = parseInt(document.getElementById('news-edit-modal').getAttribute('data-edit-index'));
-                    newsData[index].title = document.getElementById('edit-news-title').value;
-                    newsData[index].link = document.getElementById('edit-news-link').value;
-                    newsData[index].image = document.getElementById('edit-news-image').value;
-                    updateNewsDisplay();
-                    closeNewsEditModal();
+                    const modal = document.getElementById('news-edit-modal');
+                    const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                    
+                    const submitBtn = newsEditForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = isAddMode ? 'Creating...' : 'Saving...';
+                    
+                    try {
+                        const formData = {
+                            title: document.getElementById('edit-news-title').value.trim(),
+                            link: document.getElementById('edit-news-link').value.trim(),
+                            image: document.getElementById('edit-news-image').value.trim(),
+                            order: parseInt(document.getElementById('edit-news-order').value) || 0
+                        };
+                        
+                        if (isAddMode) {
+                            if (window.firestoreService) {
+                                await window.firestoreService.createNews(formData);
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        } else {
+                            const newsId = modal.getAttribute('data-edit-id');
+                            if (!newsId) {
+                                alert('Error: News ID not found');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                            
+                            if (window.firestoreService) {
+                                await window.firestoreService.updateNews(newsId, formData);
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        }
+                        
+                        closeNewsEditModal();
+                        await loadMarketNews();
+                        
+                    } catch (error) {
+                        console.error('Error saving news:', error);
+                        alert('Error saving news: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 });
             }
+            
+            window.openNewsEditModal = openNewsEditModal;
+            window.deleteNews = deleteNews;
+            window.closeNewsEditModal = closeNewsEditModal;
             
             // Consultations Section
             let consultationsData = [
@@ -3398,6 +3995,7 @@
                     userModal.querySelector('.admin-modal-close')?.addEventListener('click', closeUserEditModal);
                     userModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeUserEditModal);
                     document.getElementById('cancel-user-edit')?.addEventListener('click', closeUserEditModal);
+                    document.getElementById('delete-user-btn')?.addEventListener('click', deleteUser);
                 }
             }, 100);
             

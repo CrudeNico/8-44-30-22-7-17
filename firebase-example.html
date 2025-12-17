@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Example</title>
+</head>
+<body>
+    <h1>Firebase Integration Example</h1>
+    
+    <!-- Option 1: Using ES Modules (requires a local server) -->
+    <!-- Add this script tag before your other scripts -->
+    <script type="module">
+        // Import Firebase configuration
+        import { app, auth, db } from './firebase-config.js';
+        
+        // Now you can use Firebase services
+        console.log('Firebase initialized:', app);
+        
+        // Example: Use authentication
+        // import { signInWithEmailAndPassword } from 'firebase/auth';
+        // signInWithEmailAndPassword(auth, email, password);
+        
+        // Example: Use Firestore
+        // import { collection, addDoc } from 'firebase/firestore';
+        // addDoc(collection(db, 'users'), { name: 'John' });
+    </script>
+    
+    <!-- Option 2: Using Firebase CDN (simpler, works without bundler) -->
+    <!-- Uncomment this if you prefer CDN approach -->
+    <!--
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+    </script>
+    -->
+</body>
+</html>
+

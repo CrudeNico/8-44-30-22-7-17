@@ -183,6 +183,90 @@
     </footer>
     
     <script src="script.js"></script>
+    <!-- Firebase Configuration -->
+    <!-- Note: To use npm packages, you need to run a local server (e.g., npx serve or python -m http.server) -->
+    <!-- Or use Firebase CDN instead by uncommenting the CDN script below -->
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // Make available globally
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebase = firebase;
+        
+        // Firestore Service Functions (using CDN API)
+        window.firestoreService = {
+            USERS_COLLECTION: 'users',
+            
+            // Get user by username
+            getUserByUsername: async function(username) {
+                try {
+                    const snapshot = await db.collection(this.USERS_COLLECTION)
+                        .where('username', '==', username)
+                        .limit(1)
+                        .get();
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        return { id: doc.id, ...doc.data() };
+                    }
+                    return null;
+                } catch (error) {
+                    console.error('Error getting user by username:', error);
+                    throw error;
+                }
+            }
+        };
+        
+        // Dispatch event when services are ready
+        window.dispatchEvent(new CustomEvent('firestoreReady'));
+        
+        console.log('Firebase and Firestore initialized successfully from CDN');
+    </script>
+    <!-- Alternative: Firebase CDN (uncomment to use instead of npm packages) -->
+    <!--
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        window.firebaseApp = app;
+        window.firebaseAuth = getAuth(app);
+        window.firebaseDb = getFirestore(app);
+    </script>
+    -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Enable/disable login button based on form validity
@@ -214,35 +298,107 @@
                 passwordInput.addEventListener('input', checkFormValidity);
             }
 
-            // Form submission
+            // Form submission with Firebase Authentication
             const loginForm = document.getElementById('login-form');
             const loginError = document.getElementById('login-error');
             
             if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
+                loginForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const username = usernameInput.value.trim();
                     const password = passwordInput.value.trim();
                     
-                    // Check credentials
-                    if (username === '1' && password === '1') {
-                        // Redirect to investor portal
-                        window.location.href = 'investorsportal.html';
-                    } else if (username === '2' && password === '2') {
-                        // Redirect to admin portal
-                        window.location.href = 'adminportal.html';
-                    } else if (username === '3' && password === '3') {
-                        // Redirect to admin portal 2
-                        window.location.href = 'adminportal2.html';
-                    } else if (username === '4' && password === '4') {
-                        // Redirect to admin portal 3
-                        window.location.href = 'adminportal3.html';
-                    } else {
-                        // Show error
-                        if (loginError) loginError.style.display = 'block';
-                        passwordInput.value = '';
+                    // Show loading state
+                    loginSubmitBtn.disabled = true;
+                    loginSubmitBtn.textContent = 'Logging in...';
+                    
+                    try {
+                        // Check if Firebase and Firestore are available
+                        if (window.firebaseAuth && window.firestoreService) {
+                            // Query Firestore to get user by username
+                            console.log('Looking up user by username:', username);
+                            const userData = await window.firestoreService.getUserByUsername(username);
+                            
+                            if (userData && userData.email) {
+                                // User found, use email for Firebase Auth login
+                                console.log('User found, email:', userData.email);
+                                try {
+                                    const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(
+                                        userData.email, 
+                                        password
+                                    );
+                                    const user = userCredential.user;
+                                    
+                                    // Store user info in sessionStorage
+                                    sessionStorage.setItem('user', JSON.stringify({
+                                        uid: user.uid,
+                                        email: user.email,
+                                        username: username,
+                                        userData: userData
+                                    }));
+                                    
+                                    // Redirect based on user type/role
+                                    if (userData.type === 'admin') {
+                                        // Check which admin portal based on username or other criteria
+                                        if (username === 'admin' || username.includes('admin')) {
+                                            window.location.href = 'adminportal.html';
+                                        } else {
+                                            window.location.href = 'adminportal.html';
+                                        }
+                                    } else {
+                                        // Investor user
+                                        window.location.href = 'investorsportal.html';
+                                    }
+                                    
+                                    return; // Success, exit function
+                                } catch (authError) {
+                                    console.error('Firebase auth error:', authError);
+                                    if (loginError) {
+                                        loginError.textContent = 'Invalid password. Please try again.';
+                                        loginError.style.display = 'block';
+                                    }
+                                    passwordInput.value = '';
+                                    loginSubmitBtn.disabled = false;
+                                    loginSubmitBtn.textContent = 'Login';
+                                    return;
+                                }
+                            } else {
+                                // User not found in Firestore, try hardcoded credentials
+                                console.log('User not found in Firestore, trying hardcoded credentials');
+                                handleHardcodedLogin(username, password);
+                            }
+                        } else {
+                            // Firebase not loaded, use hardcoded credentials
+                            console.log('Firebase not available, using hardcoded credentials');
+                            handleHardcodedLogin(username, password);
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        handleHardcodedLogin(username, password);
+                    } finally {
+                        // Reset button state
+                        loginSubmitBtn.disabled = false;
+                        loginSubmitBtn.textContent = 'Login';
                     }
                 });
+            }
+            
+            // Fallback function for hardcoded credentials
+            function handleHardcodedLogin(username, password) {
+                if (loginError) loginError.style.display = 'none';
+                
+                if (username === '1' && password === '1') {
+                    window.location.href = 'investorsportal.html';
+                } else if (username === '2' && password === '2') {
+                    window.location.href = 'adminportal.html';
+                } else if (username === '3' && password === '3') {
+                    window.location.href = 'adminportal2.html';
+                } else if (username === '4' && password === '4') {
+                    window.location.href = 'adminportal3.html';
+                } else {
+                    if (loginError) loginError.style.display = 'block';
+                    passwordInput.value = '';
+                }
             }
         });
     </script>

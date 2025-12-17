@@ -1,0 +1,14 @@
+{
+  "name": "opessocius-website",
+  "version": "1.0.0",
+  "description": "Opessocius Website with Firebase Integration",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'To use Firebase with npm packages, you need a bundler. Consider using Vite: npm install -D vite && npx vite'"
+  },
+  "dependencies": {
+    "firebase": "^10.7.1"
+  },
+  "devDependencies": {}
+}
+
