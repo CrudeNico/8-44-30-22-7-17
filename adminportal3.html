@@ -289,6 +289,9 @@
                 <a href="#" class="sidebar-nav-item">
                     <span>Learning</span>
                 </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Users</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <a href="index.html" class="sidebar-footer-item">
@@ -873,6 +876,35 @@
                 </div>
             </div>
             
+            <!-- Users View -->
+            <div class="users-view" id="users-view" style="display: none;">
+                <div class="users-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">User Management</h2>
+                        <button class="admin-btn-save" id="add-user-btn" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
+                            + Add New User
+                        </button>
+                    </div>
+                    
+                    <div class="users-table-container" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                        <table class="users-table" id="users-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Username</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Email</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Role</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Status</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Users will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Module View/Edit Modal -->
             <div id="module-modal" class="admin-modal" style="display: none;">
                 <div class="admin-modal-overlay"></div>
@@ -931,6 +963,71 @@
                             <div class="admin-form-actions">
                                 <button type="button" class="admin-btn-cancel" id="cancel-module">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Module</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User View/Edit Modal -->
+            <div id="user-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="user-modal-title">Add New User</h2>
+                        <form id="user-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="user-username">Username</label>
+                                <input type="text" id="user-username" class="admin-form-input" placeholder="Enter username" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-email">Email</label>
+                                <input type="email" id="user-email" class="admin-form-input" placeholder="Enter email address" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-password">Password</label>
+                                <input type="password" id="user-password" class="admin-form-input" placeholder="Enter password" required>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Leave blank to keep current password when editing</span>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-role">Role</label>
+                                <select id="user-role" class="admin-form-input" required>
+                                    <option value="">Select a role</option>
+                                    <option value="tier1">Tier 1</option>
+                                    <option value="tier2">Tier 2</option>
+                                    <option value="tier3">Tier 3</option>
+                                </select>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-firstname">First Name</label>
+                                <input type="text" id="user-firstname" class="admin-form-input" placeholder="Enter first name">
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-lastname">Last Name</label>
+                                <input type="text" id="user-lastname" class="admin-form-input" placeholder="Enter last name">
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="user-phone">Phone Number</label>
+                                <input type="tel" id="user-phone" class="admin-form-input" placeholder="Enter phone number">
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label>
+                                    <input type="checkbox" id="user-active" style="margin-right: 0.5rem;" checked>
+                                    Active (user can log in)
+                                </label>
+                            </div>
+                            
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="cancel-user">Cancel</button>
+                                <button type="submit" class="admin-btn-save">Save User</button>
                             </div>
                         </form>
                     </div>
@@ -1078,6 +1175,7 @@
                     const consultationsView = document.getElementById('consultations-view');
                     const emailsView = document.getElementById('emails-view');
                     const learningView = document.getElementById('learning-view');
+                    const usersView = document.getElementById('users-view');
                     
                     // Hide all views
                     if (dashboardView) dashboardView.style.display = 'none';
@@ -1088,6 +1186,7 @@
                     if (consultationsView) consultationsView.style.display = 'none';
                     if (emailsView) emailsView.style.display = 'none';
                     if (learningView) learningView.style.display = 'none';
+                    if (usersView) usersView.style.display = 'none';
                     
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
@@ -1115,6 +1214,9 @@
                     } else if (navText === 'Learning' && learningView) {
                         learningView.style.display = 'block';
                         loadModulesList();
+                    } else if (navText === 'Users' && usersView) {
+                        usersView.style.display = 'block';
+                        loadUsersList();
                     }
                 });
             });
@@ -2977,6 +3079,305 @@
                     document.body.style.overflow = '';
                     form.reset();
                     alert(isEditMode ? 'Module updated successfully!' : 'Module created successfully!');
+                });
+            }
+            
+            // Users Management Section
+            let usersData = [
+                {
+                    id: 1,
+                    username: 'admin',
+                    email: 'admin@example.com',
+                    password: 'admin123',
+                    role: 'tier3',
+                    firstname: 'Admin',
+                    lastname: 'User',
+                    phone: '+1234567890',
+                    company: 'Opessocius',
+                    notes: 'Main administrator account',
+                    active: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    username: 'john_doe',
+                    email: 'john.doe@example.com',
+                    password: 'password123',
+                    role: 'tier2',
+                    firstname: 'John',
+                    lastname: 'Doe',
+                    phone: '+1234567891',
+                    company: 'ABC Corp',
+                    notes: 'Premium tier user',
+                    active: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    username: 'jane_smith',
+                    email: 'jane.smith@example.com',
+                    password: 'password123',
+                    role: 'tier1',
+                    firstname: 'Jane',
+                    lastname: 'Smith',
+                    phone: '+1234567892',
+                    company: 'XYZ Ltd',
+                    notes: 'Standard tier user',
+                    active: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            function loadUsersList() {
+                const tbody = document.getElementById('users-table-body');
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                usersData.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.style.borderBottom = '1px solid #e5e7eb';
+                    
+                    // Username
+                    const usernameCell = document.createElement('td');
+                    usernameCell.style.padding = '1rem';
+                    usernameCell.textContent = user.username;
+                    usernameCell.style.color = '#1f2937';
+                    row.appendChild(usernameCell);
+                    
+                    // Email
+                    const emailCell = document.createElement('td');
+                    emailCell.style.padding = '1rem';
+                    emailCell.textContent = user.email;
+                    emailCell.style.color = '#1f2937';
+                    row.appendChild(emailCell);
+                    
+                    // Role
+                    const roleCell = document.createElement('td');
+                    roleCell.style.padding = '1rem';
+                    const roleBadge = document.createElement('span');
+                    roleBadge.textContent = user.role.toUpperCase().replace('TIER', 'Tier ');
+                    roleBadge.style.padding = '0.25rem 0.75rem';
+                    roleBadge.style.borderRadius = '12px';
+                    roleBadge.style.fontSize = '0.75rem';
+                    roleBadge.style.fontWeight = '600';
+                    if (user.role === 'tier3') {
+                        roleBadge.style.background = '#dbeafe';
+                        roleBadge.style.color = '#1e40af';
+                    } else if (user.role === 'tier2') {
+                        roleBadge.style.background = '#e0e7ff';
+                        roleBadge.style.color = '#3730a3';
+                    } else {
+                        roleBadge.style.background = '#f3f4f6';
+                        roleBadge.style.color = '#374151';
+                    }
+                    roleCell.appendChild(roleBadge);
+                    row.appendChild(roleCell);
+                    
+                    // Status
+                    const statusCell = document.createElement('td');
+                    statusCell.style.padding = '1rem';
+                    const statusBadge = document.createElement('span');
+                    statusBadge.textContent = user.active ? 'Active' : 'Inactive';
+                    statusBadge.style.padding = '0.25rem 0.75rem';
+                    statusBadge.style.borderRadius = '12px';
+                    statusBadge.style.fontSize = '0.75rem';
+                    statusBadge.style.fontWeight = '600';
+                    statusBadge.style.background = user.active ? '#d1fae5' : '#fee2e2';
+                    statusBadge.style.color = user.active ? '#065f46' : '#991b1b';
+                    statusCell.appendChild(statusBadge);
+                    row.appendChild(statusCell);
+                    
+                    // Actions
+                    const actionsCell = document.createElement('td');
+                    actionsCell.style.padding = '1rem';
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.style.display = 'flex';
+                    actionsDiv.style.gap = '0.5rem';
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.textContent = 'Edit';
+                    editBtn.className = 'admin-btn-save';
+                    editBtn.style.padding = '0.5rem 1rem';
+                    editBtn.style.fontSize = '0.875rem';
+                    editBtn.onclick = function() {
+                        editUser(user.id);
+                    };
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.className = 'admin-btn-cancel';
+                    deleteBtn.style.padding = '0.5rem 1rem';
+                    deleteBtn.style.fontSize = '0.875rem';
+                    deleteBtn.onclick = function() {
+                        if (confirm('Are you sure you want to delete this user?')) {
+                            deleteUser(user.id);
+                        }
+                    };
+                    
+                    actionsDiv.appendChild(editBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    actionsCell.appendChild(actionsDiv);
+                    row.appendChild(actionsCell);
+                    
+                    tbody.appendChild(row);
+                });
+            }
+            
+            function editUser(userId) {
+                const user = usersData.find(u => u.id === userId);
+                if (!user) return;
+                
+                const modal = document.getElementById('user-modal');
+                const form = document.getElementById('user-form');
+                
+                document.getElementById('user-modal-title').textContent = 'Edit User';
+                document.getElementById('user-username').value = user.username;
+                document.getElementById('user-email').value = user.email;
+                document.getElementById('user-password').value = '';
+                document.getElementById('user-password').required = false;
+                document.getElementById('user-password-hint').textContent = 'Leave blank to keep current password';
+                document.getElementById('user-role').value = user.role;
+                document.getElementById('user-firstname').value = user.firstname || '';
+                document.getElementById('user-lastname').value = user.lastname || '';
+                document.getElementById('user-phone').value = user.phone || '';
+                document.getElementById('user-active').checked = user.active !== false;
+                
+                modal.setAttribute('data-edit-id', userId);
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function deleteUser(userId) {
+                usersData = usersData.filter(u => u.id !== userId);
+                loadUsersList();
+                alert('User deleted successfully!');
+            }
+            
+            // Add user button
+            const addUserBtn = document.getElementById('add-user-btn');
+            if (addUserBtn) {
+                addUserBtn.addEventListener('click', function() {
+                    const modal = document.getElementById('user-modal');
+                    const form = document.getElementById('user-form');
+                    
+                    document.getElementById('user-modal-title').textContent = 'Add New User';
+                    form.reset();
+                    document.getElementById('user-password').required = true;
+                    document.getElementById('user-password-hint').textContent = 'Enter password for new user';
+                    document.getElementById('user-active').checked = true;
+                    
+                    modal.removeAttribute('data-edit-id');
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            // User modal close handlers
+            const userModal = document.getElementById('user-modal');
+            if (userModal) {
+                const userModalClose = userModal.querySelector('.admin-modal-close');
+                const userModalCancel = document.getElementById('cancel-user');
+                
+                if (userModalClose) {
+                    userModalClose.addEventListener('click', function() {
+                        userModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    });
+                }
+                
+                if (userModalCancel) {
+                    userModalCancel.addEventListener('click', function() {
+                        userModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    });
+                }
+                
+                userModal.querySelector('.admin-modal-overlay').addEventListener('click', function() {
+                    userModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // User form handler
+            const userForm = document.getElementById('user-form');
+            if (userForm) {
+                userForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const modal = document.getElementById('user-modal');
+                    const isEditMode = modal.hasAttribute('data-edit-id');
+                    const editId = isEditMode ? parseInt(modal.getAttribute('data-edit-id')) : null;
+                    
+                    const username = document.getElementById('user-username').value;
+                    const email = document.getElementById('user-email').value;
+                    const password = document.getElementById('user-password').value;
+                    const role = document.getElementById('user-role').value;
+                    const firstname = document.getElementById('user-firstname').value;
+                    const lastname = document.getElementById('user-lastname').value;
+                    const phone = document.getElementById('user-phone').value;
+                    const active = document.getElementById('user-active').checked;
+                    
+                    // Validate password for new users
+                    if (!isEditMode && !password) {
+                        alert('Password is required for new users');
+                        return;
+                    }
+                    
+                    if (isEditMode) {
+                        // Update existing user
+                        const userIndex = usersData.findIndex(u => u.id === editId);
+                        if (userIndex !== -1) {
+                            const updatedUser = {
+                                ...usersData[userIndex],
+                                username,
+                                email,
+                                role,
+                                firstname,
+                                lastname,
+                                phone,
+                                active
+                            };
+                            // Only update password if provided
+                            if (password) {
+                                updatedUser.password = password;
+                            }
+                            usersData[userIndex] = updatedUser;
+                        }
+                    } else {
+                        // Check if username already exists
+                        if (usersData.some(u => u.username === username)) {
+                            alert('Username already exists. Please choose a different username.');
+                            return;
+                        }
+                        
+                        // Check if email already exists
+                        if (usersData.some(u => u.email === email)) {
+                            alert('Email already exists. Please use a different email address.');
+                            return;
+                        }
+                        
+                        // Create new user
+                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
+                        usersData.push({
+                            id: newId,
+                            username,
+                            email,
+                            password,
+                            role,
+                            firstname,
+                            lastname,
+                            phone,
+                            active,
+                            createdAt: new Date().toISOString()
+                        });
+                    }
+                    
+                    loadUsersList();
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    form.reset();
+                    alert(isEditMode ? 'User updated successfully!' : 'User created successfully!');
                 });
             }
             

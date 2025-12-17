@@ -820,6 +820,15 @@
                         <form id="user-edit-form" class="admin-modal-form">
                             <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Account Information</h3>
                             <div class="admin-form-group">
+                                <label for="edit-user-username">Username</label>
+                                <input type="text" id="edit-user-username" class="admin-form-input" placeholder="Enter username for login" required>
+                            </div>
+                            <div class="admin-form-group">
+                                <label for="edit-user-password">Password</label>
+                                <input type="password" id="edit-user-password" class="admin-form-input" placeholder="Enter password for login">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Leave blank to keep current password when editing</span>
+                            </div>
+                            <div class="admin-form-group">
                                 <label for="edit-user-name">Full Name</label>
                                 <input type="text" id="edit-user-name" class="admin-form-input" required>
                             </div>
@@ -2764,16 +2773,16 @@
             
             // Users List Functions
             let usersData = [
-                { id: 1, name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
-                { id: 2, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 3, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 4, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
+                { id: 1, username: 'admin', password: 'admin123', name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
+                { id: 2, username: 'john_investor', password: 'password123', name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
+                { id: 3, username: 'sarah_smith', password: 'password123', name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
+                { id: 4, username: 'michael_brown', password: 'password123', name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
                 // Additional investors for Payment Tracking widget
-                { id: 5, name: 'Elena Martínez', email: 'elena.martinez@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', status: 'Active', country: 'Spain', memberSince: 'April 2024', initial: 120000, balance: 144000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 6, name: 'David Wilson', email: 'david.wilson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', status: 'Active', country: 'Spain', memberSince: 'May 2024', initial: 160000, balance: 192000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 7, name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+39 345 678 901', account: 'ACC-2024-001239', status: 'Active', country: 'Italy', memberSince: 'June 2024', initial: 200000, balance: 210000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 8, name: 'Lukas Schneider', email: 'lukas.schneider@example.com', phone: '+49 160 123 4567', account: 'ACC-2024-001240', status: 'Active', country: 'Germany', memberSince: 'July 2024', initial: 175000, balance: 189000, return: 8.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 9, name: 'Sofia Novak', email: 'sofia.novak@example.com', phone: '+420 777 123 456', account: 'ACC-2024-001241', status: 'Active', country: 'Czech Republic', memberSince: 'August 2024', initial: 140000, balance: 147000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 }
+                { id: 5, username: 'elena_martinez', password: 'password123', name: 'Elena Martínez', email: 'elena.martinez@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', status: 'Active', country: 'Spain', memberSince: 'April 2024', initial: 120000, balance: 144000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
+                { id: 6, username: 'david_wilson', password: 'password123', name: 'David Wilson', email: 'david.wilson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', status: 'Active', country: 'Spain', memberSince: 'May 2024', initial: 160000, balance: 192000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
+                { id: 7, username: 'isabella_rossi', password: 'password123', name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+39 345 678 901', account: 'ACC-2024-001239', status: 'Active', country: 'Italy', memberSince: 'June 2024', initial: 200000, balance: 210000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
+                { id: 8, username: 'lukas_schneider', password: 'password123', name: 'Lukas Schneider', email: 'lukas.schneider@example.com', phone: '+49 160 123 4567', account: 'ACC-2024-001240', status: 'Active', country: 'Germany', memberSince: 'July 2024', initial: 175000, balance: 189000, return: 8.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
+                { id: 9, username: 'sofia_novak', password: 'password123', name: 'Sofia Novak', email: 'sofia.novak@example.com', phone: '+420 777 123 456', account: 'ACC-2024-001241', status: 'Active', country: 'Czech Republic', memberSince: 'August 2024', initial: 140000, balance: 147000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 }
             ];
             
             function loadUsersList() {
@@ -2818,6 +2827,8 @@
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('user-modal-title').textContent = 'Add New User';
                 document.getElementById('user-edit-form').reset();
+                document.getElementById('edit-user-password').required = true;
+                document.getElementById('user-password-hint').textContent = 'Password is required for new users';
                 modal.removeAttribute('data-edit-id');
                 modal.setAttribute('data-add-mode', 'true');
                 modal.style.display = 'block';
@@ -2831,6 +2842,10 @@
                 if (!user) return;
                 
                 const modal = document.getElementById('user-edit-modal');
+                document.getElementById('edit-user-username').value = user.username || '';
+                document.getElementById('edit-user-password').value = '';
+                document.getElementById('edit-user-password').required = false;
+                document.getElementById('user-password-hint').textContent = 'Leave blank to keep current password';
                 document.getElementById('edit-user-name').value = user.name;
                 document.getElementById('edit-user-email').value = user.email;
                 document.getElementById('edit-user-phone').value = user.phone;
@@ -2842,6 +2857,7 @@
                 document.getElementById('edit-user-strategy').value = user.strategy;
                 document.getElementById('edit-user-operator').value = user.operator;
                 modal.setAttribute('data-edit-id', id);
+                modal.removeAttribute('data-add-mode');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -2863,9 +2879,26 @@
                     
                     if (isAddMode) {
                         // Add new user
+                        const username = document.getElementById('edit-user-username').value;
+                        const password = document.getElementById('edit-user-password').value;
+                        
+                        // Validate password for new users
+                        if (!password) {
+                            alert('Password is required for new users');
+                            return;
+                        }
+                        
+                        // Check if username already exists
+                        if (usersData.some(u => u.username === username)) {
+                            alert('Username already exists. Please choose a different username.');
+                            return;
+                        }
+                        
                         const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
                         const newUser = {
                             id: newId,
+                            username: username,
+                            password: password,
                             name: document.getElementById('edit-user-name').value,
                             email: document.getElementById('edit-user-email').value,
                             phone: document.getElementById('edit-user-phone').value,
@@ -2902,6 +2935,20 @@
                         const id = parseInt(modal.getAttribute('data-edit-id'));
                         const user = usersData.find(u => u.id === id);
                         if (user) {
+                            const username = document.getElementById('edit-user-username').value;
+                            const password = document.getElementById('edit-user-password').value;
+                            
+                            // Check if username is being changed and if new username already exists
+                            if (username !== user.username && usersData.some(u => u.username === username && u.id !== id)) {
+                                alert('Username already exists. Please choose a different username.');
+                                return;
+                            }
+                            
+                            user.username = username;
+                            // Only update password if provided
+                            if (password) {
+                                user.password = password;
+                            }
                             user.name = document.getElementById('edit-user-name').value;
                             user.email = document.getElementById('edit-user-email').value;
                             user.phone = document.getElementById('edit-user-phone').value;
