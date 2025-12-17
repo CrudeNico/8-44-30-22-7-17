@@ -800,7 +800,51 @@
                         return `${sign}${numValue.toFixed(2)}%`;
                     }
                     
-                    // Update Dashboard Widgets with User-Specific Data
+                    // Load transactions to calculate accurate dashboard values
+                    let transactions = [];
+                    let currentBalance = userData.initialInvestment || 0;
+                    let totalGrowthSum = 0;
+                    
+                    if (window.firebaseDb && userData.id) {
+                        try {
+                            const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userData.id)
+                                .collection('transactions')
+                                .get();
+                            
+                            if (!transactionsSnapshot.empty) {
+                                transactionsSnapshot.forEach((doc) => {
+                                    transactions.push(doc.data());
+                                });
+                                
+                                // Sort by year, then monthIndex
+                                transactions.sort((a, b) => {
+                                    if (a.year !== b.year) {
+                                        return a.year - b.year;
+                                    }
+                                    return (a.monthIndex || 0) - (b.monthIndex || 0);
+                                });
+                                
+                                // Get most recent transaction's ending balance
+                                if (transactions.length > 0) {
+                                    currentBalance = transactions[transactions.length - 1].endingBalance;
+                                }
+                                
+                                // Sum all growth percentages
+                                totalGrowthSum = transactions.reduce((sum, entry) => sum + (entry.growth || 0), 0);
+                            }
+                        } catch (error) {
+                            console.error('Error loading transactions for dashboard:', error);
+                            // Use fallback values from userData
+                            currentBalance = userData.currentBalance || userData.initialInvestment || 0;
+                            totalGrowthSum = userData.totalReturn || 0;
+                        }
+                    } else {
+                        // Fallback to userData values
+                        currentBalance = userData.currentBalance || userData.initialInvestment || 0;
+                        totalGrowthSum = userData.totalReturn || 0;
+                    }
+                    
+                    // Update Dashboard Widgets with Transaction-Based Data
                     const currentBalanceWidget = document.getElementById('dashboard-current-balance');
                     const currentBalanceContainer = currentBalanceWidget?.closest('.dashboard-widget-content');
                     const capitalInvestedSubMetric = currentBalanceContainer?.querySelector('.dashboard-sub-metric');
@@ -808,24 +852,23 @@
                     const totalGainContainer = totalGainWidget?.closest('.dashboard-widget-content');
                     const profitSubMetric = totalGainContainer?.querySelector('.dashboard-sub-metric');
                     
+                    const initialInvestment = userData.initialInvestment || 0;
+                    
                     if (currentBalanceWidget) {
-                        const balance = userData.currentBalance || userData.initialInvestment || 0;
-                        currentBalanceWidget.textContent = formatCurrency(balance);
+                        currentBalanceWidget.textContent = formatCurrency(currentBalance);
                     }
                     
                     if (capitalInvestedSubMetric) {
-                        const initial = userData.initialInvestment || 0;
-                        capitalInvestedSubMetric.textContent = `Capital Invested: ${formatCurrency(initial)}`;
+                        capitalInvestedSubMetric.textContent = `Capital Invested: ${formatCurrency(initialInvestment)}`;
                     }
                     
                     if (totalGainWidget) {
-                        const returnValue = userData.totalReturn || 0;
-                        const returnText = formatPercentage(returnValue);
+                        const returnText = formatPercentage(totalGrowthSum);
                         totalGainWidget.textContent = returnText;
                         
                         // Update class for positive/negative
                         totalGainWidget.className = 'dashboard-main-metric';
-                        if (returnValue >= 0) {
+                        if (totalGrowthSum >= 0) {
                             totalGainWidget.classList.add('dashboard-metric-positive');
                         } else {
                             totalGainWidget.classList.add('dashboard-metric-negative');
@@ -833,15 +876,20 @@
                     }
                     
                     if (profitSubMetric) {
-                        const balance = userData.currentBalance || userData.initialInvestment || 0;
-                        const initial = userData.initialInvestment || 0;
-                        const profit = balance - initial;
+                        // Calculate profit excluding deposits - only count growth
+                        // Use transactions already loaded above
+                        const totalDeposits = transactions.reduce((sum, entry) => sum + (entry.deposits || 0), 0);
+                        
+                        // Profit = current balance - initial investment - total deposits (only growth, not deposits)
+                        const profit = currentBalance - initialInvestment - totalDeposits;
                         const profitText = profit >= 0 ? `€${Math.abs(profit).toLocaleString('en-US')} profit` : `€${Math.abs(profit).toLocaleString('en-US')} loss`;
                         profitSubMetric.textContent = profitText;
                     }
                     
-                    // Update projection (will be recalculated by calculateProjectionValue with user data)
-                    // This will be called after user data is loaded
+                    // Update projection with current balance from transactions
+                    setTimeout(function() {
+                        calculateProjectionValue({ currentBalance: currentBalance, initialInvestment: initialInvestment });
+                    }, 100);
                     
                     // Update Account Settings - Account Information
                     const accountSettingsView = document.getElementById('account-settings-view');
@@ -993,8 +1041,8 @@
                         dashboardView.style.display = 'block';
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
-                        setTimeout(function() {
-                            drawPortfolioChart();
+                        setTimeout(async function() {
+                            await drawPortfolioChart(); // This will update the balance cards
                             calculateProjectionValue();
                         }, 100);
                     } else if (navText === 'Transactions' && transactionsView) {
@@ -1028,10 +1076,10 @@
                 });
             });
 
-            // Portfolio Chart Function
+            // Portfolio Chart Function - Load from Firestore
             let chartDataPoints = [];
             
-            function drawPortfolioChart() {
+            async function drawPortfolioChart() {
                 const canvas = document.getElementById('portfolio-chart');
                 if (!canvas) return;
                 
@@ -1052,156 +1100,325 @@
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
-                // Sample data: Historical (12 months) + Projection (12 months) = 24 months total
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                
-                // Historical data (past 12 months) - starting from initial investment
-                const initialInvestment = 230000;
-                const historicalData = [
-                    230000, 235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000
-                ];
-                
-                // Projection data continues seamlessly from last historical value
-                const lastHistoricalValue = historicalData[historicalData.length - 1];
-                const projectionData = [
-                    280000, 285000, 290000, 295000, 300000, 305000, 310000, 315000, 320000, 325000, 330000, 335000
-                ];
-                
-                // Combine data
-                const allData = [...historicalData, ...projectionData];
-                const maxValue = Math.max(...allData) * 1.1;
-                const minValue = Math.min(...allData) * 0.9;
-                const valueRange = maxValue - minValue;
-                
-                // Store data points for hover interaction
-                chartDataPoints = [];
-                
-                // Calculate x and y positions for all points
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
-                    chartDataPoints.push({
-                        x: x,
-                        y: y,
-                        value: value,
-                        month: months[index],
-                        growthPercent: growthPercent,
-                        isHistorical: index < 12
+                try {
+                    // Get user session
+                    const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                    if (!userSession || !window.firebaseDb) {
+                        // Show empty state
+                        ctx.fillStyle = '#6b7280';
+                        ctx.font = '16px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('No entries yet. Chart will appear here once transactions are added.', width / 2, height / 2);
+                        return;
+                    }
+
+                    const user = JSON.parse(userSession);
+                    const userData = user.userData || {};
+                    const userId = userData.id;
+                    const initialInvestment = userData.initialInvestment || 0;
+
+                    if (!userId) {
+                        ctx.fillStyle = '#6b7280';
+                        ctx.font = '16px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('No entries yet. Chart will appear here once transactions are added.', width / 2, height / 2);
+                        return;
+                    }
+
+                    // Load transactions from Firestore (without composite index - sort in JavaScript)
+                    const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userId)
+                        .collection('transactions')
+                        .get();
+
+                    if (transactionsSnapshot.empty) {
+                        // Show empty state
+                        ctx.fillStyle = '#6b7280';
+                        ctx.font = '16px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('No performance data yet. Chart will appear here once transactions are added.', width / 2, height / 2);
+                        return;
+                    }
+
+                    // Build historical data from transactions - sort by year, then monthIndex
+                    const transactions = [];
+                    transactionsSnapshot.forEach((doc) => {
+                        transactions.push(doc.data());
                     });
-                });
-                
-                // Draw grid lines
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 1;
-                for (let i = 0; i <= 5; i++) {
-                    const y = padding.top + (chartHeight / 5) * i;
-                    ctx.beginPath();
-                    ctx.moveTo(padding.left, y);
-                    ctx.lineTo(width - padding.right, y);
-                    ctx.stroke();
-                }
-                
-                // Draw area fill below the line (only historical section with gradient)
-                const gradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / 24) * 12, 
-                    padding.top + chartHeight
-                );
-                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
-                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-                
-                ctx.beginPath();
-                const firstX = padding.left + (chartWidth / 24) / 2;
-                const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(firstX, height - padding.bottom);
-                ctx.lineTo(firstX, firstY);
-                
-                // Historical area only
-                historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                // Close at the last historical point
-                const lastHistoricalX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                ctx.lineTo(lastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                
-                // Draw historical line
-                ctx.beginPath();
-                ctx.strokeStyle = '#2563eb';
-                ctx.lineWidth = 2.5;
-                historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
+                    // Sort by year, then monthIndex
+                    transactions.sort((a, b) => {
+                        if (a.year !== b.year) {
+                            return a.year - b.year;
+                        }
+                        return (a.monthIndex || 0) - (b.monthIndex || 0);
+                    });
+                    
+                    // Store transaction metadata for labels
+                    const monthNameMap = {
+                        'January': 'Jan', 'February': 'Feb', 'March': 'Mar', 'April': 'Apr',
+                        'May': 'May', 'June': 'Jun', 'July': 'Jul', 'August': 'Aug',
+                        'September': 'Sep', 'October': 'Oct', 'November': 'Nov', 'December': 'Dec'
+                    };
+                    
+                    const transactionLabels = transactions.map(entry => {
+                        const monthShort = entry.month ? (monthNameMap[entry.month] || entry.month.substring(0, 3)) : '';
+                        return `${monthShort} ${entry.year}`;
+                    });
+                    
+                    const historicalData = transactions.map(entry => entry.endingBalance);
+                    const historicalGrowth = transactions.map(entry => entry.growth || 0); // Store actual growth % from transaction
+
+                    // If no transactions, start with initial investment
+                    if (historicalData.length === 0) {
+                        historicalData.push(initialInvestment);
+                        historicalGrowth.push(0);
+                        transactionLabels.push('Start');
                     }
-                });
-                ctx.stroke();
-                
-                // Draw projection line (dashed, green, continuing from historical)
-                ctx.beginPath();
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                projectionData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * (12 + index) + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+
+                    // Generate projection data (12 months forward with 2% monthly growth)
+                    const lastHistoricalValue = historicalData[historicalData.length - 1];
+                    const monthlyGrowthRate = 0.02; // 2% per month
+                    const projectionData = [];
+                    const projectionLabels = [];
+                    let projectionBalance = lastHistoricalValue;
                     
-                    if (index === 0) {
-                        // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                        const lastHistY = padding.top + chartHeight - ((historicalData[11] - minValue) / valueRange) * chartHeight;
-                        ctx.moveTo(lastHistX, lastHistY);
+                    // Calculate next month/year for projection labels
+                    let projectionMonth = transactions.length > 0 ? transactions[transactions.length - 1].monthIndex : 0;
+                    let projectionYear = transactions.length > 0 ? transactions[transactions.length - 1].year : new Date().getFullYear();
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    
+                    for (let i = 0; i < 12; i++) {
+                        projectionBalance = projectionBalance * (1 + monthlyGrowthRate);
+                        projectionData.push(projectionBalance);
+                        
+                        // Calculate next month label
+                        projectionMonth = (projectionMonth + 1) % 12;
+                        if (projectionMonth === 0) projectionYear++;
+                        projectionLabels.push(`${monthNames[projectionMonth]} ${projectionYear}`);
                     }
-                    ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                // Draw smaller, more formal data points (blue for historical, green for projection)
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 12;
                     
-                    ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                });
+                    // Combine data
+                    const allData = [...historicalData, ...projectionData];
+                    const maxValue = Math.max(...allData) * 1.1;
+                    const minValue = Math.min(...allData) * 0.9;
+                    const valueRange = maxValue - minValue;
                 
-                // Draw Y-axis labels
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
-                for (let i = 0; i <= 5; i++) {
-                    const value = minValue + (valueRange / 5) * (5 - i);
-                    const y = padding.top + (chartHeight / 5) * i;
-                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
-                    ctx.fillText(formattedValue, padding.left - 10, y);
-                }
-                
-                // Draw X-axis labels
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                for (let i = 0; i < 24; i += 2) {
-                    const x = padding.left + (chartWidth / 24) * i + (chartWidth / 24) / 2;
-                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                    // Store data points for hover interaction
+                    chartDataPoints = [];
+                    
+                    const historicalCount = historicalData.length;
+                    const totalDataPoints = historicalCount + projectionData.length;
+                    const dataPointWidth = chartWidth / Math.max(totalDataPoints, 1);
+                    
+                    // Combine labels
+                    const allLabels = [...transactionLabels, ...projectionLabels];
+                    
+                    // Calculate x and y positions for all points
+                    allData.forEach((value, index) => {
+                        const x = padding.left + dataPointWidth * index + dataPointWidth / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        
+                        // For historical data, use actual growth from transaction; for projection, use 2%
+                        let growthPercent;
+                        if (index < historicalCount) {
+                            growthPercent = historicalGrowth[index].toFixed(2);
+                        } else {
+                            growthPercent = '2.00'; // Projection growth
+                        }
+                        
+                        chartDataPoints.push({
+                            x: x,
+                            y: y,
+                            value: value,
+                            month: allLabels[index] || `Month ${index + 1}`,
+                            growthPercent: growthPercent,
+                            isHistorical: index < historicalCount
+                        });
+                    });
+                    
+                    // Helper function for currency formatting
+                    function formatCurrency(amount) {
+                        if (amount === null || amount === undefined) return '€0';
+                        const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
+                        return new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'EUR',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        }).format(numAmount);
+                    }
+                    
+                    // Update Portfolio balance cards
+                    const capitalInvestedEl = document.getElementById('capital-invested');
+                    const currentBalanceEl = document.getElementById('current-balance');
+                    const totalGainEl = document.getElementById('total-gain');
+                    
+                    if (capitalInvestedEl) {
+                        capitalInvestedEl.textContent = formatCurrency(initialInvestment);
+                    }
+                    
+                    if (currentBalanceEl && transactions.length > 0) {
+                        // Use ending balance of most recent transaction
+                        const mostRecentTransaction = transactions[transactions.length - 1];
+                        currentBalanceEl.textContent = formatCurrency(mostRecentTransaction.endingBalance);
+                    } else if (currentBalanceEl) {
+                        currentBalanceEl.textContent = formatCurrency(initialInvestment);
+                    }
+                    
+                    if (totalGainEl && transactions.length > 0) {
+                        // Sum all growth percentages from transactions
+                        const totalGrowthSum = transactions.reduce((sum, entry) => sum + (entry.growth || 0), 0);
+                        const sign = totalGrowthSum >= 0 ? '+' : '';
+                        totalGainEl.textContent = `${sign}${totalGrowthSum.toFixed(2)}%`;
+                        totalGainEl.className = 'balance-amount balance-amount-gain';
+                        if (totalGrowthSum < 0) {
+                            totalGainEl.classList.add('balance-amount-loss');
+                        }
+                    } else if (totalGainEl) {
+                        totalGainEl.textContent = '+0.00%';
+                        totalGainEl.className = 'balance-amount balance-amount-gain';
+                    }
+                    
+                    // Draw grid lines
+                    ctx.strokeStyle = '#e5e7eb';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i <= 5; i++) {
+                        const y = padding.top + (chartHeight / 5) * i;
+                        ctx.beginPath();
+                        ctx.moveTo(padding.left, y);
+                        ctx.lineTo(width - padding.right, y);
+                        ctx.stroke();
+                    }
+                    
+                    // Draw area fill below the line (only historical section with gradient)
+                    if (historicalData.length > 0) {
+                        const gradient = ctx.createLinearGradient(
+                            padding.left, 
+                            padding.top, 
+                            padding.left + dataPointWidth * historicalCount, 
+                            padding.top + chartHeight
+                        );
+                        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                        
+                        ctx.beginPath();
+                        const firstX = padding.left + dataPointWidth / 2;
+                        const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
+                        ctx.moveTo(firstX, height - padding.bottom);
+                        ctx.lineTo(firstX, firstY);
+                        
+                        // Historical area only
+                        historicalData.forEach((value, index) => {
+                            const x = padding.left + dataPointWidth * index + dataPointWidth / 2;
+                            const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                            ctx.lineTo(x, y);
+                        });
+                        
+                        // Close at the last historical point
+                        const lastHistoricalX = padding.left + dataPointWidth * (historicalCount - 1) + dataPointWidth / 2;
+                        ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                        ctx.closePath();
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                    }
+                    
+                    // Draw historical line
+                    if (historicalData.length > 0) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#2563eb';
+                        ctx.lineWidth = 2.5;
+                        historicalData.forEach((value, index) => {
+                            const x = padding.left + dataPointWidth * index + dataPointWidth / 2;
+                            const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                            
+                            if (index === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        });
+                        ctx.stroke();
+                    }
+                    
+                    // Draw projection line (dashed, green, continuing from historical)
+                    if (projectionData.length > 0 && historicalData.length > 0) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#10b981';
+                        ctx.lineWidth = 2.5;
+                        ctx.setLineDash([6, 4]);
+                        projectionData.forEach((value, index) => {
+                            const x = padding.left + dataPointWidth * (historicalCount + index) + dataPointWidth / 2;
+                            const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                            
+                            if (index === 0) {
+                                // Connect to last historical point
+                                const lastHistX = padding.left + dataPointWidth * (historicalCount - 1) + dataPointWidth / 2;
+                                const lastHistY = padding.top + chartHeight - ((historicalData[historicalCount - 1] - minValue) / valueRange) * chartHeight;
+                                ctx.moveTo(lastHistX, lastHistY);
+                            }
+                            ctx.lineTo(x, y);
+                        });
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                    
+                    // Draw smaller, more formal data points (blue for historical, green for projection)
+                    allData.forEach((value, index) => {
+                        const x = padding.left + dataPointWidth * index + dataPointWidth / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        const isHistorical = index < historicalCount;
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                    });
+                    
+                    // Helper function for currency formatting
+                    function formatCurrencyAxis(amount) {
+                        if (amount >= 1000000) {
+                            return '€' + (amount / 1000000).toFixed(1) + 'M';
+                        } else if (amount >= 1000) {
+                            return '€' + (amount / 1000).toFixed(0) + 'k';
+                        } else {
+                            return '€' + Math.round(amount).toLocaleString('en-US');
+                        }
+                    }
+                    
+                    // Draw Y-axis labels with proper formatting
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    for (let i = 0; i <= 5; i++) {
+                        const value = minValue + (valueRange / 5) * (5 - i);
+                        const y = padding.top + (chartHeight / 5) * i;
+                        const formattedValue = formatCurrencyAxis(value);
+                        ctx.fillText(formattedValue, padding.left - 10, y);
+                    }
+                    
+                    // Draw X-axis labels with actual month names
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    const labelInterval = Math.max(1, Math.floor(totalDataPoints / Math.min(12, totalDataPoints)));
+                    for (let i = 0; i < totalDataPoints; i += labelInterval) {
+                        const x = padding.left + dataPointWidth * i + dataPointWidth / 2;
+                        const label = allLabels[i] || `M${i + 1}`;
+                        ctx.fillText(label, x, height - padding.bottom + 10);
+                    }
+                } catch (error) {
+                    console.error('Error drawing portfolio chart:', error);
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '16px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('No entries yet. Chart will appear here once transactions are added.', width / 2, height / 2);
                 }
             }
             
@@ -1251,71 +1468,86 @@
             // Setup hover after chart is drawn
             setTimeout(setupChartHover, 150);
 
-            // Transactions Table Population
-            function populateTransactionsTable() {
+            // Transactions Table Population - Load from Firestore
+            async function populateTransactionsTable() {
                 const tableBody = document.getElementById('transactions-table-body');
                 if (!tableBody) return;
 
-                // Historical data matching the chart
-                const initialInvestment = 230000;
-                // Data starts from January 2024
-                const startYear = 2024;
-                const monthlyData = [
-                    { ending: 230000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 235000, deposits: 5000, withdrawals: 0, depositDate: '2024-01-15', withdrawalDate: null },
-                    { ending: 238000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 242000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 245000, deposits: 3000, withdrawals: 0, depositDate: '2024-04-10', withdrawalDate: null },
-                    { ending: 248000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 252000, deposits: 4000, withdrawals: 0, depositDate: '2024-06-20', withdrawalDate: null },
-                    { ending: 255000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 260000, deposits: 5000, withdrawals: 0, depositDate: '2024-08-05', withdrawalDate: null },
-                    { ending: 265000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 270000, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                    { ending: 275000, deposits: 0, withdrawals: 5000, depositDate: null, withdrawalDate: '2024-11-18' }
-                ];
+                // Show loading state
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">Loading transactions...</td></tr>';
 
-                const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                               'July', 'August', 'September', 'October', 'November', 'December'];
+                try {
+                    // Get user session
+                    const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                    if (!userSession) {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No transactions yet. Performance entries will appear here once added by your administrator.</td></tr>';
+                        return;
+                    }
 
-                tableBody.innerHTML = '';
+                    const user = JSON.parse(userSession);
+                    const userData = user.userData || {};
+                    const userId = userData.id;
 
-                monthlyData.forEach((data, index) => {
-                    const startingBalance = index === 0 ? initialInvestment : monthlyData[index - 1].ending;
-                    const endingBalance = data.ending;
-                    // Calculate growth excluding deposits and including withdrawals
-                    const netGrowth = endingBalance - startingBalance - (data.deposits || 0) + (data.withdrawals || 0);
-                    const growth = startingBalance > 0 ? (netGrowth / startingBalance * 100).toFixed(2) : '0.00';
-                    const growthValue = parseFloat(growth);
-                    
-                    // Calculate year (assuming data starts in January 2024)
-                    const monthIndex = index;
-                    const year = startYear + Math.floor(monthIndex / 12);
-                    const monthName = months[monthIndex % 12];
-                    const monthYear = `${monthName} ${year}`;
-                    
-                    const row = document.createElement('tr');
-                    
-                    // Format dates
-                    const depositDisplay = data.depositDate 
-                        ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
-                        : '-';
-                    
-                    const withdrawalDisplay = data.withdrawalDate 
-                        ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
-                        : '-';
+                    if (!userId || !window.firebaseDb) {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No transactions yet. Performance entries will appear here once added by your administrator.</td></tr>';
+                        return;
+                    }
 
-                    row.innerHTML = `
-                        <td>${monthYear}</td>
-                        <td>€${startingBalance.toLocaleString('en-US')}</td>
-                        <td>€${endingBalance.toLocaleString('en-US')}</td>
-                        <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth}%</td>
-                        <td class="transaction-cell">${depositDisplay}</td>
-                        <td class="transaction-cell">${withdrawalDisplay}</td>
-                    `;
+                    // Load transactions from Firestore (without composite index - sort in JavaScript)
+                    const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userId)
+                        .collection('transactions')
+                        .get();
+
+                    tableBody.innerHTML = '';
+
+                    if (transactionsSnapshot.empty) {
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No transactions yet. Performance entries will appear here once added by your administrator.</td></tr>';
+                        return;
+                    }
+
+                    // Sort transactions in JavaScript (by year, then monthIndex)
+                    const transactions = [];
+                    transactionsSnapshot.forEach((doc) => {
+                        transactions.push(doc.data());
+                    });
                     
-                    tableBody.appendChild(row);
-                });
+                    // Sort by year, then monthIndex
+                    transactions.sort((a, b) => {
+                        if (a.year !== b.year) {
+                            return a.year - b.year;
+                        }
+                        return (a.monthIndex || 0) - (b.monthIndex || 0);
+                    });
+
+                    // Populate table with transactions
+                    transactions.forEach((entry) => {
+                        
+                        const row = document.createElement('tr');
+                        
+                        // Format dates
+                        const depositDisplay = entry.deposits > 0 && entry.depositDate
+                            ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate.toDate())}</span>`
+                            : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
+                        
+                        const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
+                            ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate.toDate())}</span>`
+                            : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
+
+                        row.innerHTML = `
+                            <td>${entry.month} ${entry.year}</td>
+                            <td>€${entry.startingBalance.toLocaleString('en-US')}</td>
+                            <td>€${entry.endingBalance.toLocaleString('en-US')}</td>
+                            <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
+                            <td class="transaction-cell">${depositDisplay}</td>
+                            <td class="transaction-cell">${withdrawalDisplay}</td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error('Error loading transactions:', error);
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No transactions yet. Performance entries will appear here once added by your administrator.</td></tr>';
+                }
             }
 
             function formatDate(dateString) {
@@ -2023,8 +2255,8 @@
                     mutations.forEach(function(mutation) {
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             if (dashboardViewEl.style.display !== 'none') {
-                                setTimeout(function() {
-                                    calculateProjectionValue();
+                                setTimeout(async function() {
+                                    await calculateProjectionValue();
                                 }, 100);
                             }
                         }
@@ -2035,22 +2267,55 @@
             
             // Calculate 12-month projection value
             // Accepts optional userData parameter to use user-specific balance
-            function calculateProjectionValue(userData = null) {
+            async function calculateProjectionValue(userData = null) {
                 const projectionValueEl = document.getElementById('dashboard-projection-value');
                 const portfolioProjectionEl = document.getElementById('portfolio-projection');
                 
-                // Get user-specific balance if available, otherwise try to get from sessionStorage
+                // Get user-specific balance - try to get from most recent transaction
                 let balance = null;
-                if (userData) {
-                    balance = userData.currentBalance || userData.initialInvestment || null;
+                
+                if (userData && userData.currentBalance) {
+                    balance = userData.currentBalance;
                 } else {
-                    // Try to get from sessionStorage
+                    // Try to get from sessionStorage and load most recent transaction
                     try {
                         const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
-                        if (userSession) {
+                        if (userSession && window.firebaseDb) {
                             const user = JSON.parse(userSession);
                             const data = user.userData || {};
-                            balance = data.currentBalance || data.initialInvestment || null;
+                            const userId = data.id;
+                            
+                            if (userId) {
+                                // Load transactions to get most recent ending balance
+                                const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userId)
+                                    .collection('transactions')
+                                    .get();
+                                
+                                if (!transactionsSnapshot.empty) {
+                                    const transactions = [];
+                                    transactionsSnapshot.forEach((doc) => {
+                                        transactions.push(doc.data());
+                                    });
+                                    
+                                    // Sort by year, then monthIndex
+                                    transactions.sort((a, b) => {
+                                        if (a.year !== b.year) {
+                                            return a.year - b.year;
+                                        }
+                                        return (a.monthIndex || 0) - (b.monthIndex || 0);
+                                    });
+                                    
+                                    // Get most recent transaction's ending balance
+                                    if (transactions.length > 0) {
+                                        balance = transactions[transactions.length - 1].endingBalance;
+                                    }
+                                }
+                            }
+                            
+                            // Fallback to userData values
+                            if (!balance) {
+                                balance = data.currentBalance || data.initialInvestment || null;
+                            }
                         }
                     } catch (e) {
                         console.warn('Could not get user data for projection:', e);

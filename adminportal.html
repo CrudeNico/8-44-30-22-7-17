@@ -707,17 +707,18 @@
                                 <label for="performance-year">Year</label>
                                 <input type="number" id="performance-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
                             </div>
-                            <div class="admin-form-group">
-                                <label for="performance-growth">Growth Rate (%)</label>
-                                <input type="number" id="performance-growth" class="admin-form-input" step="0.01" required>
+                            <div class="admin-form-group" id="performance-growth-group" style="display: none;">
+                                <label for="performance-growth">Growth Rate (%) - Only for Personalized Strategy</label>
+                                <input type="number" id="performance-growth" class="admin-form-input" step="0.01" value="0">
                             </div>
                             <div class="admin-form-group">
                                 <label for="performance-deposits">Deposits (€)</label>
                                 <input type="number" id="performance-deposits" class="admin-form-input" step="0.01" value="0" required>
                             </div>
                             <div class="admin-form-group">
-                                <label for="performance-deposit-date">Deposit Date</label>
+                                <label for="performance-deposit-date">Deposit Date (Required if deposit amount > 0)</label>
                                 <input type="date" id="performance-deposit-date" class="admin-form-input">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Growth will be prorated based on deposit date</span>
                             </div>
                             <div class="admin-form-group">
                                 <label for="performance-withdrawals">Withdrawals (€)</label>
@@ -753,6 +754,7 @@
                                         <th>Growth %</th>
                                         <th>Deposits</th>
                                         <th>Withdrawals</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="investor-performance-table-body">
@@ -884,7 +886,11 @@
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-strategy">Investment Strategy</label>
-                                <input type="text" id="edit-user-strategy" class="admin-form-input" required>
+                                <select id="edit-user-strategy" class="admin-form-input" required>
+                                    <option value="Low risk 2% a month">Low risk 2% a month</option>
+                                    <option value="High risk 4% a month">High risk 4% a month</option>
+                                    <option value="Personalized">Personalized</option>
+                                </select>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-operator">Assigned Operator Email</label>
@@ -2507,57 +2513,100 @@
             // Reports Section - Store reports data
             let reportsData = {}; // Structure: { userId: { '2024-01': { file: File, month: 'January', year: 2024 }, ... } }
             
-            function loadReportsUsersList() {
+            async function loadReportsUsersList() {
                 const container = document.getElementById('reports-users-grid');
                 if (!container) return;
                 
-                container.innerHTML = '';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading users...</div>';
                 
-                // Get all users (admin + investors)
-                const allUsers = [...usersData];
-                
-                allUsers.forEach(user => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const userReports = reportsData[user.id] || {};
-                    const reportCount = Object.keys(userReports).length;
-                    const isAdmin = user.type === 'admin';
+                try {
+                    // Load users from Firestore
+                    const usersSnapshot = await db.collection('users')
+                        .orderBy('createdAt', 'desc')
+                        .get();
                     
-                    // Get list of reports for this user
-                    const reportsList = Object.values(userReports).sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
+                    container.innerHTML = '';
                     
-                    let reportsHtml = '';
-                    if (reportsList.length > 0) {
-                        reportsHtml = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><strong style="font-size: 0.875rem; color: #374151;">Uploaded Reports:</strong><ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem; color: #6b7280;">';
-                        reportsList.forEach(report => {
-                            reportsHtml += `<li>${report.month} ${report.year}</li>`;
-                        });
-                        reportsHtml += '</ul></div>';
+                    if (usersSnapshot.empty) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">No users found</div>';
+                        return;
                     }
                     
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${user.name}</h3>
-                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
-                            ${reportsHtml}
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="admin-btn-save" onclick="openReportUploadModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
-                            ${isAdmin ? `<button class="admin-btn-view" onclick="viewAdminReportsWidget()">View Admin Reports</button>` : ''}
-                            ${isAdmin && reportCount > 0 ? `<button class="admin-btn-view" onclick="viewAdminReport(${user.id})">View Report</button>` : ''}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+                    // Process each user
+                    for (const userDoc of usersSnapshot.docs) {
+                        const userData = userDoc.data();
+                        const userId = userDoc.id;
+                        const isAdmin = userData.type === 'admin';
+                        const isInvestor = userData.type === 'investor' || !userData.type;
+                        
+                        // Get transaction count for investors
+                        let transactionCount = 0;
+                        if (isInvestor) {
+                            const transactionsSnapshot = await db.collection('users').doc(userId)
+                                .collection('transactions')
+                                .get();
+                            transactionCount = transactionsSnapshot.size;
+                        }
+                        
+                        // Get report count (from local reportsData for now)
+                        const userReports = reportsData[userId] || {};
+                        const reportCount = Object.keys(userReports).length;
+                        
+                        // Get list of reports for this user
+                        const reportsList = Object.values(userReports).sort((a, b) => {
+                            const yearDiff = a.year - b.year;
+                            if (yearDiff !== 0) return yearDiff;
+                            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                            return months.indexOf(a.month) - months.indexOf(b.month);
+                        });
+                        
+                        let reportsHtml = '';
+                        if (reportsList.length > 0) {
+                            reportsHtml = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><strong style="font-size: 0.875rem; color: #374151;">Uploaded Reports:</strong><ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem; color: #6b7280;">';
+                            reportsList.forEach(report => {
+                                reportsHtml += `<li>${report.month} ${report.year}</li>`;
+                            });
+                            reportsHtml += '</ul></div>';
+                        }
+                        
+                        const card = document.createElement('div');
+                        card.className = 'investor-card';
+                        
+                        const userName = userData.fullName || userData.username || 'Unknown';
+                        const userEmail = userData.email || 'N/A';
+                        const userStatus = userData.accountStatus || 'Active';
+                        const currentBalance = userData.currentBalance || userData.initialInvestment || 0;
+                        const initialInvestment = userData.initialInvestment || 0;
+                        const totalReturn = userData.totalReturn || 0;
+                        
+                        card.innerHTML = `
+                            <div class="investor-card-header">
+                                <h3>${userName}</h3>
+                                <span class="investor-status investor-status-${userStatus.toLowerCase()}">${isAdmin ? 'Admin' : userStatus}</span>
+                            </div>
+                            <div class="investor-card-body">
+                                <p><strong>Email:</strong> ${userEmail}</p>
+                                ${isInvestor ? `
+                                    <p><strong>Initial Investment:</strong> €${initialInvestment.toLocaleString('en-US')}</p>
+                                    <p><strong>Current Balance:</strong> €${currentBalance.toLocaleString('en-US')}</p>
+                                    <p><strong>Total Return:</strong> <span class="${totalReturn >= 0 ? 'return-positive' : 'return-negative'}">${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%</span></p>
+                                    <p><strong>Performance Entries:</strong> ${transactionCount}</p>
+                                ` : ''}
+                                <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
+                                ${reportsHtml}
+                            </div>
+                            <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="admin-btn-save" onclick="openReportUploadModal('${userId}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
+                                ${isAdmin ? `<button class="admin-btn-view" onclick="viewAdminReportsWidget()">View Admin Reports</button>` : ''}
+                                ${isAdmin && reportCount > 0 ? `<button class="admin-btn-view" onclick="viewAdminReport('${userId}')">View Report</button>` : ''}
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                } catch (error) {
+                    console.error('Error loading reports users list:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc2626;">Error loading users: ' + error.message + '</div>';
+                }
             }
             
             function openReportUploadModal(userId) {
@@ -2927,116 +2976,264 @@
                 }
             }
             
-            // Investors List Functions
-            let investorsData = [
-                { id: 1, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', initial: 230000, balance: 287450, status: 'Active' },
-                { id: 2, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', initial: 150000, balance: 187500, status: 'Active' },
-                { id: 3, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', initial: 500000, balance: 625000, status: 'Active' },
-                { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' }
-            ];
-            
-            // Investor Performance Data - stores performance entries for each investor
-            let investorPerformanceData = {};
-            
-            function loadInvestorsList() {
+            // Investors List Functions - Load from Firestore
+            async function loadInvestorsList() {
                 const container = document.getElementById('investors-grid');
                 if (!container) return;
                 
-                container.innerHTML = '';
-                investorsData.forEach(investor => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const returnPercent = ((investor.balance - investor.initial) / investor.initial * 100).toFixed(2);
-                    const performanceCount = investorPerformanceData[investor.id] ? investorPerformanceData[investor.id].length : 0;
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${investor.name}</h3>
-                            <span class="investor-status investor-status-${investor.status.toLowerCase()}">${investor.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Email:</strong> ${investor.email}</p>
-                            <p><strong>Account:</strong> ${investor.account}</p>
-                            <p><strong>Initial Investment:</strong> €${investor.initial.toLocaleString('en-US')}</p>
-                            <p><strong>Current Balance:</strong> €${investor.balance.toLocaleString('en-US')}</p>
-                            <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            <p><strong>Performance Entries:</strong> ${performanceCount}</p>
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
-                            <button class="admin-btn-save" onclick="openInvestorPerformanceModal(${investor.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
-                            <button class="admin-btn-view" onclick="viewInvestorPerformance(${investor.id})">View History</button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading investors...</div>';
+                
+                try {
+                    // Load all users from Firestore (without composite index - filter and sort in JavaScript)
+                    const usersSnapshot = await db.collection('users')
+                        .get();
+                    
+                    container.innerHTML = '';
+                    
+                    if (usersSnapshot.empty) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">No investors found</div>';
+                        return;
+                    }
+                    
+                    // Filter investors and sort by createdAt
+                    const investors = [];
+                    usersSnapshot.forEach((doc) => {
+                        const userData = doc.data();
+                        if (userData.type === 'investor' || (!userData.type && userData.username)) {
+                            // Handle Firestore timestamp
+                            let createdAt = 0;
+                            if (userData.createdAt) {
+                                if (userData.createdAt.toMillis) {
+                                    createdAt = userData.createdAt.toMillis();
+                                } else if (userData.createdAt.seconds) {
+                                    createdAt = userData.createdAt.seconds * 1000;
+                                } else if (userData.createdAt instanceof Date) {
+                                    createdAt = userData.createdAt.getTime();
+                                }
+                            }
+                            
+                            investors.push({
+                                id: doc.id,
+                                data: userData,
+                                createdAt: createdAt
+                            });
+                        }
+                    });
+                    
+                    // Sort by createdAt (newest first)
+                    investors.sort((a, b) => b.createdAt - a.createdAt);
+                    
+                    if (investors.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">No investors found</div>';
+                        return;
+                    }
+                    
+                    // Process each investor
+                    for (const investor of investors) {
+                        const userData = investor.data;
+                        const userId = investor.id;
+                        
+                        // Get transaction count
+                        const transactionsSnapshot = await db.collection('users').doc(userId)
+                            .collection('transactions')
+                            .get();
+                        const transactionCount = transactionsSnapshot.size;
+                        
+                        const card = document.createElement('div');
+                        card.className = 'investor-card';
+                        
+                        const userName = userData.fullName || userData.username || 'Unknown';
+                        const userEmail = userData.email || 'N/A';
+                        const accountNumber = userData.accountNumber || 'N/A';
+                        const initialInvestment = userData.initialInvestment || 0;
+                        const currentBalance = userData.currentBalance || initialInvestment;
+                        const totalReturn = userData.totalReturn || 0;
+                        const accountStatus = userData.accountStatus || 'Active';
+                        
+                        const returnPercent = initialInvestment > 0 
+                            ? ((currentBalance - initialInvestment) / initialInvestment * 100).toFixed(2)
+                            : '0.00';
+                        
+                        card.innerHTML = `
+                            <div class="investor-card-header">
+                                <h3>${userName}</h3>
+                                <span class="investor-status investor-status-${accountStatus.toLowerCase()}">${accountStatus}</span>
+                            </div>
+                            <div class="investor-card-body">
+                                <p><strong>Email:</strong> ${userEmail}</p>
+                                <p><strong>Account:</strong> ${accountNumber}</p>
+                                <p><strong>Initial Investment:</strong> €${initialInvestment.toLocaleString('en-US')}</p>
+                                <p><strong>Current Balance:</strong> €${currentBalance.toLocaleString('en-US')}</p>
+                                <p><strong>Return:</strong> <span class="${totalReturn >= 0 ? 'return-positive' : 'return-negative'}">${totalReturn >= 0 ? '+' : ''}${returnPercent}%</span></p>
+                                <p><strong>Performance Entries:</strong> ${transactionCount}</p>
+                            </div>
+                            <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
+                                <button class="admin-btn-save" onclick="openInvestorPerformanceModal('${userId}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
+                                <button class="admin-btn-view" onclick="viewInvestorPerformance('${userId}')">View History</button>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                } catch (error) {
+                    console.error('Error loading investors list:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc2626;">Error loading investors: ' + error.message + '</div>';
+                }
             }
             
-            function openInvestorPerformanceModal(investorId) {
-                const investor = investorsData.find(inv => inv.id === investorId);
-                if (!investor) return;
-                
-                const modal = document.getElementById('investor-performance-modal');
-                document.getElementById('investor-performance-modal-title').textContent = `Add Performance - ${investor.name}`;
-                document.getElementById('investor-performance-form').reset();
-                modal.setAttribute('data-investor-id', investorId);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
+            async function openInvestorPerformanceModal(investorId) {
+                try {
+                    // Get user from Firestore
+                    const userDoc = await db.collection('users').doc(investorId).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
+                    }
+                    
+                    const userData = userDoc.data();
+                    const investor = {
+                        id: investorId,
+                        name: userData.fullName || userData.username || 'Unknown'
+                    };
+                    
+                    const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
+                    
+                    const modal = document.getElementById('investor-performance-modal');
+                    document.getElementById('investor-performance-modal-title').textContent = `Add Performance - ${investor.name}`;
+                    document.getElementById('investor-performance-form').reset();
+                    
+                    // Show/hide growth input based on strategy
+                    const growthGroup = document.getElementById('performance-growth-group');
+                    if (investmentStrategy === 'Personalized') {
+                        growthGroup.style.display = 'block';
+                        document.getElementById('performance-growth').required = true;
+                    } else {
+                        growthGroup.style.display = 'none';
+                        document.getElementById('performance-growth').required = false;
+                        // Display strategy info
+                        const strategyInfo = document.createElement('div');
+                        strategyInfo.id = 'strategy-info';
+                        strategyInfo.style.cssText = 'padding: 0.75rem; background: #eff6ff; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; color: #1e40af;';
+                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Growth will be calculated automatically.`;
+                        const form = document.getElementById('investor-performance-form');
+                        const existingInfo = document.getElementById('strategy-info');
+                        if (existingInfo) existingInfo.remove();
+                        form.insertBefore(strategyInfo, form.firstChild);
+                    }
+                    
+                    modal.setAttribute('data-investor-id', investorId);
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error opening performance modal:', error);
+                    alert('Error loading investor data: ' + error.message);
+                }
             }
             
             function closeInvestorPerformanceModal() {
-                document.getElementById('investor-performance-modal').style.display = 'none';
+                const modal = document.getElementById('investor-performance-modal');
+                modal.style.display = 'none';
                 document.body.style.overflow = '';
+                // Clear edit mode and reset form
+                modal.removeAttribute('data-edit-mode');
+                modal.removeAttribute('data-edit-transaction-id');
+                document.getElementById('investor-performance-form').reset();
+                const strategyInfo = document.getElementById('strategy-info');
+                if (strategyInfo) strategyInfo.remove();
+                const growthGroup = document.getElementById('performance-growth-group');
+                if (growthGroup) growthGroup.style.display = 'none';
             }
             
-            function viewInvestorPerformance(investorId) {
-                const investor = investorsData.find(inv => inv.id === investorId);
-                if (!investor) return;
-                
-                const modal = document.getElementById('investor-performance-table-modal');
-                document.getElementById('investor-performance-table-title').textContent = `Performance History - ${investor.name}`;
-                
-                const tableBody = document.getElementById('investor-performance-table-body');
-                const performanceEntries = investorPerformanceData[investorId] || [];
-                
-                if (performanceEntries.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
-                } else {
-                    tableBody.innerHTML = '';
-                    let currentBalance = investor.initial;
+            async function viewInvestorPerformance(investorId) {
+                try {
+                    const userDoc = await db.collection('users').doc(investorId).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
+                    }
                     
-                    performanceEntries.sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
+                    const userData = userDoc.data();
+                    const investor = {
+                        id: investorId,
+                        name: userData.fullName || 'Unknown',
+                        initial: userData.initialInvestment || 0
+                    };
                     
-                    performanceEntries.forEach((entry, index) => {
-                        const startingBalance = index === 0 ? investor.initial : currentBalance;
-                        const endingBalance = startingBalance * (1 + entry.growth / 100) + (entry.deposits || 0) - (entry.withdrawals || 0);
-                        currentBalance = endingBalance;
+                    const modal = document.getElementById('investor-performance-table-modal');
+                    document.getElementById('investor-performance-table-title').textContent = `Performance History - ${investor.name}`;
+                    
+                    const tableBody = document.getElementById('investor-performance-table-body');
+                    
+                    // Load transactions from Firestore (without composite index - sort in JavaScript)
+                    const transactionsSnapshot = await db.collection('users').doc(investorId)
+                        .collection('transactions')
+                        .get();
+                    
+                    if (transactionsSnapshot.empty) {
+                        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
+                    } else {
+                        tableBody.innerHTML = '';
                         
-                        const row = document.createElement('tr');
-                        const depositDisplay = entry.deposits > 0 && entry.depositDate
-                            ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate)}</span>`
-                            : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
-                        const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
-                            ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate)}</span>`
-                            : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
+                        // Sort transactions in JavaScript (by year, then monthIndex)
+                        const transactions = [];
+                        transactionsSnapshot.forEach((doc) => {
+                            transactions.push({
+                                id: doc.id,
+                                ...doc.data()
+                            });
+                        });
                         
-                        row.innerHTML = `
-                            <td>${entry.month} ${entry.year}</td>
-                            <td>€${startingBalance.toLocaleString('en-US')}</td>
-                            <td>€${endingBalance.toLocaleString('en-US')}</td>
-                            <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
-                            <td class="transaction-cell">${depositDisplay}</td>
-                            <td class="transaction-cell">${withdrawalDisplay}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
+                        // Sort by year, then monthIndex
+                        transactions.sort((a, b) => {
+                            if (a.year !== b.year) {
+                                return a.year - b.year;
+                            }
+                            return (a.monthIndex || 0) - (b.monthIndex || 0);
+                        });
+                        
+                        transactions.forEach((entry) => {
+                            
+                            const row = document.createElement('tr');
+                            const depositDisplay = entry.deposits > 0 && entry.depositDate
+                                ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate.toDate())}</span>`
+                                : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
+                            const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
+                                ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate.toDate())}</span>`
+                                : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
+                            
+                            // Format deposit and withdrawal dates for form
+                            let depositDateFormatted = '';
+                            if (entry.depositDate) {
+                                const depositDateObj = entry.depositDate.toDate();
+                                depositDateFormatted = depositDateObj.toISOString().split('T')[0];
+                            }
+                            
+                            let withdrawalDateFormatted = '';
+                            if (entry.withdrawalDate) {
+                                const withdrawalDateObj = entry.withdrawalDate.toDate();
+                                withdrawalDateFormatted = withdrawalDateObj.toISOString().split('T')[0];
+                            }
+                            
+                            row.innerHTML = `
+                                <td>${entry.month} ${entry.year}</td>
+                                <td>€${entry.startingBalance.toLocaleString('en-US')}</td>
+                                <td>€${entry.endingBalance.toLocaleString('en-US')}</td>
+                                <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
+                                <td class="transaction-cell">${depositDisplay}</td>
+                                <td class="transaction-cell">${withdrawalDisplay}</td>
+                                <td>
+                                    <button class="admin-btn-save" onclick="editPerformanceEntry('${investorId}', '${entry.id}', '${entry.month}', ${entry.year}, ${entry.growth || 0}, ${entry.deposits || 0}, ${entry.withdrawals || 0}, '${depositDateFormatted}', '${withdrawalDateFormatted}')" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;">Edit</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    }
+                    
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error loading performance history:', error);
+                    alert('Error loading performance history: ' + error.message);
                 }
-                
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
             }
             
             function closeInvestorPerformanceTableModal() {
@@ -3044,52 +3241,334 @@
                 document.body.style.overflow = '';
             }
             
-            window.openInvestorPerformanceModal = openInvestorPerformanceModal;
-            window.viewInvestorPerformance = viewInvestorPerformance;
-            
-            // Investor performance form handler
-            const investorPerformanceForm = document.getElementById('investor-performance-form');
-            if (investorPerformanceForm) {
-                investorPerformanceForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const investorId = parseInt(document.getElementById('investor-performance-modal').getAttribute('data-investor-id'));
+            // Function to edit a performance entry
+            async function editPerformanceEntry(investorId, transactionId, month, year, growth, deposits, withdrawals, depositDate, withdrawalDate) {
+                try {
+                    // Close the history modal
+                    closeInvestorPerformanceTableModal();
                     
-                    if (!investorPerformanceData[investorId]) {
-                        investorPerformanceData[investorId] = [];
+                    // Open the performance modal in edit mode
+                    const userDoc = await db.collection('users').doc(investorId).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
                     }
                     
-                    const entry = {
-                        month: document.getElementById('performance-month').value,
-                        year: parseInt(document.getElementById('performance-year').value),
-                        growth: parseFloat(document.getElementById('performance-growth').value),
-                        deposits: parseFloat(document.getElementById('performance-deposits').value) || 0,
-                        withdrawals: parseFloat(document.getElementById('performance-withdrawals').value) || 0,
-                        depositDate: document.getElementById('performance-deposit-date').value || null,
-                        withdrawalDate: document.getElementById('performance-withdrawal-date').value || null
+                    const userData = userDoc.data();
+                    const investor = {
+                        id: investorId,
+                        name: userData.fullName || userData.username || 'Unknown'
                     };
                     
-                    investorPerformanceData[investorId].push(entry);
-                    loadInvestorsList();
-                    closeInvestorPerformanceModal();
-                    alert('Performance entry added successfully!');
+                    const modal = document.getElementById('investor-performance-modal');
+                    document.getElementById('investor-performance-modal-title').textContent = `Edit Performance - ${investor.name}`;
+                    
+                    // Populate form with existing data
+                    document.getElementById('performance-month').value = month;
+                    document.getElementById('performance-year').value = year;
+                    document.getElementById('performance-deposits').value = deposits || 0;
+                    document.getElementById('performance-withdrawals').value = withdrawals || 0;
+                    document.getElementById('performance-deposit-date').value = depositDate || '';
+                    document.getElementById('performance-withdrawal-date').value = withdrawalDate || '';
+                    
+                    // Show/hide growth input based on strategy
+                    const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
+                    const growthGroup = document.getElementById('performance-growth-group');
+                    if (investmentStrategy === 'Personalized') {
+                        growthGroup.style.display = 'block';
+                        document.getElementById('performance-growth').value = growth || 0;
+                        document.getElementById('performance-growth').required = true;
+                    } else {
+                        growthGroup.style.display = 'none';
+                        document.getElementById('performance-growth').required = false;
+                        // Display strategy info
+                        const form = document.getElementById('investor-performance-form');
+                        const existingInfo = document.getElementById('strategy-info');
+                        if (existingInfo) existingInfo.remove();
+                        const strategyInfo = document.createElement('div');
+                        strategyInfo.id = 'strategy-info';
+                        strategyInfo.style.cssText = 'padding: 0.75rem; background: #eff6ff; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; color: #1e40af;';
+                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Growth will be calculated automatically.`;
+                        form.insertBefore(strategyInfo, form.firstChild);
+                    }
+                    
+                    // Store transaction ID for update mode
+                    modal.setAttribute('data-investor-id', investorId);
+                    modal.setAttribute('data-edit-transaction-id', transactionId);
+                    modal.setAttribute('data-edit-mode', 'true');
+                    
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error opening edit performance modal:', error);
+                    alert('Error loading entry data: ' + error.message);
+                }
+            }
+            
+            window.openInvestorPerformanceModal = openInvestorPerformanceModal;
+            window.viewInvestorPerformance = viewInvestorPerformance;
+            window.editPerformanceEntry = editPerformanceEntry;
+            
+            // Investor performance form handler - Save to Firestore
+            const investorPerformanceForm = document.getElementById('investor-performance-form');
+            if (investorPerformanceForm) {
+                investorPerformanceForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const modal = document.getElementById('investor-performance-modal');
+                    const investorId = modal.getAttribute('data-investor-id');
+                    const isEditMode = modal.getAttribute('data-edit-mode') === 'true';
+                    const transactionId = modal.getAttribute('data-edit-transaction-id');
+                    
+                    if (!investorId) {
+                        alert('Error: Investor ID not found');
+                        return;
+                    }
+                    
+                    try {
+                        const month = document.getElementById('performance-month').value;
+                        const year = parseInt(document.getElementById('performance-year').value);
+                        const deposits = parseFloat(document.getElementById('performance-deposits').value) || 0;
+                        const withdrawals = parseFloat(document.getElementById('performance-withdrawals').value) || 0;
+                        const depositDate = document.getElementById('performance-deposit-date').value || null;
+                        const withdrawalDate = document.getElementById('performance-withdrawal-date').value || null;
+                        
+                        // Validate deposit date if deposit amount > 0
+                        if (deposits > 0 && !depositDate) {
+                            alert('Please enter a deposit date when adding a deposit.');
+                            return;
+                        }
+                        
+                        // Get current user data to calculate starting balance and get investment strategy
+                        const userDoc = await db.collection('users').doc(investorId).get();
+                        if (!userDoc.exists) {
+                            alert('Error: User not found');
+                            return;
+                        }
+                        
+                        const userData = userDoc.data();
+                        const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
+                        
+                        // Determine monthly growth rate based on investment strategy
+                        let monthlyGrowthRate = 0.02; // Default to 2%
+                        let isPersonalized = false;
+                        
+                        if (investmentStrategy === 'High risk 4% a month') {
+                            monthlyGrowthRate = 0.04; // 4%
+                        } else if (investmentStrategy === 'Personalized') {
+                            // For personalized, use manual input
+                            const manualGrowth = parseFloat(document.getElementById('performance-growth').value);
+                            if (!manualGrowth || manualGrowth === 0) {
+                                alert('Please enter a growth rate for Personalized strategy.');
+                                return;
+                            }
+                            monthlyGrowthRate = manualGrowth / 100;
+                            isPersonalized = true;
+                        } else {
+                            monthlyGrowthRate = 0.02; // Low risk 2%
+                        }
+                        
+                        // Get all existing transactions for this user to calculate starting balance
+                        // Load all and sort in JavaScript to avoid composite index requirement
+                        const transactionsSnapshot = await db.collection('users').doc(investorId)
+                            .collection('transactions')
+                            .get();
+                        
+                        let startingBalance = userData.initialInvestment || 0;
+                        if (!transactionsSnapshot.empty) {
+                            // Sort transactions by year, then monthIndex
+                            const transactions = [];
+                            transactionsSnapshot.forEach((doc) => {
+                                transactions.push(doc.data());
+                            });
+                            
+                            transactions.sort((a, b) => {
+                                if (a.year !== b.year) {
+                                    return a.year - b.year;
+                                }
+                                return (a.monthIndex || 0) - (b.monthIndex || 0);
+                            });
+                            
+                            // Get the last transaction (most recent)
+                            if (transactions.length > 0) {
+                                const lastTransaction = transactions[transactions.length - 1];
+                                startingBalance = lastTransaction.endingBalance || startingBalance;
+                            }
+                        }
+                        
+                        // Calculate growth with prorated deposit growth
+                        let endingBalance = startingBalance;
+                        let depositGrowth = 0;
+                        let daysRemaining = 0;
+                        let daysInMonth = 30;
+                        
+                        // Apply full monthly growth to existing balance
+                        const existingBalanceGrowth = startingBalance * monthlyGrowthRate;
+                        endingBalance = startingBalance + existingBalanceGrowth;
+                        
+                        // If there's a deposit with a date, calculate prorated growth for the deposit
+                        if (deposits > 0 && depositDate) {
+                            // Calculate days into the month
+                            const depositDateObj = new Date(depositDate);
+                            const depositDay = depositDateObj.getDate();
+                            
+                            // Get total days in the month
+                            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                             'July', 'August', 'September', 'October', 'November', 'December'];
+                            const monthIndexForCalc = monthNames.indexOf(month);
+                            daysInMonth = new Date(year, monthIndexForCalc + 1, 0).getDate();
+                            
+                            // Calculate days remaining in month (including deposit day)
+                            daysRemaining = daysInMonth - depositDay + 1;
+                            
+                            // Prorate growth for deposit: (days remaining / total days) * monthly growth rate
+                            const proratedGrowthRate = (daysRemaining / daysInMonth) * monthlyGrowthRate;
+                            depositGrowth = deposits * proratedGrowthRate;
+                            
+                            // Add deposit and its prorated growth
+                            endingBalance = endingBalance + deposits + depositGrowth;
+                        } else if (deposits > 0) {
+                            // If deposit but no date, add deposit without growth
+                            endingBalance = endingBalance + deposits;
+                        }
+                        
+                        // Subtract withdrawals
+                        endingBalance = endingBalance - withdrawals;
+                        
+                        // Calculate the effective growth percentage for display
+                        const totalGrowthAmount = existingBalanceGrowth + depositGrowth;
+                        const effectiveGrowthPercent = startingBalance > 0 ? (totalGrowthAmount / startingBalance * 100) : 0;
+                        
+                        // Month index for sorting (0-11)
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                       'July', 'August', 'September', 'October', 'November', 'December'];
+                        const monthIndex = months.indexOf(month);
+                        
+                        // Create transaction entry
+                        const transactionData = {
+                            month: month,
+                            monthIndex: monthIndex,
+                            year: year,
+                            startingBalance: startingBalance,
+                            endingBalance: endingBalance,
+                            growth: effectiveGrowthPercent, // Store effective growth percentage
+                            deposits: deposits,
+                            withdrawals: withdrawals,
+                            depositDate: depositDate ? firebase.firestore.Timestamp.fromDate(new Date(depositDate)) : null,
+                            withdrawalDate: withdrawalDate ? firebase.firestore.Timestamp.fromDate(new Date(withdrawalDate)) : null,
+                            investmentStrategy: investmentStrategy, // Store strategy used
+                            monthlyGrowthRate: monthlyGrowthRate * 100, // Store as percentage
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        // Check if transaction for this month/year already exists (for editing)
+                        // Load all transactions and filter in JavaScript to avoid index requirement
+                        const allTransactionsSnapshot = await db.collection('users').doc(investorId)
+                            .collection('transactions')
+                            .get();
+                        
+                        let existingTransactionDoc = null;
+                        if (!allTransactionsSnapshot.empty) {
+                            // Find transactions matching this month/year
+                            const matchingTransactions = [];
+                            allTransactionsSnapshot.forEach((doc) => {
+                                const data = doc.data();
+                                if (data.year === year && data.month === month) {
+                                    matchingTransactions.push({
+                                        id: doc.id,
+                                        createdAt: data.createdAt?.toMillis() || 0
+                                    });
+                                }
+                            });
+                            
+                            // Sort by createdAt to get most recent
+                            if (matchingTransactions.length > 0) {
+                                matchingTransactions.sort((a, b) => b.createdAt - a.createdAt);
+                                existingTransactionDoc = matchingTransactions[0];
+                            }
+                        }
+                        
+                        let isUpdate = false;
+                        
+                        // Check if we're in edit mode (from View History Edit button)
+                        if (isEditMode && transactionId) {
+                            // Update existing transaction (edit mode from View History)
+                            await db.collection('users').doc(investorId)
+                                .collection('transactions')
+                                .doc(transactionId)
+                                .update({
+                                    ...transactionData,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            isUpdate = true;
+                        } else if (existingTransactionDoc) {
+                            // Update existing transaction (most recent one for this month/year)
+                            await db.collection('users').doc(investorId)
+                                .collection('transactions')
+                                .doc(existingTransactionDoc.id)
+                                .update({
+                                    ...transactionData,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            isUpdate = true;
+                        } else {
+                            // Create new transaction entry
+                            await db.collection('users').doc(investorId)
+                                .collection('transactions')
+                                .add(transactionData);
+                        }
+                        
+                        // Update user's current balance and total return
+                        const totalReturn = userData.initialInvestment > 0 
+                            ? ((endingBalance - userData.initialInvestment) / userData.initialInvestment * 100) 
+                            : 0;
+                        
+                        await db.collection('users').doc(investorId).update({
+                            currentBalance: endingBalance,
+                            totalReturn: totalReturn,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Clear edit mode attributes
+                        modal.removeAttribute('data-edit-mode');
+                        modal.removeAttribute('data-edit-transaction-id');
+                        
+                        // Reload investors list
+                        await loadInvestorsList();
+                        await loadReportsUsersList();
+                        closeInvestorPerformanceModal();
+                        alert(isUpdate ? `Performance entry for ${month} ${year} updated successfully!` : 'Performance entry added successfully!');
+                    } catch (error) {
+                        console.error('Error saving performance entry:', error);
+                        alert('Error saving performance entry: ' + error.message);
+                    }
                 });
             }
             
-            function openInvestorEditModal(id) {
-                const investor = investorsData.find(inv => inv.id === id);
-                if (!investor) return;
-                
-                const modal = document.getElementById('investor-edit-modal');
-                document.getElementById('edit-investor-name').value = investor.name;
-                document.getElementById('edit-investor-email').value = investor.email;
-                document.getElementById('edit-investor-phone').value = investor.phone;
-                document.getElementById('edit-investor-account').value = investor.account;
-                document.getElementById('edit-investor-initial').value = investor.initial;
-                document.getElementById('edit-investor-balance').value = investor.balance;
-                document.getElementById('edit-investor-status').value = investor.status;
-                modal.setAttribute('data-edit-id', id);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
+            async function openInvestorEditModal(id) {
+                try {
+                    const userDoc = await db.collection('users').doc(id).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
+                    }
+                    
+                    const userData = userDoc.data();
+                    const modal = document.getElementById('investor-edit-modal');
+                    document.getElementById('edit-investor-name').value = userData.fullName || '';
+                    document.getElementById('edit-investor-email').value = userData.email || '';
+                    document.getElementById('edit-investor-phone').value = userData.phone || '';
+                    document.getElementById('edit-investor-account').value = userData.accountNumber || '';
+                    document.getElementById('edit-investor-initial').value = userData.initialInvestment || 0;
+                    document.getElementById('edit-investor-balance').value = userData.currentBalance || userData.initialInvestment || 0;
+                    document.getElementById('edit-investor-status').value = userData.accountStatus || 'Active';
+                    modal.setAttribute('data-edit-id', id);
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error loading investor for edit:', error);
+                    alert('Error loading investor data: ' + error.message);
+                }
             }
             
             function closeInvestorEditModal() {
@@ -3100,23 +3579,33 @@
             // Make function global
             window.openInvestorEditModal = openInvestorEditModal;
             
-            // Investor edit form handler
+            // Investor edit form handler - Update Firestore
             const investorEditForm = document.getElementById('investor-edit-form');
             if (investorEditForm) {
-                investorEditForm.addEventListener('submit', function(e) {
+                investorEditForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const id = parseInt(document.getElementById('investor-edit-modal').getAttribute('data-edit-id'));
-                    const investor = investorsData.find(inv => inv.id === id);
-                    if (investor) {
-                        investor.name = document.getElementById('edit-investor-name').value;
-                        investor.email = document.getElementById('edit-investor-email').value;
-                        investor.phone = document.getElementById('edit-investor-phone').value;
-                        investor.account = document.getElementById('edit-investor-account').value;
-                        investor.initial = parseFloat(document.getElementById('edit-investor-initial').value);
-                        investor.balance = parseFloat(document.getElementById('edit-investor-balance').value);
-                        investor.status = document.getElementById('edit-investor-status').value;
-                        loadInvestorsList();
+                    const id = document.getElementById('investor-edit-modal').getAttribute('data-edit-id');
+                    if (!id) return;
+                    
+                    try {
+                        const updateData = {
+                            fullName: document.getElementById('edit-investor-name').value,
+                            email: document.getElementById('edit-investor-email').value,
+                            phone: document.getElementById('edit-investor-phone').value,
+                            accountNumber: document.getElementById('edit-investor-account').value,
+                            initialInvestment: parseFloat(document.getElementById('edit-investor-initial').value) || 0,
+                            currentBalance: parseFloat(document.getElementById('edit-investor-balance').value) || 0,
+                            accountStatus: document.getElementById('edit-investor-status').value,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        await db.collection('users').doc(id).update(updateData);
+                        await loadInvestorsList();
                         closeInvestorEditModal();
+                        alert('Investor updated successfully!');
+                    } catch (error) {
+                        console.error('Error updating investor:', error);
+                        alert('Error updating investor: ' + error.message);
                     }
                 });
             }
@@ -3358,9 +3847,15 @@
                             console.log('User deleted from Firestore. If Firebase Auth user exists with email:', user.email, '- it should be deleted via Firebase Console or Admin SDK.');
                         }
                         
-                        // Close modal and reload list
+                        // Close modal and reload lists
                         closeUserEditModal();
                         await loadUsersList();
+                        
+                        // Also reload Performance section
+                        await loadInvestorsList();
+                        
+                        // Also reload Reports section
+                        await loadReportsUsersList();
                         
                         alert('User deleted successfully from database.');
                     } else {
@@ -3500,9 +3995,17 @@
                                 // Close modal first
                                 closeUserEditModal();
                                 
-                                // Reload users list
+                                // Reload users list and Performance section (if user is investor)
                                 console.log('Reloading users list...');
                                 await loadUsersList();
+                                
+                                // Also reload Performance section so new investor appears there
+                                if (formData.type === 'investor' || !formData.type) {
+                                    await loadInvestorsList();
+                                }
+                                
+                                // Also reload Reports section
+                                await loadReportsUsersList();
                                 
                                 // User added successfully - no alert needed
                             } else {
@@ -3567,9 +4070,15 @@
                         // Close modal first
                         closeUserEditModal();
                         
-                        // Reload users list
+                        // Reload users list and Performance section
                         console.log('Reloading users list...');
                         await loadUsersList();
+                        
+                        // Also reload Performance section in case user type changed
+                        await loadInvestorsList();
+                        
+                        // Also reload Reports section
+                        await loadReportsUsersList();
                         
                         } catch (error) {
                             console.error('Error saving user:', error);
