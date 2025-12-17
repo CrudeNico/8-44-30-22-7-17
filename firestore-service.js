@@ -81,6 +81,9 @@ export async function createUser(userData) {
             investmentStrategy: userData.strategy || '',
             assignedOperatorEmail: userData.operator || '',
             
+            // Profile
+            profilePictureUrl: null, // Initialize profile picture as null - user can upload later
+            
             // Metadata
             type: userData.type || 'investor',
             createdAt: serverTimestamp(),

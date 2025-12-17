@@ -6,6 +6,11 @@
     <title>Admin Portal - Opessocius</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* Admin Modal Styles */
         .admin-modal {
             position: fixed;
@@ -261,7 +266,16 @@
     <section class="user-dashboard" id="user-dashboard">
         <div class="dashboard-sidebar">
             <div class="sidebar-profile">
-                <img src="images/diegorequena.JPG" alt="Admin Profile" class="sidebar-profile-image" />
+                <div class="sidebar-profile-image-container" id="admin-profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
+                    <img src="" alt="Profile Picture" class="sidebar-profile-image" id="admin-profile-picture-img" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" />
+                    <div class="profile-picture-placeholder" id="admin-profile-picture-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 2rem; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <span>👤</span>
+                    </div>
+                    <div class="profile-picture-upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 0.75rem; text-align: center; padding: 0.5rem; cursor: pointer;">
+                        Click to upload
+                    </div>
+                </div>
+                <input type="file" id="admin-profile-picture-input" accept="image/*" style="display: none;" />
                 <div class="sidebar-profile-name">Admin</div>
             </div>
             <nav class="sidebar-navigation">
@@ -830,9 +844,9 @@
                                 <input type="text" id="edit-user-username" class="admin-form-input" placeholder="Enter username for login" required>
                             </div>
                             <div class="admin-form-group">
-                                <label for="edit-user-password">Password</label>
-                                <input type="text" id="edit-user-password" class="admin-form-input" placeholder="Enter password for login" minlength="6">
-                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Password must be at least 6 characters. Enter new password to change it.</span>
+                                <label for="edit-user-password">Password (View Only)</label>
+                                <input type="text" id="edit-user-password" class="admin-form-input" placeholder="Password" readonly style="background-color: #f3f4f6; cursor: not-allowed;">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;" id="user-password-hint">Password is view-only. Cannot be changed after user creation.</span>
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-name">Full Name</label>
@@ -1153,6 +1167,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
     
     <!-- Firebase Configuration and Service -->
@@ -1229,6 +1244,7 @@
                         email: userData.email,
                         password: userData.password || '', // Store password in Firestore (for admin viewing/editing)
                         phone: userData.phone || '',
+                        accountNumber: userData.account || '',
                         accountStatus: userData.status || 'Active',
                         country: userData.country || '',
                         memberSince: userData.memberSince ? this.convertToFirestoreDate(userData.memberSince) : null,
@@ -1238,6 +1254,7 @@
                         totalReturn: 0,
                         investmentStrategy: userData.strategy || '',
                         assignedOperatorEmail: userData.operator || '',
+                        profilePictureUrl: null, // Initialize profile picture as null - user can upload later
                         type: userData.type || 'investor',
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1260,7 +1277,14 @@
                     };
                     if (userData.username !== undefined) updateData.username = userData.username;
                     if (userData.email !== undefined) updateData.email = userData.email;
-                    if (userData.password !== undefined && userData.password !== '') updateData.password = userData.password;
+                    // Update password in Firestore if provided (not undefined and not empty)
+                    if (userData.password !== undefined && userData.password !== '') {
+                        updateData.password = userData.password;
+                        console.log('Password will be updated in Firestore for user:', userId);
+                        console.log('Password value (first 3 chars):', userData.password.substring(0, 3) + '***'); // Log for debugging
+                    } else {
+                        console.log('Password not included in update (keeping current password)');
+                    }
                     if (userData.name !== undefined) updateData.fullName = userData.name;
                     if (userData.phone !== undefined) updateData.phone = userData.phone;
                     if (userData.status !== undefined) updateData.accountStatus = userData.status;
@@ -1268,11 +1292,13 @@
                     if (userData.memberSince !== undefined) {
                         updateData.memberSince = userData.memberSince ? this.convertToFirestoreDate(userData.memberSince) : null;
                     }
+                    if (userData.account !== undefined) updateData.accountNumber = userData.account;
                     if (userData.initial !== undefined) updateData.initialInvestment = userData.initial;
                     if (userData.strategy !== undefined) updateData.investmentStrategy = userData.strategy;
                     if (userData.operator !== undefined) updateData.assignedOperatorEmail = userData.operator;
                     await db.collection(this.USERS_COLLECTION).doc(userId).update(updateData);
-                    console.log('User updated successfully');
+                    console.log('User updated successfully in Firestore');
+                    console.log('Updated fields:', Object.keys(updateData));
                 } catch (error) {
                     console.error('Error updating user:', error);
                     throw error;
@@ -1282,7 +1308,31 @@
             // Delete user
             deleteUser: async function(userId) {
                 try {
+                    // Get user data first to get email for Firebase Auth deletion
+                    const userDoc = await db.collection(this.USERS_COLLECTION).doc(userId).get();
+                    const userData = userDoc.exists ? userDoc.data() : null;
+                    
+                    // Delete from Firestore
                     await db.collection(this.USERS_COLLECTION).doc(userId).delete();
+                    console.log('User deleted from Firestore:', userId);
+                    
+                    // Delete from Firebase Auth if email exists
+                    if (userData && userData.email && window.firebaseAuth) {
+                        try {
+                            // Get user by email from Firebase Auth
+                            // Note: We need to use Admin SDK for this, but as a workaround,
+                            // we can try to sign in and then delete (if password is known)
+                            // However, the best approach is to store the Firebase Auth UID in Firestore
+                            
+                            // For now, we'll just delete from Firestore
+                            // Firebase Auth users will need to be cleaned up manually or via Admin SDK
+                            console.log('User deleted from Firestore. Note: Firebase Auth user with email ' + userData.email + ' may still exist and needs to be deleted via Firebase Console or Admin SDK.');
+                        } catch (authError) {
+                            console.warn('Could not delete from Firebase Auth:', authError);
+                            // Continue - Firestore deletion succeeded
+                        }
+                    }
+                    
                     console.log('User deleted successfully');
                 } catch (error) {
                     console.error('Error deleting user:', error);
@@ -3164,8 +3214,17 @@
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('user-modal-title').textContent = 'Add New User';
                 document.getElementById('user-edit-form').reset();
-                document.getElementById('edit-user-password').required = true;
+                
+                // Make password field editable for new users
+                const passwordInput = document.getElementById('edit-user-password');
+                passwordInput.value = '';
+                passwordInput.readOnly = false;
+                passwordInput.required = true;
+                passwordInput.placeholder = 'Enter password for login';
+                passwordInput.style.backgroundColor = '';
+                passwordInput.style.cursor = '';
                 document.getElementById('user-password-hint').textContent = 'Password must be at least 6 characters.';
+                
                 // Hide delete button when adding new user
                 const deleteBtn = document.getElementById('delete-user-btn');
                 if (deleteBtn) deleteBtn.style.display = 'none';
@@ -3184,10 +3243,15 @@
                 
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('edit-user-username').value = user.username || '';
-                // Display current password from Firestore
-                document.getElementById('edit-user-password').value = user.password || '';
-                document.getElementById('edit-user-password').required = false;
-                document.getElementById('user-password-hint').textContent = 'Password must be at least 6 characters. You can modify it here.';
+                // Display current password (read-only, admin can only view it)
+                const passwordInput = document.getElementById('edit-user-password');
+                passwordInput.value = user.password || '';
+                passwordInput.placeholder = 'Password';
+                passwordInput.readOnly = true;
+                passwordInput.required = false;
+                passwordInput.style.backgroundColor = '#f3f4f6';
+                passwordInput.style.cursor = 'not-allowed';
+                document.getElementById('user-password-hint').textContent = 'Password is view-only. Cannot be changed after user creation.';
                 // Show delete button when editing
                 document.getElementById('delete-user-btn').style.display = 'inline-block';
                 document.getElementById('edit-user-name').value = user.name;
@@ -3208,6 +3272,63 @@
                 document.body.style.overflow = 'hidden';
             }
             
+            // Cleanup Database Function - Delete all users except default ones (1,2,3,4)
+            async function cleanupDatabase() {
+                if (!confirm('⚠️ WARNING: This will delete ALL users from the database except the default accounts (username: 1,2,3,4).\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?')) {
+                    return;
+                }
+                
+                if (!confirm('This is your last chance. Are you REALLY sure you want to delete all users?')) {
+                    return;
+                }
+                
+                try {
+                    if (!window.firebaseDb) {
+                        alert('Firebase not available. Please refresh the page.');
+                        return;
+                    }
+                    
+                    // Get all users from Firestore
+                    const usersSnapshot = await window.firebaseDb.collection('users').get();
+                    const defaultUsernames = ['1', '2', '3', '4'];
+                    let deletedCount = 0;
+                    let keptCount = 0;
+                    
+                    // Delete all users except default ones
+                    for (const doc of usersSnapshot.docs) {
+                        const userData = doc.data();
+                        const username = userData.username || '';
+                        
+                        // Keep default users (1,2,3,4)
+                        if (defaultUsernames.includes(username)) {
+                            keptCount++;
+                            console.log('Keeping default user:', username);
+                            continue;
+                        }
+                        
+                        // Delete non-default users
+                        try {
+                            await window.firebaseDb.collection('users').doc(doc.id).delete();
+                            deletedCount++;
+                            console.log('Deleted user:', username, doc.id);
+                        } catch (error) {
+                            console.error('Error deleting user', doc.id, ':', error);
+                        }
+                    }
+                    
+                    alert(`Database cleanup complete!\n\nDeleted: ${deletedCount} user(s)\nKept: ${keptCount} default user(s)\n\nNote: Firebase Auth users may still exist and need to be deleted manually via Firebase Console.`);
+                    
+                    // Reload users list
+                    await loadUsersList();
+                    
+                } catch (error) {
+                    console.error('Error cleaning up database:', error);
+                    alert('Error cleaning up database: ' + error.message);
+                }
+            }
+            
+            window.cleanupDatabase = cleanupDatabase;
+            
             // Delete user function
             async function deleteUser() {
                 const modal = document.getElementById('user-edit-modal');
@@ -3225,12 +3346,23 @@
                 
                 try {
                     if (window.firestoreService) {
-                        // Delete from Firestore
+                        // Get user data before deletion to get email for Firebase Auth cleanup
+                        const user = usersData.find(u => u.id === userId);
+                        
+                        // Delete from Firestore (this will also trigger cleanup)
                         await window.firestoreService.deleteUser(userId);
+                        
+                        // Note: Firebase Auth user deletion requires Admin SDK
+                        // For now, we delete from Firestore and log a note
+                        if (user && user.email) {
+                            console.log('User deleted from Firestore. If Firebase Auth user exists with email:', user.email, '- it should be deleted via Firebase Console or Admin SDK.');
+                        }
                         
                         // Close modal and reload list
                         closeUserEditModal();
                         await loadUsersList();
+                        
+                        alert('User deleted successfully from database.');
                     } else {
                         alert('Firestore service not available. Please refresh the page.');
                     }
@@ -3277,9 +3409,15 @@
                         
                         try {
                             // Collect form data
+                            // Password is read-only, so we don't include it in updates
+                            
+                            // Get password only for new users (it's read-only when editing)
+                            const passwordInput = document.getElementById('edit-user-password');
+                            const passwordValue = isAddMode ? passwordInput.value.trim() : undefined;
+                            
                             const formData = {
                                 username: document.getElementById('edit-user-username').value.trim(),
-                                password: document.getElementById('edit-user-password').value,
+                                password: passwordValue, // Only included for new users
                                 name: document.getElementById('edit-user-name').value.trim(),
                                 email: document.getElementById('edit-user-email').value.trim(),
                                 phone: document.getElementById('edit-user-phone').value.trim(),
@@ -3292,13 +3430,8 @@
                                 type: 'investor'
                             };
                             
-                            // Validate password if provided (for editing)
-                            if (!isAddMode && formData.password && formData.password.length < 6) {
-                                alert('Password must be at least 6 characters long');
-                                submitBtn.disabled = false;
-                                submitBtn.textContent = originalText;
-                                return;
-                            }
+                            // Password validation only for new users (password is read-only when editing)
+                            // No password validation needed for editing since password field is read-only
                         
                         if (isAddMode) {
                             // Add new user
@@ -3341,9 +3474,10 @@
                                 const userId = await window.firestoreService.createUser(formData);
                                 console.log('User created in Firestore with ID:', userId);
                                 
-                                // Create Firebase Auth user
+                                // Create Firebase Auth user (only if email doesn't already exist)
                                 if (formData.password && window.firebaseAuth) {
                                     try {
+                                        // Try to create Firebase Auth user
                                         const authUser = await window.firebaseAuth.createUserWithEmailAndPassword(
                                             formData.email, 
                                             formData.password
@@ -3351,8 +3485,15 @@
                                         console.log('Firebase Auth user created:', authUser.user.uid);
                                     } catch (authError) {
                                         console.error('Could not create Firebase Auth user:', authError);
-                                        // Continue anyway - user is created in Firestore
-                                        alert('User created in database, but Firebase Auth creation failed: ' + authError.message);
+                                        
+                                        // If email already exists in Firebase Auth, that's okay - user can still log in
+                                        if (authError.code === 'auth/email-already-in-use') {
+                                            console.log('Email already exists in Firebase Auth. User can log in with existing credentials.');
+                                            // User is created in Firestore, and Auth user already exists, so this is fine
+                                        } else {
+                                            // Other errors - show warning but continue
+                                            alert('User created in database. Note: Firebase Auth user creation failed: ' + authError.message);
+                                        }
                                     }
                                 }
                                 
@@ -3406,22 +3547,14 @@
                             
                             // Update user in Firestore
                             if (window.firestoreService) {
-                                // Include password in update (will only update if provided and not empty)
-                                await window.firestoreService.updateUser(userId, formData);
-                                
-                                // Update password in Firebase Auth if provided
-                                if (formData.password && formData.password.length >= 6 && window.firebaseAuth) {
-                                    try {
-                                        const user = usersData.find(u => u.id === userId);
-                                        if (user && user.email) {
-                                            // Note: To update password in Firebase Auth, the user needs to be signed in
-                                            // For admin password updates, you may need to use Admin SDK
-                                            console.log('Password updated in Firestore. Firebase Auth password update requires user to be signed in.');
-                                        }
-                                    } catch (authError) {
-                                        console.warn('Could not update Firebase Auth password:', authError);
-                                    }
+                                // Password is NOT included in formData when editing (read-only field)
+                                // Remove password from formData if editing (it shouldn't be there, but just in case)
+                                if (!isAddMode && formData.password !== undefined) {
+                                    delete formData.password;
                                 }
+                                
+                                // Only update other fields (password is view-only and cannot be changed)
+                                await window.firestoreService.updateUser(userId, formData);
                                 // User updated successfully - no alert needed
                             } else {
                                 alert('Firestore service not available. Please refresh the page.');
@@ -3648,6 +3781,123 @@
             window.openNewsEditModal = openNewsEditModal;
             window.deleteNews = deleteNews;
             window.closeNewsEditModal = closeNewsEditModal;
+            
+            // Admin Profile Picture Functions
+            function loadAdminProfilePicture(profilePictureUrl) {
+                const profileImg = document.getElementById('admin-profile-picture-img');
+                const placeholder = document.getElementById('admin-profile-picture-placeholder');
+                
+                if (profilePictureUrl && profilePictureUrl.trim() !== '') {
+                    profileImg.src = profilePictureUrl;
+                    profileImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    profileImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Load admin profile picture from separate admin sessionStorage key
+            const adminProfilePicture = sessionStorage.getItem('adminProfilePicture');
+            if (adminProfilePicture) {
+                try {
+                    loadAdminProfilePicture(adminProfilePicture);
+                } catch (error) {
+                    console.error('Error loading admin profile picture:', error);
+                }
+            }
+            
+            // Setup admin profile picture upload
+            const adminProfileContainer = document.getElementById('admin-profile-picture-container');
+            const adminProfileInput = document.getElementById('admin-profile-picture-input');
+            const adminProfileOverlay = adminProfileContainer?.querySelector('.profile-picture-upload-overlay');
+            
+            if (adminProfileContainer && adminProfileInput) {
+                // Show overlay on hover
+                adminProfileContainer.addEventListener('mouseenter', function() {
+                    if (adminProfileOverlay) adminProfileOverlay.style.display = 'flex';
+                });
+                
+                adminProfileContainer.addEventListener('mouseleave', function() {
+                    if (adminProfileOverlay) adminProfileOverlay.style.display = 'none';
+                });
+                
+                // Click to upload
+                adminProfileContainer.addEventListener('click', function() {
+                    adminProfileInput.click();
+                });
+                
+                // Handle file selection
+                adminProfileInput.addEventListener('change', async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    try {
+                        // Show loading state - use spinner
+                        const profileImg = document.getElementById('admin-profile-picture-img');
+                        const placeholder = document.getElementById('admin-profile-picture-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = '<div style="width: 20px; height: 20px; border: 2px solid #6b7280; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>';
+                            placeholder.style.opacity = '0.7';
+                        }
+                        
+                        // Convert image to base64 data URL (avoids Storage CORS issues)
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const base64DataUrl = e.target.result;
+                                
+                                // Store admin profile picture in separate sessionStorage key (isolated from users)
+                                sessionStorage.setItem('adminProfilePicture', base64DataUrl);
+                                
+                                // Update display
+                                loadAdminProfilePicture(base64DataUrl);
+                                
+                                // Reset placeholder opacity
+                                if (placeholder) {
+                                    placeholder.style.opacity = '1';
+                                }
+                                
+                                console.log('Admin profile picture updated successfully');
+                            } catch (error) {
+                                console.error('Error saving admin profile picture:', error);
+                                alert('Error saving profile picture: ' + error.message);
+                                if (placeholder) {
+                                    placeholder.innerHTML = '<span>👤</span>';
+                                    placeholder.style.opacity = '1';
+                                }
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('Error reading file:', error);
+                            alert('Error reading image file.');
+                            if (placeholder) {
+                                placeholder.innerHTML = '<span>👤</span>';
+                                placeholder.style.opacity = '1';
+                            }
+                        };
+                        
+                        // Read file as data URL
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error uploading admin profile picture:', error);
+                        alert('Error uploading profile picture: ' + error.message);
+                    }
+                });
+            }
             
             // Consultations Section
             let consultationsData = [

@@ -5,12 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investor Portal - Opessocius</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body class="dashboard-active">
     <section class="user-dashboard" id="user-dashboard">
         <div class="dashboard-sidebar">
             <div class="sidebar-profile">
-                <img src="images/diegorequena.JPG" alt="Investor Profile" class="sidebar-profile-image" />
+                <div class="sidebar-profile-image-container" id="profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
+                    <img src="" alt="Profile Picture" class="sidebar-profile-image" id="profile-picture-img" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" />
+                    <div class="profile-picture-placeholder" id="profile-picture-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 2rem; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <span>👤</span>
+                    </div>
+                    <div class="profile-picture-upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 0.75rem; text-align: center; padding: 0.5rem; cursor: pointer;">
+                        Click to upload
+                    </div>
+                </div>
+                <input type="file" id="profile-picture-input" accept="image/*" style="display: none;" />
                 <div class="sidebar-profile-name">John Investor</div>
             </div>
             <nav class="sidebar-navigation">
@@ -561,6 +576,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
     
     <!-- Firebase Configuration and Service -->
@@ -582,11 +598,13 @@
         // Initialize services
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const storage = firebase.storage();
         const analytics = firebase.analytics();
         
         // Make available globally
         window.firebaseDb = db;
         window.firebaseAuth = auth;
+        window.firebaseStorage = storage;
         window.firebaseAnalytics = analytics;
         window.firebase = firebase;
         
@@ -630,6 +648,308 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Profile Picture Functions (defined first)
+            function loadProfilePicture(profilePictureUrl) {
+                const profileImg = document.getElementById('profile-picture-img');
+                const placeholder = document.getElementById('profile-picture-placeholder');
+                
+                if (profilePictureUrl && profilePictureUrl.trim() !== '') {
+                    profileImg.src = profilePictureUrl;
+                    profileImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    profileImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Load and display user data
+            async function loadUserData() {
+                try {
+                    // Try to get user-specific session first, then fall back to 'user'
+                    let userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                    if (!userSession) {
+                        console.warn('No user session found');
+                        return;
+                    }
+                    
+                    const user = JSON.parse(userSession);
+                    let userData = user.userData || {};
+                    
+                    // Ensure we're not loading admin data - check if it's an investor
+                    if (userData.type && userData.type === 'admin') {
+                        console.warn('Admin session detected in investor portal');
+                        return;
+                    }
+                    
+                    // Fetch fresh user data from Firestore to ensure we have the latest data for THIS specific user
+                    if (window.firebaseDb) {
+                        try {
+                            let userDoc = null;
+                            
+                            // First try using userData.id (Firestore document ID)
+                            let foundUserDoc = null;
+                            if (userData.id) {
+                                const docSnapshot = await window.firebaseDb.collection('users').doc(userData.id).get();
+                                if (docSnapshot.exists) {
+                                    foundUserDoc = { id: docSnapshot.id, data: docSnapshot.data() };
+                                }
+                            }
+                            
+                            // If not found or no ID, find by username (most reliable identifier)
+                            if (!foundUserDoc && user.username) {
+                                const userQuery = await window.firebaseDb.collection('users')
+                                    .where('username', '==', user.username)
+                                    .where('type', '==', 'investor')
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    const doc = userQuery.docs[0];
+                                    foundUserDoc = { id: doc.id, data: doc.data() };
+                                }
+                            }
+                            
+                            // If still not found, try by email
+                            if (!foundUserDoc && userData.email) {
+                                const userQuery = await window.firebaseDb.collection('users')
+                                    .where('email', '==', userData.email)
+                                    .where('type', '==', 'investor')
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    const doc = userQuery.docs[0];
+                                    foundUserDoc = { id: doc.id, data: doc.data() };
+                                }
+                            }
+                            
+                            if (foundUserDoc && foundUserDoc.id && foundUserDoc.data) {
+                                // Update with fresh data from Firestore
+                                userData = { 
+                                    id: foundUserDoc.id, 
+                                    ...foundUserDoc.data 
+                                };
+                                
+                                // Update sessionStorage with fresh data
+                                user.userData = userData;
+                                sessionStorage.setItem('investorUser', JSON.stringify(user));
+                                sessionStorage.setItem('user', JSON.stringify(user));
+                                console.log('Loaded fresh user data from Firestore for user:', userData.id, 'username:', userData.username);
+                            } else {
+                                console.warn('User document not found in Firestore for username:', user.username);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching user data from Firestore:', error);
+                            // Continue with cached data if Firestore fetch fails
+                        }
+                    }
+                    
+                    // Update sidebar profile name
+                    const sidebarProfileName = document.querySelector('.sidebar-profile-name');
+                    if (sidebarProfileName) {
+                        sidebarProfileName.textContent = userData.fullName || user.username || 'Investor';
+                    }
+                    
+                    // Load and display profile picture from userData (which comes from Firestore)
+                    loadProfilePicture(userData.profilePictureUrl);
+                    
+                    // Format date helper
+                    function formatDate(dateValue) {
+                        if (!dateValue) return 'N/A';
+                        try {
+                            let date;
+                            if (dateValue.toDate) {
+                                // Firestore Timestamp
+                                date = dateValue.toDate();
+                            } else if (dateValue instanceof Date) {
+                                date = dateValue;
+                            } else if (typeof dateValue === 'string') {
+                                date = new Date(dateValue);
+                            } else {
+                                return 'N/A';
+                            }
+                            
+                            return date.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long' 
+                            });
+                        } catch (error) {
+                            console.error('Error formatting date:', error);
+                            return 'N/A';
+                        }
+                    }
+                    
+                    // Format currency helper
+                    function formatCurrency(amount) {
+                        if (amount === null || amount === undefined) return '€0';
+                        const numAmount = typeof amount === 'number' ? amount : parseFloat(amount) || 0;
+                        return new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'EUR',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        }).format(numAmount);
+                    }
+                    
+                    // Format percentage helper
+                    function formatPercentage(value) {
+                        if (value === null || value === undefined) return '0%';
+                        const numValue = typeof value === 'number' ? value : parseFloat(value) || 0;
+                        const sign = numValue >= 0 ? '+' : '';
+                        return `${sign}${numValue.toFixed(2)}%`;
+                    }
+                    
+                    // Update Dashboard Widgets with User-Specific Data
+                    const currentBalanceWidget = document.getElementById('dashboard-current-balance');
+                    const currentBalanceContainer = currentBalanceWidget?.closest('.dashboard-widget-content');
+                    const capitalInvestedSubMetric = currentBalanceContainer?.querySelector('.dashboard-sub-metric');
+                    const totalGainWidget = document.getElementById('dashboard-total-gain');
+                    const totalGainContainer = totalGainWidget?.closest('.dashboard-widget-content');
+                    const profitSubMetric = totalGainContainer?.querySelector('.dashboard-sub-metric');
+                    
+                    if (currentBalanceWidget) {
+                        const balance = userData.currentBalance || userData.initialInvestment || 0;
+                        currentBalanceWidget.textContent = formatCurrency(balance);
+                    }
+                    
+                    if (capitalInvestedSubMetric) {
+                        const initial = userData.initialInvestment || 0;
+                        capitalInvestedSubMetric.textContent = `Capital Invested: ${formatCurrency(initial)}`;
+                    }
+                    
+                    if (totalGainWidget) {
+                        const returnValue = userData.totalReturn || 0;
+                        const returnText = formatPercentage(returnValue);
+                        totalGainWidget.textContent = returnText;
+                        
+                        // Update class for positive/negative
+                        totalGainWidget.className = 'dashboard-main-metric';
+                        if (returnValue >= 0) {
+                            totalGainWidget.classList.add('dashboard-metric-positive');
+                        } else {
+                            totalGainWidget.classList.add('dashboard-metric-negative');
+                        }
+                    }
+                    
+                    if (profitSubMetric) {
+                        const balance = userData.currentBalance || userData.initialInvestment || 0;
+                        const initial = userData.initialInvestment || 0;
+                        const profit = balance - initial;
+                        const profitText = profit >= 0 ? `€${Math.abs(profit).toLocaleString('en-US')} profit` : `€${Math.abs(profit).toLocaleString('en-US')} loss`;
+                        profitSubMetric.textContent = profitText;
+                    }
+                    
+                    // Update projection (will be recalculated by calculateProjectionValue with user data)
+                    // This will be called after user data is loaded
+                    
+                    // Update Account Settings - Account Information
+                    const accountSettingsView = document.getElementById('account-settings-view');
+                    if (accountSettingsView) {
+                        // Full Name
+                        const fullNameElement = accountSettingsView.querySelector('.account-info-row:nth-child(1) .account-info-value');
+                        if (fullNameElement) {
+                            fullNameElement.textContent = userData.fullName || user.username || 'N/A';
+                        }
+                        
+                        // Email Address
+                        const emailElement = accountSettingsView.querySelector('.account-info-row:nth-child(2) .account-info-value');
+                        if (emailElement) {
+                            emailElement.textContent = userData.email || user.email || 'N/A';
+                        }
+                        
+                        // Phone Number
+                        const phoneElement = accountSettingsView.querySelector('.account-info-row:nth-child(3) .account-info-value');
+                        if (phoneElement) {
+                            phoneElement.textContent = userData.phone || 'N/A';
+                        }
+                        
+                        // Account Number
+                        const accountNumberElement = accountSettingsView.querySelector('.account-info-row:nth-child(4) .account-info-value');
+                        if (accountNumberElement) {
+                            accountNumberElement.textContent = userData.accountNumber || 'N/A';
+                        }
+                        
+                        // Account Status
+                        const accountStatusElement = accountSettingsView.querySelector('.account-info-row:nth-child(5) .account-info-value');
+                        if (accountStatusElement) {
+                            const status = userData.accountStatus || 'Active';
+                            accountStatusElement.textContent = status;
+                            // Update status class
+                            accountStatusElement.className = 'account-info-value';
+                            if (status.toLowerCase() === 'active') {
+                                accountStatusElement.classList.add('account-status-active');
+                            } else if (status.toLowerCase() === 'inactive' || status.toLowerCase() === 'suspended') {
+                                accountStatusElement.classList.add('account-status-inactive');
+                            }
+                        }
+                        
+                        // Member Since
+                        const memberSinceElement = accountSettingsView.querySelector('.account-info-row:nth-child(6) .account-info-value');
+                        if (memberSinceElement) {
+                            memberSinceElement.textContent = formatDate(userData.memberSince);
+                        }
+                        
+                        // Country
+                        const countryElement = accountSettingsView.querySelector('.account-info-row:nth-child(7) .account-info-value');
+                        if (countryElement) {
+                            countryElement.textContent = userData.country || 'N/A';
+                        }
+                        
+                        // Investment Details
+                        // Initial Investment
+                        const initialInvestmentElement = accountSettingsView.querySelectorAll('.account-info-card')[1]?.querySelector('.account-info-row:nth-child(1) .account-info-value');
+                        if (initialInvestmentElement) {
+                            initialInvestmentElement.textContent = formatCurrency(userData.initialInvestment);
+                        }
+                        
+                        // Current Balance
+                        const currentBalanceElement = accountSettingsView.querySelectorAll('.account-info-card')[1]?.querySelector('.account-info-row:nth-child(2) .account-info-value');
+                        if (currentBalanceElement) {
+                            currentBalanceElement.textContent = formatCurrency(userData.currentBalance);
+                        }
+                        
+                        // Total Return
+                        const totalReturnElement = accountSettingsView.querySelectorAll('.account-info-card')[1]?.querySelector('.account-info-row:nth-child(3) .account-info-value');
+                        if (totalReturnElement) {
+                            const returnValue = userData.totalReturn || 0;
+                            totalReturnElement.textContent = formatPercentage(returnValue);
+                            // Update class for positive/negative
+                            totalReturnElement.className = 'account-info-value';
+                            if (returnValue >= 0) {
+                                totalReturnElement.classList.add('account-value-positive');
+                            } else {
+                                totalReturnElement.classList.add('account-value-negative');
+                            }
+                        }
+                        
+                        // Investment Strategy
+                        const strategyElement = accountSettingsView.querySelectorAll('.account-info-card')[1]?.querySelector('.account-info-row:nth-child(4) .account-info-value');
+                        if (strategyElement) {
+                            strategyElement.textContent = userData.investmentStrategy || 'N/A';
+                        }
+                        
+                        // Assigned Operator Email
+                        const operatorElement = accountSettingsView.querySelectorAll('.account-info-card')[1]?.querySelector('.account-info-row:nth-child(5) .account-info-value');
+                        if (operatorElement) {
+                            operatorElement.textContent = userData.assignedOperatorEmail || 'N/A';
+                        }
+                    }
+                    
+                    // Recalculate projection with user-specific data
+                    setTimeout(function() {
+                        calculateProjectionValue(userData);
+                    }, 100);
+                    
+                    console.log('User data loaded successfully');
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            }
+            
+            // Load user data on page load
+            loadUserData();
+            
             // Navigation handling
             const navItems = document.querySelectorAll('.sidebar-nav-item');
             const dashboardView = document.getElementById('dashboard-view');
@@ -1714,21 +2034,45 @@
             }
             
             // Calculate 12-month projection value
-            function calculateProjectionValue() {
+            // Accepts optional userData parameter to use user-specific balance
+            function calculateProjectionValue(userData = null) {
                 const projectionValueEl = document.getElementById('dashboard-projection-value');
                 const portfolioProjectionEl = document.getElementById('portfolio-projection');
                 
+                // Get user-specific balance if available, otherwise try to get from sessionStorage
+                let balance = null;
+                if (userData) {
+                    balance = userData.currentBalance || userData.initialInvestment || null;
+                } else {
+                    // Try to get from sessionStorage
+                    try {
+                        const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                        if (userSession) {
+                            const user = JSON.parse(userSession);
+                            const data = user.userData || {};
+                            balance = data.currentBalance || data.initialInvestment || null;
+                        }
+                    } catch (e) {
+                        console.warn('Could not get user data for projection:', e);
+                    }
+                }
+                
+                // Fallback to default if no user data available
+                if (balance === null || balance === undefined) {
+                    balance = 287450; // Default fallback
+                }
+                
                 // Use same calculation as portfolio chart (2% compound growth per month)
                 const monthlyGrowthRate = 0.02; // 2% per month
-                let balance = 287450; // Current balance (month 12)
                 
                 // Calculate 12 months forward
+                let projectedBalance = balance;
                 for (let i = 0; i < 12; i++) {
-                    balance = balance * (1 + monthlyGrowthRate);
+                    projectedBalance = projectedBalance * (1 + monthlyGrowthRate);
                 }
                 
                 // Round to whole number and format
-                const projectedValue = Math.round(balance);
+                const projectedValue = Math.round(projectedBalance);
                 const formattedValue = '€' + projectedValue.toLocaleString('en-US');
                 
                 if (projectionValueEl) {
@@ -1740,10 +2084,24 @@
             }
             
             // Initial draw if dashboard is visible
+            // Note: calculateProjectionValue will be called from loadUserData() with user-specific data
+            // This fallback is only if user data hasn't loaded yet
             if (dashboardViewEl && dashboardViewEl.style.display !== 'none') {
                 setTimeout(function() {
-                    calculateProjectionValue();
-                }, 100);
+                    // Try to get user data first
+                    try {
+                        const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                        if (userSession) {
+                            const user = JSON.parse(userSession);
+                            const userData = user.userData || {};
+                            calculateProjectionValue(userData);
+                        } else {
+                            calculateProjectionValue();
+                        }
+                    } catch (e) {
+                        calculateProjectionValue();
+                    }
+                }, 500); // Delay to allow loadUserData to run first
             }
 
             // Redraw chart on window resize
@@ -2064,6 +2422,21 @@
             }
             
             // Community Group Chat Section
+            // Helper function to get user display name
+            function getUserDisplayName() {
+                try {
+                    const userSession = sessionStorage.getItem('user');
+                    if (userSession) {
+                        const user = JSON.parse(userSession);
+                        const userData = user.userData || {};
+                        return userData.fullName || user.username || 'Investor';
+                    }
+                } catch (error) {
+                    console.error('Error getting user display name:', error);
+                }
+                return 'Investor';
+            }
+            
             let communityChatMessages = [
                 {
                     id: 1,
@@ -2074,7 +2447,7 @@
                 },
                 {
                     id: 2,
-                    sender: 'John Investor',
+                    sender: getUserDisplayName(),
                     message: 'Thanks! Looking forward to learning more about the market trends.',
                     images: [],
                     timestamp: new Date(Date.now() - 3300000).toISOString() // 55 minutes ago
@@ -2257,7 +2630,7 @@
                 // Add message
                 const newMessage = {
                     id: communityChatMessages.length + 1,
-                    sender: 'John Investor',
+                    sender: getUserDisplayName(),
                     message: messageText,
                     images: imageUrls,
                     timestamp: new Date().toISOString()
@@ -2711,6 +3084,182 @@
             
             // Make loadMarketNews available globally
             window.loadMarketNews = loadMarketNews;
+            
+            // Setup profile picture upload
+            const profileContainer = document.getElementById('profile-picture-container');
+            const profileInput = document.getElementById('profile-picture-input');
+            const profileOverlay = profileContainer?.querySelector('.profile-picture-upload-overlay');
+            
+            if (profileContainer && profileInput) {
+                // Show overlay on hover
+                profileContainer.addEventListener('mouseenter', function() {
+                    if (profileOverlay) profileOverlay.style.display = 'flex';
+                });
+                
+                profileContainer.addEventListener('mouseleave', function() {
+                    if (profileOverlay) profileOverlay.style.display = 'none';
+                });
+                
+                // Click to upload
+                profileContainer.addEventListener('click', function() {
+                    profileInput.click();
+                });
+                
+                // Handle file selection
+                profileInput.addEventListener('change', async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    try {
+                        // Get user data - use investor-specific key to avoid admin conflicts
+                        let userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                        if (!userSession) {
+                            alert('User session not found. Please log in again.');
+                            return;
+                        }
+                        
+                        const user = JSON.parse(userSession);
+                        const userData = user.userData || {};
+                        
+                        // Ensure this is an investor, not admin
+                        if (userData.type && userData.type === 'admin') {
+                            alert('This is an admin session. Please use the admin portal.');
+                            return;
+                        }
+                        
+                        // Get user document ID from Firestore (must be the specific user's ID)
+                        // First try to get it from userData.id (Firestore document ID)
+                        let userDocId = userData.id;
+                        
+                        // If not found, try to find by username (most reliable)
+                        if (!userDocId && user.username) {
+                            if (window.firebaseDb) {
+                                const userQuery = await window.firebaseDb.collection('users')
+                                    .where('username', '==', user.username)
+                                    .where('type', '==', 'investor') // Ensure it's an investor
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    userDocId = userQuery.docs[0].id;
+                                    // Update userData with the correct ID
+                                    userData.id = userDocId;
+                                    user.userData = userData;
+                                    sessionStorage.setItem('investorUser', JSON.stringify(user));
+                                    sessionStorage.setItem('user', JSON.stringify(user));
+                                }
+                            }
+                        }
+                        
+                        // If still not found, try by email
+                        if (!userDocId && userData.email) {
+                            if (window.firebaseDb) {
+                                const userQuery = await window.firebaseDb.collection('users')
+                                    .where('email', '==', userData.email)
+                                    .where('type', '==', 'investor') // Ensure it's an investor
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    userDocId = userQuery.docs[0].id;
+                                    // Update userData with the correct ID
+                                    userData.id = userDocId;
+                                    user.userData = userData;
+                                    sessionStorage.setItem('investorUser', JSON.stringify(user));
+                                    sessionStorage.setItem('user', JSON.stringify(user));
+                                }
+                            }
+                        }
+                        
+                        if (!userDocId) {
+                            alert('User ID not found. Please log out and log in again.');
+                            console.error('User data:', user);
+                            console.error('UserData:', userData);
+                            return;
+                        }
+                        
+                        console.log('Using Firestore document ID for profile picture:', userDocId);
+                        
+                        // Show loading state - use spinner instead of text
+                        const profileImg = document.getElementById('profile-picture-img');
+                        const placeholder = document.getElementById('profile-picture-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = '<div style="width: 20px; height: 20px; border: 2px solid #6b7280; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>';
+                            placeholder.style.opacity = '0.7';
+                        }
+                        
+                        // Convert image to base64 data URL (avoids Storage CORS issues)
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const base64DataUrl = e.target.result;
+                                
+                                // Update user document in Firestore with base64 data URL
+                                if (window.firebaseDb && userDocId) {
+                                    await window.firebaseDb.collection('users').doc(userDocId).update({
+                                        profilePictureUrl: base64DataUrl,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                    
+                                    // Update sessionStorage - only update this specific user's data
+                                    user.userData = user.userData || {};
+                                    user.userData.profilePictureUrl = base64DataUrl;
+                                    // Use investor-specific key to avoid conflicts with admin
+                                    sessionStorage.setItem('investorUser', JSON.stringify(user));
+                                    // Also keep 'user' for backward compatibility (only if it's an investor)
+                                    if (!userData.type || userData.type !== 'admin') {
+                                        sessionStorage.setItem('user', JSON.stringify(user));
+                                    }
+                                    
+                                    // Update display
+                                    loadProfilePicture(base64DataUrl);
+                                    
+                                    // Reset placeholder opacity
+                                    if (placeholder) {
+                                        placeholder.style.opacity = '1';
+                                    }
+                                    
+                                    console.log('Profile picture updated successfully');
+                                }
+                            } catch (error) {
+                                console.error('Error saving profile picture:', error);
+                                alert('Error saving profile picture: ' + error.message);
+                                if (placeholder) {
+                                    placeholder.innerHTML = '<span>👤</span>';
+                                    placeholder.style.opacity = '1';
+                                }
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('Error reading file:', error);
+                            alert('Error reading image file.');
+                            if (placeholder) {
+                                placeholder.innerHTML = '<span>👤</span>';
+                                placeholder.style.opacity = '1';
+                            }
+                        };
+                        
+                        // Read file as data URL
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error uploading profile picture:', error);
+                        alert('Error uploading profile picture: ' + error.message);
+                    }
+                });
+            }
     });
     </script>
 </body>

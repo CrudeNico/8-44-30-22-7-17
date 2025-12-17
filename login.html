@@ -329,13 +329,35 @@
                                     );
                                     const user = userCredential.user;
                                     
-                                    // Store user info in sessionStorage
-                                    sessionStorage.setItem('user', JSON.stringify({
+                                    // Ensure userData has the Firestore document ID
+                                    if (!userData.id) {
+                                        // If id is missing, try to get it from the query result
+                                        const userQuery = await db.collection('users')
+                                            .where('username', '==', username)
+                                            .limit(1)
+                                            .get();
+                                        if (!userQuery.empty) {
+                                            userData.id = userQuery.docs[0].id;
+                                        }
+                                    }
+                                    
+                                    // Store user info in sessionStorage with proper Firestore document ID
+                                    // Use investorUser key for investors to avoid conflicts with admin sessions
+                                    const userSession = {
                                         uid: user.uid,
                                         email: user.email,
                                         username: username,
-                                        userData: userData
-                                    }));
+                                        userData: userData // This now includes the Firestore document ID
+                                    };
+                                    
+                                    // Store with both keys for compatibility
+                                    if (userData.type === 'admin') {
+                                        sessionStorage.setItem('adminUser', JSON.stringify(userSession));
+                                        sessionStorage.setItem('user', JSON.stringify(userSession));
+                                    } else {
+                                        sessionStorage.setItem('investorUser', JSON.stringify(userSession));
+                                        sessionStorage.setItem('user', JSON.stringify(userSession));
+                                    }
                                     
                                     // Redirect based on user type/role
                                     if (userData.type === 'admin') {
