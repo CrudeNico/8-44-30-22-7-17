@@ -547,31 +547,8 @@
                         </div>
                     </div>
                     <div class="market-news-articles-section">
-                        <div class="news-grid">
-                            <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
-                                <div class="news-image-container">
-                                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
-                                    <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
-                                </div>
-                            </a>
-                            <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
-                                <div class="news-image-container">
-                                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
-                                    <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
-                                </div>
-                            </a>
-                            <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
-                                <div class="news-image-container">
-                                    <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
-                                    <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
-                                </div>
-                            </a>
-                            <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
-                                <div class="news-image-container">
-                                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
-                                    <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
-                                </div>
-                            </a>
+                        <div class="news-grid" id="news-grid">
+                            <!-- News articles will be loaded from Firestore -->
                         </div>
                     </div>
                 </div>
@@ -580,6 +557,77 @@
     </section>
     
     <script src="script.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const analytics = firebase.analytics();
+        
+        // Make available globally
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseAnalytics = analytics;
+        window.firebase = firebase;
+        
+        // Firestore Service Functions for News (using CDN API)
+        window.firestoreService = {
+            NEWS_COLLECTION: 'marketNews',
+            
+            // Get all news articles
+            getAllNews: async function() {
+                try {
+                    const snapshot = await db.collection(this.NEWS_COLLECTION)
+                        .orderBy('order', 'asc')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    const news = [];
+                    snapshot.forEach((doc) => {
+                        news.push({ id: doc.id, ...doc.data() });
+                    });
+                    return news;
+                } catch (error) {
+                    console.error('Error getting news:', error);
+                    // If orderBy fails (no index), try without order
+                    try {
+                        const snapshot = await db.collection(this.NEWS_COLLECTION)
+                            .orderBy('createdAt', 'desc')
+                            .get();
+                        const news = [];
+                        snapshot.forEach((doc) => {
+                            news.push({ id: doc.id, ...doc.data() });
+                        });
+                        // Sort by order manually
+                        news.sort((a, b) => (a.order || 0) - (b.order || 0));
+                        return news;
+                    } catch (error2) {
+                        console.error('Error getting news (fallback):', error2);
+                        return [];
+                    }
+                }
+            }
+        };
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Navigation handling
@@ -640,6 +688,7 @@
                         }, 100);
                     } else if (navText === 'Market News' && marketNewsView) {
                         marketNewsView.style.display = 'block';
+                        loadMarketNews();
                     } else if (navText === 'Account Settings' && accountSettingsView) {
                         accountSettingsView.style.display = 'block';
                     } else if (navText === 'Reports' && reportsView) {
@@ -2615,6 +2664,53 @@
                 });
                 observer.observe(communityView, { attributes: true, attributeFilter: ['style'] });
             }
+            
+            // Market News Functions - Load from Firestore
+            async function loadMarketNews() {
+                const container = document.getElementById('news-grid');
+                if (!container) return;
+                
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading news...</div>';
+                
+                try {
+                    let newsData = [];
+                    if (window.firestoreService) {
+                        newsData = await window.firestoreService.getAllNews();
+                        console.log('News loaded from Firestore:', newsData.length);
+                    } else {
+                        console.warn('Firestore service not available');
+                        newsData = [];
+                    }
+                    
+                    container.innerHTML = '';
+                    
+                    if (newsData.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No news articles available at the moment.</p><p style="margin: 0; font-size: 0.875rem;">Please check back later for the latest market news.</p></div>';
+                        return;
+                    }
+                    
+                    newsData.forEach((news) => {
+                        const newsCard = document.createElement('a');
+                        newsCard.href = news.link;
+                        newsCard.target = '_blank';
+                        newsCard.rel = 'noopener noreferrer';
+                        newsCard.className = 'news-card';
+                        newsCard.innerHTML = `
+                            <div class="news-image-container">
+                                <img src="${news.image}" alt="${news.title}" class="news-image" />
+                                <h3 class="news-title">${news.title}</h3>
+                            </div>
+                        `;
+                        container.appendChild(newsCard);
+                    });
+                } catch (error) {
+                    console.error('Error loading news:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc2626; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0;">Error loading news. Please try again later.</p></div>';
+                }
+            }
+            
+            // Make loadMarketNews available globally
+            window.loadMarketNews = loadMarketNews;
     });
     </script>
 </body>
