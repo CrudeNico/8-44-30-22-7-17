@@ -152,53 +152,13 @@
                     </div>
                     
                     <!-- Latest Report - Second Row -->
-                    <div class="dashboard-widget" style="grid-column: 2; grid-row: 2;">
+                    <div class="dashboard-widget" id="dashboard-report-widget" style="grid-column: 2; grid-row: 2;">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Latest Report</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">November 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+17.39%</span>
-                                    <span class="dashboard-report-balance">€270,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2024-11">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">December 2024</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+19.57%</span>
-                                    <span class="dashboard-report-balance">€275,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2024-12">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="dashboard-report-item">
-                                <div class="dashboard-report-period">January 2025</div>
-                                <div class="dashboard-report-metrics">
-                                    <span class="dashboard-report-gain">+21.74%</span>
-                                    <span class="dashboard-report-balance">€280,000</span>
-                                </div>
-                                <button class="dashboard-report-download" data-month="2025-01">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                        <polyline points="7 10 12 15 17 10"></polyline>
-                                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                                    </svg>
-                                </button>
-                            </div>
+                            <!-- Reports will be loaded dynamically by JavaScript -->
+                            <div style="text-align: center; padding: 1rem; color: #9ca3af;">Loading reports...</div>
                         </div>
                     </div>
                     
@@ -2670,24 +2630,46 @@
             }
             
             // Dashboard report download buttons - load from Firestore
-            async function setupDashboardReportDownloads() {
-                const dashboardReportDownloads = document.querySelectorAll('.dashboard-report-download');
+            // Format month and year as "Nov 24", "Dec 25", etc.
+            function formatMonthYear(month, year) {
+                const monthAbbr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const monthIndex = months.indexOf(month);
+                const yearShort = year.toString().slice(-2);
+                return `${monthAbbr[monthIndex]} ${yearShort}`;
+            }
+            
+            // Load and display dashboard reports with real data
+            async function loadDashboardReports() {
+                const reportWidget = document.getElementById('dashboard-report-widget');
+                if (!reportWidget) return;
                 
-                if (dashboardReportDownloads.length === 0) return;
+                const reportContent = reportWidget.querySelector('.dashboard-widget-content');
+                if (!reportContent) return;
                 
                 try {
                     const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
-                    if (!userSession || !window.firebaseDb) return;
+                    if (!userSession || !window.firebaseDb) {
+                        reportContent.innerHTML = '<div style="text-align: center; padding: 1rem; color: #9ca3af;">Loading reports...</div>';
+                        return;
+                    }
                     
                     const user = JSON.parse(userSession);
                     const userData = user.userData || {};
                     const userId = userData.id;
                     
-                    if (!userId) return;
+                    if (!userId) {
+                        reportContent.innerHTML = '<div style="text-align: center; padding: 1rem; color: #9ca3af;">No user data available</div>';
+                        return;
+                    }
                     
-                    // Load latest reports (without orderBy to avoid index requirement)
+                    // Load reports
                     const reportsSnapshot = await window.firebaseDb.collection('users').doc(userId)
                         .collection('reports')
+                        .get();
+                    
+                    // Load transactions to get growth and balance data
+                    const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userId)
+                        .collection('transactions')
                         .get();
                     
                     const reportsList = [];
@@ -2699,44 +2681,116 @@
                             fileName: reportData.fileName,
                             month: reportData.month,
                             year: reportData.year,
+                            fileBase64: reportData.fileBase64,
+                            storageMethod: reportData.storageMethod || 'storage',
                             uploadDate: reportData.uploadDate
                         });
                     });
                     
-                    // Sort by year (desc) and month (desc) to show newest first, then take top 3
+                    // Build transactions map by month/year
+                    const transactionsMap = {};
+                    transactionsSnapshot.forEach((doc) => {
+                        const txData = doc.data();
+                        const monthKey = `${txData.year}-${String(txData.monthIndex + 1).padStart(2, '0')}`;
+                        transactionsMap[monthKey] = {
+                            endingBalance: txData.endingBalance,
+                            returnPercent: txData.returnPercent || txData.monthlyReturn || null,
+                            startingBalance: txData.startingBalance || null
+                        };
+                    });
+                    
+                    // Sort reports by year (desc) and month (desc) to show newest first
                     reportsList.sort((a, b) => {
                         const yearDiff = b.year - a.year;
                         if (yearDiff !== 0) return yearDiff;
                         return months.indexOf(b.month) - months.indexOf(a.month);
                     });
                     
-                    const reportsMap = {};
-                    reportsList.slice(0, 3).forEach((report) => {
-                        const monthKey = `${report.year}-${String(months.indexOf(report.month) + 1).padStart(2, '0')}`;
-                        reportsMap[monthKey] = {
-                            fileUrl: report.fileUrl,
-                            fileName: report.fileName,
-                            month: report.month,
-                            year: report.year
-                        };
+                    // Take top 3 reports
+                    const latestReports = reportsList.slice(0, 3);
+                    
+                    if (latestReports.length === 0) {
+                        reportContent.innerHTML = '<div style="text-align: center; padding: 1rem; color: #9ca3af;">No reports available yet</div>';
+                        return;
+                    }
+                    
+                    // Build HTML for reports
+                    let reportsHtml = '';
+                    latestReports.forEach((report) => {
+                        const monthIndex = months.indexOf(report.month);
+                        const monthKey = `${report.year}-${String(monthIndex + 1).padStart(2, '0')}`;
+                        const transaction = transactionsMap[monthKey];
+                        
+                        // Get growth percentage and balance
+                        let growthPercent = null;
+                        let balance = null;
+                        
+                        if (transaction) {
+                            balance = transaction.endingBalance;
+                            if (transaction.returnPercent !== null && transaction.returnPercent !== undefined) {
+                                growthPercent = transaction.returnPercent;
+                            } else if (transaction.startingBalance && transaction.endingBalance) {
+                                // Calculate growth from starting and ending balance
+                                growthPercent = ((transaction.endingBalance - transaction.startingBalance) / transaction.startingBalance) * 100;
+                            }
+                        }
+                        
+                        // Format values
+                        const formattedPeriod = formatMonthYear(report.month, report.year);
+                        const formattedGrowth = growthPercent !== null ? `${growthPercent >= 0 ? '+' : ''}${growthPercent.toFixed(2)}%` : 'N/A';
+                        const formattedBalance = balance !== null ? `€${balance.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}` : 'N/A';
+                        
+                        reportsHtml += `
+                            <div class="dashboard-report-item">
+                                <div class="dashboard-report-period">${formattedPeriod}</div>
+                                <div class="dashboard-report-metrics">
+                                    <span class="dashboard-report-gain">${formattedGrowth}</span>
+                                    <span class="dashboard-report-balance">${formattedBalance}</span>
+                                </div>
+                                <button class="dashboard-report-download" data-report-key="report_${report.id}" style="background: none; border: none; cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
                     });
                     
-                    dashboardReportDownloads.forEach(btn => {
+                    reportContent.innerHTML = reportsHtml;
+                    
+                    // Store reports data for download
+                    window.dashboardReportsMap = window.dashboardReportsMap || new Map();
+                    latestReports.forEach((report) => {
+                        const reportKey = `report_${report.id}`;
+                        window.dashboardReportsMap.set(reportKey, report);
+                    });
+                    
+                    // Add download button listeners
+                    reportContent.querySelectorAll('.dashboard-report-download').forEach(btn => {
                         btn.addEventListener('click', async function(e) {
                             e.preventDefault();
-                            const month = this.getAttribute('data-month');
-                            const report = reportsMap[month];
+                            e.stopPropagation();
+                            const reportKey = this.getAttribute('data-report-key');
+                            const report = window.dashboardReportsMap.get(reportKey);
                             
-                            if (report && report.fileUrl) {
-                                downloadReportFile(report.fileUrl, report.fileName);
+                            if (report) {
+                                downloadReportFile(report.fileUrl, report.fileName, report.fileBase64, report.storageMethod);
                             } else {
-                                alert('Report not available for this month.');
+                                alert('Report not available.');
                             }
                         });
                     });
                 } catch (error) {
-                    console.error('Error setting up dashboard report downloads:', error);
+                    console.error('Error loading dashboard reports:', error);
+                    reportContent.innerHTML = '<div style="text-align: center; padding: 1rem; color: #dc2626;">Error loading reports</div>';
                 }
+            }
+            
+            async function setupDashboardReportDownloads() {
+                // This function is now replaced by loadDashboardReports, but keeping for backward compatibility
+                await loadDashboardReports();
             }
             
             // Setup dashboard report downloads when dashboard is shown
@@ -2747,6 +2801,8 @@
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             if (dashboardViewEl.style.display !== 'none') {
                                 setTimeout(setupDashboardReportDownloads, 100);
+                                // Load latest news titles in dashboard widget
+                                setTimeout(loadDashboardLatestNews, 100);
                             }
                         }
                     });
@@ -2754,6 +2810,11 @@
                 observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
             }
             
+            // Load dashboard news and reports on initial page load if dashboard is visible
+            if (dashboardViewEl && dashboardViewEl.style.display !== 'none') {
+                setTimeout(loadDashboardLatestNews, 500);
+                setTimeout(loadDashboardReports, 500);
+            }
             
             // Dashboard news widget click handler
             const dashboardNewsWidget = document.getElementById('dashboard-news-widget');
@@ -3854,8 +3915,58 @@
                 }
             }
             
+            // Load Latest News titles in Dashboard widget from Market News
+            async function loadDashboardLatestNews() {
+                const newsWidget = document.getElementById('dashboard-news-widget');
+                if (!newsWidget) return;
+                
+                const newsContent = newsWidget.querySelector('.dashboard-widget-content');
+                if (!newsContent) return;
+                
+                try {
+                    let newsData = [];
+                    if (window.firestoreService) {
+                        newsData = await window.firestoreService.getAllNews();
+                    } else {
+                        console.warn('Firestore service not available');
+                        return;
+                    }
+                    
+                    // Clear existing content
+                    newsContent.innerHTML = '';
+                    
+                    if (newsData.length === 0) {
+                        newsContent.innerHTML = '<div class="dashboard-news-item"><div class="dashboard-news-title" style="color: #9ca3af;">No news available</div></div>';
+                        return;
+                    }
+                    
+                    // Show up to 4 latest news items
+                    const latestNews = newsData.slice(0, 4);
+                    
+                    latestNews.forEach((news) => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'dashboard-news-item';
+                        newsItem.style.cursor = 'pointer';
+                        newsItem.innerHTML = `<div class="dashboard-news-title">${news.title}</div>`;
+                        
+                        // Make it clickable to open the news link
+                        newsItem.addEventListener('click', function() {
+                            if (news.link) {
+                                window.open(news.link, '_blank', 'noopener,noreferrer');
+                            }
+                        });
+                        
+                        newsContent.appendChild(newsItem);
+                    });
+                } catch (error) {
+                    console.error('Error loading dashboard news:', error);
+                    newsContent.innerHTML = '<div class="dashboard-news-item"><div class="dashboard-news-title" style="color: #dc2626;">Error loading news</div></div>';
+                }
+            }
+            
             // Make loadMarketNews available globally
             window.loadMarketNews = loadMarketNews;
+            window.loadDashboardLatestNews = loadDashboardLatestNews;
             
             // Setup profile picture upload
             const profileContainer = document.getElementById('profile-picture-container');
