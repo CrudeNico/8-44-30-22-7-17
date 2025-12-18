@@ -1059,8 +1059,8 @@
                         populateTransactionsTable();
                     } else if (navText === 'Performance' && performanceView) {
                         performanceView.style.display = 'block';
-                        setTimeout(function() {
-                            drawPerformanceChart();
+                        setTimeout(async function() {
+                            await drawPerformanceChart();
                             setTimeout(setupPerformanceChartHover, 150);
                         }, 100);
                     } else if (navText === 'Market News' && marketNewsView) {
@@ -1570,7 +1570,7 @@
             // Performance Chart Function
             let performanceDataPoints = [];
             
-            function drawPerformanceChart() {
+            async function drawPerformanceChart() {
                 const canvas = document.getElementById('performance-chart');
                 if (!canvas) return;
                 
@@ -1591,42 +1591,123 @@
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
-                const months = ['Start', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-                              'Jan', 'Feb', 'Mar', 'Apr'];
+                // Get userData from sessionStorage
+                const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                if (!userSession) {
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '16px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Please log in to view performance data.', width / 2, height / 2);
+                    return;
+                }
                 
-                // Use actual account balance values (not normalized)
-                const initialInvestment = 230000;
+                const user = JSON.parse(userSession);
+                const userData = user.userData || {};
                 
-                // Historical data (12 months) - actual account balances - with Month 0
-                // All lines start from the exact same initial investment
-                const opessociusHistorical = [
-                    initialInvestment,  // Month 0 - exact same starting balance as S&P 500 and Banks
-                    235000, 238000, 242000, 245000, 248000, 252000, 255000, 260000, 265000, 270000, 275000, 280000
-                ];
+                // Get initial investment from userData
+                const initialInvestment = userData.initialInvestment || 230000;
                 
-                // Projection data (4 months) - fixed values (2% compound growth per month for Opessocius)
-                const lastHistoricalValue = opessociusHistorical[12];
-                const projectionData = [
-                    lastHistoricalValue * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02 * 1.02,
-                    lastHistoricalValue * 1.02 * 1.02 * 1.02 * 1.02
-                ];
+                // Load transactions to build Opessocius historical data
+                let opessociusHistorical = [initialInvestment]; // Start with Month 0
+                let transactionCount = 0;
+                let transactionMonths = []; // Store actual transaction months for labels
+                let lastTransactionMonth = null;
+                let lastTransactionYear = null;
+                let lastTransactionMonthIndex = null;
+                
+                if (window.firebaseDb && userData.id) {
+                    try {
+                        const transactionsSnapshot = await window.firebaseDb.collection('users').doc(userData.id)
+                            .collection('transactions')
+                            .get();
+                        
+                        if (!transactionsSnapshot.empty) {
+                            // Build historical data from transactions - sort by year, then monthIndex
+                            const transactions = [];
+                            transactionsSnapshot.forEach((doc) => {
+                                transactions.push(doc.data());
+                            });
+                            
+                            // Sort by year, then monthIndex
+                            transactions.sort((a, b) => {
+                                if (a.year !== b.year) {
+                                    return a.year - b.year;
+                                }
+                                return (a.monthIndex || 0) - (b.monthIndex || 0);
+                            });
+                            
+                            // Count actual transactions
+                            transactionCount = transactions.length;
+                            
+                            // Month name mapping
+                            const monthNameMap = {
+                                'January': 'Jan', 'February': 'Feb', 'March': 'Mar', 'April': 'Apr',
+                                'May': 'May', 'June': 'Jun', 'July': 'Jul', 'August': 'Aug',
+                                'September': 'Sep', 'October': 'Oct', 'November': 'Nov', 'December': 'Dec'
+                            };
+                            
+                            // Build historical data array and store transaction months
+                            transactionMonths.push('Start'); // Month 0
+                            transactions.forEach((entry) => {
+                                if (entry.endingBalance !== undefined && entry.endingBalance !== null) {
+                                    opessociusHistorical.push(entry.endingBalance);
+                                    
+                                    // Store month label
+                                    const monthShort = entry.month ? (monthNameMap[entry.month] || entry.month.substring(0, 3)) : '';
+                                    const yearShort = entry.year ? String(entry.year).slice(-2) : '';
+                                    transactionMonths.push(`${monthShort} ${yearShort}`);
+                                    
+                                    // Store last transaction info for projections
+                                    lastTransactionMonth = entry.month;
+                                    lastTransactionYear = entry.year;
+                                    lastTransactionMonthIndex = entry.monthIndex || 0;
+                                }
+                            });
+                        } else {
+                            // No transactions - transactionCount remains 0
+                            transactionCount = 0;
+                            transactionMonths.push('Start');
+                        }
+                    } catch (error) {
+                        console.error('Error loading transactions for performance chart:', error);
+                        transactionCount = 0;
+                        transactionMonths.push('Start');
+                    }
+                } else {
+                    transactionMonths.push('Start');
+                }
+                
+                // Determine total months to show (historical + projection)
+                // Show at least 12 months total, but adjust based on transaction count
+                const totalMonthsToShow = Math.max(12, transactionCount + 4); // At least 12, or transactionCount + 4 projections
+                const projectionMonths = totalMonthsToShow - transactionCount;
+                
+                // Build Opessocius projection data (2% compound growth per month)
+                const lastHistoricalValue = opessociusHistorical[opessociusHistorical.length - 1];
+                const opessociusProjection = [];
+                let projectionBalance = lastHistoricalValue;
+                for (let i = 0; i < projectionMonths; i++) {
+                    projectionBalance = projectionBalance * 1.02;
+                    opessociusProjection.push(projectionBalance);
+                }
                 
                 // S&P 500 monthly returns (%): +2.3%, −1.4%, +3.1%, +0.6%, −2.8%, +4.5%, +1.2%, −3.6%, +2.9%, +0.4%, +5.1%, −1.9%, +1.7%, +3.8%, −0.7%, +2.5%
                 const sp500MonthlyReturns = [
                     2.3, -1.4, 3.1, 0.6, -2.8, 4.5, 1.2, -3.6, 2.9, 0.4, 5.1, -1.9,  // 12 historical
-                    1.7, 3.8, -0.7, 2.5  // 4 projection
+                    1.7, 3.8, -0.7, 2.5, 2.1, 1.5, 0.8, 3.2  // projection months
                 ];
                 
                 // Calculate S&P 500 values - SIMPLE INTEREST (no compound, each return based on initial investment)
                 const sp500DataRaw = [initialInvestment]; // Month 0
                 let cumulativeReturn = 0;
-                sp500MonthlyReturns.forEach((returnPercent) => {
-                    cumulativeReturn += returnPercent;
+                // Use only the returns needed for historical + projection
+                const returnsNeeded = transactionCount + projectionMonths;
+                for (let i = 0; i < returnsNeeded && i < sp500MonthlyReturns.length; i++) {
+                    cumulativeReturn += sp500MonthlyReturns[i];
                     const monthValue = initialInvestment * (1 + cumulativeReturn / 100);
                     sp500DataRaw.push(monthValue);
-                });
+                }
                 
                 // Light smoothing for S&P 500 (2-point average) to reduce sharp peaks but keep volatility visible
                 function lightSmooth(data) {
@@ -1644,27 +1725,34 @@
                 
                 const sp500Data = lightSmooth(sp500DataRaw);
                 
-                // Split S&P 500 data into historical and projection (Month 0 + 12 historical, 4 projection)
-                const sp500Historical = sp500Data.slice(0, 13); // Month 0 + 12 months
-                const sp500Projection = sp500Data.slice(13, 17); // 4 months
+                // Split S&P 500 data into historical and projection based on transaction count
+                const sp500Historical = sp500Data.slice(0, transactionCount + 1); // Month 0 + transactionCount months
+                const sp500Projection = sp500Data.slice(transactionCount + 1, transactionCount + 1 + projectionMonths);
                 
                 // Banks: constant 0.20% monthly growth - SIMPLE INTEREST (no compound)
-                // Ensure it starts from exact same initial investment
+                // Build historical data for transactionCount months
                 const banksMonthlyGrowth = 0.20; // 0.20% per month
-                const banksData = [initialInvestment]; // Month 0 - exact same starting balance
-                for (let i = 1; i <= 16; i++) {
+                const banksHistorical = [initialInvestment]; // Month 0
+                for (let i = 1; i <= transactionCount; i++) {
                     // Simple interest: add 0.20% of initial investment each month
                     const monthValue = initialInvestment * (1 + (banksMonthlyGrowth * i) / 100);
-                    banksData.push(monthValue);
+                    banksHistorical.push(monthValue);
                 }
                 
-                // Split Banks data into historical and projection
-                const banksHistorical = banksData.slice(0, 13); // Month 0 + 12 months
-                const banksProjection = banksData.slice(13, 17); // 4 months
+                // Build Banks projection data
+                const banksProjection = [];
+                const lastBankValue = banksHistorical[banksHistorical.length - 1];
+                for (let i = 1; i <= projectionMonths; i++) {
+                    const monthValue = initialInvestment * (1 + (banksMonthlyGrowth * (transactionCount + i)) / 100);
+                    banksProjection.push(monthValue);
+                }
                 
                 
                 // Combine all data for max/min calculation
-                const allData = [...opessociusHistorical, ...projectionData, ...sp500Data, ...banksData];
+                const allOpessociusData = [...opessociusHistorical, ...opessociusProjection];
+                const allSp500Data = [...sp500Historical, ...sp500Projection];
+                const allBanksData = [...banksHistorical, ...banksProjection];
+                const allData = [...allOpessociusData, ...allSp500Data, ...allBanksData];
                 const maxValue = Math.max(...allData) * 1.1;
                 const minValue = Math.min(...allData) * 0.9;
                 const valueRange = maxValue - minValue;
@@ -1683,14 +1771,38 @@
                     ctx.stroke();
                 }
                 
-                // Total months: 17 (Month 0 + 12 historical + 4 projection)
-                const totalMonths = 17;
+                // Total months: Month 0 + transactionCount historical + projectionMonths projection
+                const totalMonths = 1 + transactionCount + projectionMonths;
                 
-                // Draw area fill for user investment historical section only (Month 0 + 12 months)
+                // Generate months array using actual transaction months + projection months
+                const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const months = [...transactionMonths]; // Start with actual transaction months
+                
+                // Add projection month labels
+                if (lastTransactionMonthIndex !== null && lastTransactionYear !== null) {
+                    let projectionMonthIndex = lastTransactionMonthIndex;
+                    let projectionYear = lastTransactionYear;
+                    
+                    for (let i = 0; i < projectionMonths; i++) {
+                        projectionMonthIndex = (projectionMonthIndex + 1) % 12;
+                        if (projectionMonthIndex === 0) projectionYear++;
+                        const yearShort = String(projectionYear).slice(-2);
+                        months.push(`${monthNamesShort[projectionMonthIndex]} ${yearShort}`);
+                    }
+                } else {
+                    // Fallback: generate generic month names if no transactions
+                    for (let i = transactionMonths.length; i < totalMonths; i++) {
+                        const monthIndex = (i - 1) % 12;
+                        months.push(monthNamesShort[monthIndex]);
+                    }
+                }
+                
+                // Draw area fill for user investment historical section only (Month 0 + transactionCount months)
+                const historicalMonthsCount = transactionCount + 1; // Month 0 + transactionCount
                 const gradient = ctx.createLinearGradient(
                     padding.left, 
                     padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.left + (chartWidth / totalMonths) * historicalMonthsCount, 
                     padding.top + chartHeight
                 );
                 gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
@@ -1708,17 +1820,17 @@
                     ctx.lineTo(x, y);
                 });
                 
-                const lastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                const lastHistoricalX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
                 ctx.lineTo(lastHistoricalX, height - padding.bottom);
                 ctx.closePath();
                 ctx.fillStyle = gradient;
                 ctx.fill();
                 
-                // Draw area fill for S&P 500 historical section only - orange shade (Month 0 + 12 months)
+                // Draw area fill for S&P 500 historical section only - orange shade (Month 0 + transactionCount months)
                 const sp500Gradient = ctx.createLinearGradient(
                     padding.left, 
                     padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.left + (chartWidth / totalMonths) * historicalMonthsCount, 
                     padding.top + chartHeight
                 );
                 sp500Gradient.addColorStop(0, 'rgba(249, 115, 22, 0.25)');
@@ -1736,17 +1848,17 @@
                     ctx.lineTo(x, y);
                 });
                 
-                const sp500LastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                const sp500LastHistoricalX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
                 ctx.lineTo(sp500LastHistoricalX, height - padding.bottom);
                 ctx.closePath();
                 ctx.fillStyle = sp500Gradient;
                 ctx.fill();
                 
-                // Draw area fill for Banks historical section only - grey shade (Month 0 + 12 months)
+                // Draw area fill for Banks historical section only - grey shade (Month 0 + transactionCount months)
                 const banksGradient = ctx.createLinearGradient(
                     padding.left, 
                     padding.top, 
-                    padding.left + (chartWidth / totalMonths) * 13, 
+                    padding.left + (chartWidth / totalMonths) * historicalMonthsCount, 
                     padding.top + chartHeight
                 );
                 banksGradient.addColorStop(0, 'rgba(107, 114, 128, 0.25)');
@@ -1764,7 +1876,7 @@
                     ctx.lineTo(x, y);
                 });
                 
-                const banksLastHistoricalX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
+                const banksLastHistoricalX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
                 ctx.lineTo(banksLastHistoricalX, height - padding.bottom);
                 ctx.closePath();
                 ctx.fillStyle = banksGradient;
@@ -1791,14 +1903,14 @@
                 ctx.strokeStyle = '#10b981';
                 ctx.lineWidth = 2.5;
                 ctx.setLineDash([6, 4]);
-                projectionData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                opessociusProjection.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (transactionCount + 1 + index) + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
                     if (index === 0) {
                         // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((opessociusHistorical[12] - minValue) / valueRange) * chartHeight;
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((opessociusHistorical[transactionCount] - minValue) / valueRange) * chartHeight;
                         ctx.moveTo(lastHistX, lastHistY);
                     }
                     ctx.lineTo(x, y);
@@ -1828,13 +1940,13 @@
                 ctx.lineWidth = 2.5;
                 ctx.setLineDash([6, 4]);
                 sp500Projection.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const x = padding.left + (chartWidth / totalMonths) * (transactionCount + 1 + index) + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
                     if (index === 0) {
                         // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((sp500Historical[12] - minValue) / valueRange) * chartHeight;
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((sp500Historical[transactionCount] - minValue) / valueRange) * chartHeight;
                         ctx.moveTo(lastHistX, lastHistY);
                     }
                     ctx.lineTo(x, y);
@@ -1864,13 +1976,13 @@
                 ctx.lineWidth = 2.5;
                 ctx.setLineDash([6, 4]);
                 banksProjection.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / totalMonths) * (13 + index) + (chartWidth / totalMonths) / 2;
+                    const x = padding.left + (chartWidth / totalMonths) * (transactionCount + 1 + index) + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
                     if (index === 0) {
                         // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / totalMonths) * 12 + (chartWidth / totalMonths) / 2;
-                        const lastHistY = padding.top + chartHeight - ((banksHistorical[12] - minValue) / valueRange) * chartHeight;
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * transactionCount + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((banksHistorical[transactionCount] - minValue) / valueRange) * chartHeight;
                         ctx.moveTo(lastHistX, lastHistY);
                     }
                     ctx.lineTo(x, y);
@@ -1879,10 +1991,10 @@
                 ctx.setLineDash([]);
                 
                 // Draw data points for Opessocius investment
-                [...opessociusHistorical, ...projectionData].forEach((value, index) => {
+                [...opessociusHistorical, ...opessociusProjection].forEach((value, index) => {
                     const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
+                    const isHistorical = index <= transactionCount; // Month 0 + transactionCount months
                     
                     ctx.fillStyle = '#ffffff';
                     ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
@@ -1907,10 +2019,10 @@
                 });
                 
                 // Draw data points for S&P 500
-                sp500Data.forEach((value, index) => {
+                [...sp500Historical, ...sp500Projection].forEach((value, index) => {
                     const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
+                    const isHistorical = index <= transactionCount; // Month 0 + transactionCount months
                     
                     ctx.fillStyle = '#ffffff';
                     ctx.strokeStyle = '#f97316';
@@ -1935,10 +2047,10 @@
                 });
                 
                 // Draw data points for Banks
-                banksData.forEach((value, index) => {
+                [...banksHistorical, ...banksProjection].forEach((value, index) => {
                     const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 13; // Month 0 + 12 months
+                    const isHistorical = index <= transactionCount; // Month 0 + transactionCount months
                     
                     ctx.fillStyle = '#ffffff';
                     ctx.strokeStyle = '#6b7280';
@@ -1985,19 +2097,30 @@
                     ctx.fillText(formattedValue, padding.left - 10, y);
                 }
                 
-                // Draw X-axis labels (17 months total: Month 0 + 12 historical + 4 projection)
+                // Draw X-axis labels (dynamic based on transaction count)
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                for (let i = 0; i < totalMonths; i += 2) {
+                const labelInterval = Math.max(1, Math.floor(totalMonths / 8)); // Show about 8 labels
+                for (let i = 0; i < totalMonths; i += labelInterval) {
                     const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
-                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                    ctx.fillText(months[i] || `M${i}`, x, height - padding.bottom + 10);
+                }
+                // Always show the last label
+                if (totalMonths > 1 && (totalMonths - 1) % labelInterval !== 0) {
+                    const lastX = padding.left + (chartWidth / totalMonths) * (totalMonths - 1) + (chartWidth / totalMonths) / 2;
+                    ctx.fillText(months[totalMonths - 1] || `M${totalMonths - 1}`, lastX, height - padding.bottom + 10);
                 }
                 
                 // Draw legend at the top
                 const legendY = padding.top - 50;
                 const legendX = padding.left;
+                
+                // Determine Opessocius risk based on investment strategy
+                const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
+                const opessociusRisk = investmentStrategy === 'High risk 4% a month' ? '100%' : '0%';
+                
                 const legendItems = [
-                    { name: 'Opessocius', color: '#2563eb', risk: '0%' },
+                    { name: 'Opessocius', color: '#2563eb', risk: opessociusRisk },
                     { name: 'Savings Account', color: '#6b7280', risk: '0%' },
                     { name: 'S&P 500', color: '#f97316', risk: '100%' }
                 ];
@@ -2395,12 +2518,12 @@
             let resizeTimeout;
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(function() {
+                resizeTimeout = setTimeout(async function() {
                     if (portfolioView && portfolioView.style.display !== 'none') {
                         drawPortfolioChart();
                     }
                     if (performanceView && performanceView.style.display !== 'none') {
-                        drawPerformanceChart();
+                        await drawPerformanceChart();
                         setTimeout(setupPerformanceChartHover, 150);
                     }
                     // Dashboard widgets resized
