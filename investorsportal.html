@@ -1174,7 +1174,8 @@
                     
                     const transactionLabels = transactions.map(entry => {
                         const monthShort = entry.month ? (monthNameMap[entry.month] || entry.month.substring(0, 3)) : '';
-                        return `${monthShort} ${entry.year}`;
+                        const yearShort = entry.year ? String(entry.year).slice(-2) : '';
+                        return `${monthShort} ${yearShort}`;
                     });
                     
                     const historicalData = transactions.map(entry => entry.endingBalance);
@@ -1206,7 +1207,8 @@
                         // Calculate next month label
                         projectionMonth = (projectionMonth + 1) % 12;
                         if (projectionMonth === 0) projectionYear++;
-                        projectionLabels.push(`${monthNames[projectionMonth]} ${projectionYear}`);
+                        const yearShort = String(projectionYear).slice(-2);
+                        projectionLabels.push(`${monthNames[projectionMonth]} ${yearShort}`);
                     }
                     
                     // Combine data
@@ -1960,6 +1962,17 @@
                     });
                 });
                 
+                // Helper function for dynamic currency formatting on Y-axis
+                function formatCurrencyAxis(amount) {
+                    if (amount >= 1000000) {
+                        return '€' + (amount / 1000000).toFixed(1) + 'M';
+                    } else if (amount >= 1000) {
+                        return '€' + (amount / 1000).toFixed(1) + 'k';
+                    } else {
+                        return '€' + Math.round(amount).toLocaleString('en-US');
+                    }
+                }
+                
                 // Draw Y-axis labels (in euros)
                 ctx.fillStyle = '#6b7280';
                 ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
@@ -1968,7 +1981,7 @@
                 for (let i = 0; i <= 5; i++) {
                     const value = minValue + (valueRange / 5) * (5 - i);
                     const y = padding.top + (chartHeight / 5) * i;
-                    const formattedValue = '€' + (value / 1000).toFixed(0) + 'k';
+                    const formattedValue = formatCurrencyAxis(value);
                     ctx.fillText(formattedValue, padding.left - 10, y);
                 }
                 

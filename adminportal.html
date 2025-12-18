@@ -707,6 +707,11 @@
                                 <label for="performance-year">Year</label>
                                 <input type="number" id="performance-year" class="admin-form-input" min="2020" max="2030" value="2024" required>
                             </div>
+                            <div class="admin-form-group">
+                                <label for="performance-return-percent">Return % (Actual monthly return - overrides strategy default)</label>
+                                <input type="number" id="performance-return-percent" class="admin-form-input" step="0.01" placeholder="Leave empty to use strategy default (2% or 4%)">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">If actual performance differs from target, enter the actual return % here. All calculations will use this value.</span>
+                            </div>
                             <div class="admin-form-group" id="performance-growth-group" style="display: none;">
                                 <label for="performance-growth">Growth Rate (%) - Only for Personalized Strategy</label>
                                 <input type="number" id="performance-growth" class="admin-form-input" step="0.01" value="0">
@@ -3198,7 +3203,7 @@
                         const strategyInfo = document.createElement('div');
                         strategyInfo.id = 'strategy-info';
                         strategyInfo.style.cssText = 'padding: 0.75rem; background: #eff6ff; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; color: #1e40af;';
-                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Growth will be calculated automatically.`;
+                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Default growth will be used unless you enter a Return % above.`;
                         const form = document.getElementById('investor-performance-form');
                         const existingInfo = document.getElementById('strategy-info');
                         if (existingInfo) existingInfo.remove();
@@ -3306,7 +3311,7 @@
                                 <td class="transaction-cell">${depositDisplay}</td>
                                 <td class="transaction-cell">${withdrawalDisplay}</td>
                                 <td>
-                                    <button class="admin-btn-save" onclick="editPerformanceEntry('${investorId}', '${entry.id}', '${entry.month}', ${entry.year}, ${entry.growth || 0}, ${entry.deposits || 0}, ${entry.withdrawals || 0}, '${depositDateFormatted}', '${withdrawalDateFormatted}')" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;">Edit</button>
+                                    <button class="admin-btn-save" onclick="editPerformanceEntry('${investorId}', '${entry.id}', '${entry.month}', ${entry.year}, ${entry.growth || 0}, ${entry.deposits || 0}, ${entry.withdrawals || 0}, '${depositDateFormatted}', '${withdrawalDateFormatted}', ${entry.returnPercent !== null && entry.returnPercent !== undefined ? entry.returnPercent : 'null'})" style="padding: 0.4rem 0.8rem; font-size: 0.875rem;">Edit</button>
                                 </td>
                             `;
                             tableBody.appendChild(row);
@@ -3327,7 +3332,7 @@
             }
             
             // Function to edit a performance entry
-            async function editPerformanceEntry(investorId, transactionId, month, year, growth, deposits, withdrawals, depositDate, withdrawalDate) {
+            async function editPerformanceEntry(investorId, transactionId, month, year, growth, deposits, withdrawals, depositDate, withdrawalDate, returnPercent) {
                 try {
                     // Close the history modal
                     closeInvestorPerformanceTableModal();
@@ -3355,6 +3360,8 @@
                     document.getElementById('performance-withdrawals').value = withdrawals || 0;
                     document.getElementById('performance-deposit-date').value = depositDate || '';
                     document.getElementById('performance-withdrawal-date').value = withdrawalDate || '';
+                    // Populate Return % field if it exists
+                    document.getElementById('performance-return-percent').value = returnPercent !== null && returnPercent !== undefined ? returnPercent : '';
                     
                     // Show/hide growth input based on strategy
                     const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
@@ -3373,7 +3380,7 @@
                         const strategyInfo = document.createElement('div');
                         strategyInfo.id = 'strategy-info';
                         strategyInfo.style.cssText = 'padding: 0.75rem; background: #eff6ff; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; color: #1e40af;';
-                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Growth will be calculated automatically.`;
+                        strategyInfo.textContent = `Investment Strategy: ${investmentStrategy}. Default growth will be used unless you enter a Return % above.`;
                         form.insertBefore(strategyInfo, form.firstChild);
                     }
                     
@@ -3433,23 +3440,30 @@
                         const userData = userDoc.data();
                         const investmentStrategy = userData.investmentStrategy || 'Low risk 2% a month';
                         
-                        // Determine monthly growth rate based on investment strategy
+                        // Check if Return % is provided (takes priority over strategy default)
+                        const returnPercentInput = document.getElementById('performance-return-percent').value;
                         let monthlyGrowthRate = 0.02; // Default to 2%
                         let isPersonalized = false;
                         
-                        if (investmentStrategy === 'High risk 4% a month') {
-                            monthlyGrowthRate = 0.04; // 4%
-                        } else if (investmentStrategy === 'Personalized') {
-                            // For personalized, use manual input
-                            const manualGrowth = parseFloat(document.getElementById('performance-growth').value);
-                            if (!manualGrowth || manualGrowth === 0) {
-                                alert('Please enter a growth rate for Personalized strategy.');
-                                return;
-                            }
-                            monthlyGrowthRate = manualGrowth / 100;
-                            isPersonalized = true;
+                        if (returnPercentInput && returnPercentInput !== '') {
+                            // Use the actual return % if provided
+                            monthlyGrowthRate = parseFloat(returnPercentInput) / 100;
                         } else {
-                            monthlyGrowthRate = 0.02; // Low risk 2%
+                            // Otherwise, determine monthly growth rate based on investment strategy
+                            if (investmentStrategy === 'High risk 4% a month') {
+                                monthlyGrowthRate = 0.04; // 4%
+                            } else if (investmentStrategy === 'Personalized') {
+                                // For personalized, use manual input
+                                const manualGrowth = parseFloat(document.getElementById('performance-growth').value);
+                                if (!manualGrowth || manualGrowth === 0) {
+                                    alert('Please enter a growth rate for Personalized strategy.');
+                                    return;
+                                }
+                                monthlyGrowthRate = manualGrowth / 100;
+                                isPersonalized = true;
+                            } else {
+                                monthlyGrowthRate = 0.02; // Low risk 2%
+                            }
                         }
                         
                         // Get all existing transactions for this user to calculate starting balance
@@ -3577,6 +3591,7 @@
                             withdrawalDate: withdrawalDate ? firebase.firestore.Timestamp.fromDate(new Date(withdrawalDate)) : null,
                             investmentStrategy: investmentStrategy, // Store strategy used
                             monthlyGrowthRate: monthlyGrowthRate * 100, // Store as percentage
+                            returnPercent: returnPercentInput && returnPercentInput !== '' ? parseFloat(returnPercentInput) : null, // Store actual return % if provided
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         };
