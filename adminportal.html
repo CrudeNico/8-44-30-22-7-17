@@ -1912,11 +1912,12 @@
                 const modal = document.getElementById('transaction-edit-modal');
                 document.getElementById('edit-starting-balance').value = data.starting;
                 document.getElementById('edit-ending-balance').value = data.ending;
-                document.getElementById('edit-growth').value = data.growth;
                 document.getElementById('edit-deposits').value = data.deposits || 0;
                 document.getElementById('edit-withdrawals').value = data.withdrawals || 0;
                 document.getElementById('edit-deposit-date').value = data.depositDate || '';
                 document.getElementById('edit-withdrawal-date').value = data.withdrawalDate || '';
+                // Auto-calculate growth percentage using the correct formula
+                updateEditGrowthPercentage();
                 modal.setAttribute('data-edit-index', index);
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
@@ -1934,10 +1935,19 @@
                 transactionEditForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     const index = parseInt(document.getElementById('transaction-edit-modal').getAttribute('data-edit-index'));
-                    transactionData[index].starting = parseFloat(document.getElementById('edit-starting-balance').value);
-                    transactionData[index].ending = parseFloat(document.getElementById('edit-ending-balance').value);
-                    transactionData[index].growth = parseFloat(document.getElementById('edit-growth').value);
-                    transactionData[index].deposits = parseFloat(document.getElementById('edit-deposits').value);
+                    const starting = parseFloat(document.getElementById('edit-starting-balance').value);
+                    const ending = parseFloat(document.getElementById('edit-ending-balance').value);
+                    const deposits = parseFloat(document.getElementById('edit-deposits').value) || 0;
+                    const withdrawals = parseFloat(document.getElementById('edit-withdrawals').value) || 0;
+                    // Auto-calculate growth if not manually overridden
+                    let growth = parseFloat(document.getElementById('edit-growth').value);
+                    if (isNaN(growth) || growth === 0) {
+                        growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    }
+                    transactionData[index].starting = starting;
+                    transactionData[index].ending = ending;
+                    transactionData[index].growth = growth;
+                    transactionData[index].deposits = deposits;
                     transactionData[index].withdrawals = parseFloat(document.getElementById('edit-withdrawals').value);
                     transactionData[index].depositDate = document.getElementById('edit-deposit-date').value || null;
                     transactionData[index].withdrawalDate = document.getElementById('edit-withdrawal-date').value || null;
@@ -1954,6 +1964,67 @@
                 document.getElementById('cancel-transaction-edit')?.addEventListener('click', closeTransactionEditModal);
             }
             
+            // Helper function to calculate growth percentage
+            // Return (%) = ((Ending balance + Withdrawals) - (Starting balance + Deposit)) / (Starting balance + Deposit) × 100
+            // Note: Withdrawals are added back to ending balance for calculation, but NOT included in the denominator
+            function calculateGrowthPercentage(startingBalance, endingBalance, deposits, withdrawals) {
+                const denominator = startingBalance + deposits;
+                if (denominator > 0) {
+                    const withdrawalsAmount = withdrawals || 0;
+                    return (((endingBalance + withdrawalsAmount) - denominator) / denominator * 100);
+                }
+                return 0;
+            }
+            
+            // Auto-calculate growth percentage for fund performance form
+            function updateFundGrowthPercentage() {
+                const starting = parseFloat(document.getElementById('fund-starting-balance').value) || 0;
+                const ending = parseFloat(document.getElementById('fund-ending-balance').value) || 0;
+                const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
+                const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
+                const growthInput = document.getElementById('fund-growth');
+                
+                if (starting > 0 || deposits > 0) {
+                    const calculatedGrowth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    growthInput.value = calculatedGrowth.toFixed(2);
+                }
+            }
+            
+            // Auto-calculate growth percentage for edit transaction form
+            function updateEditGrowthPercentage() {
+                const starting = parseFloat(document.getElementById('edit-starting-balance').value) || 0;
+                const ending = parseFloat(document.getElementById('edit-ending-balance').value) || 0;
+                const deposits = parseFloat(document.getElementById('edit-deposits').value) || 0;
+                const withdrawals = parseFloat(document.getElementById('edit-withdrawals').value) || 0;
+                const growthInput = document.getElementById('edit-growth');
+                
+                if (starting > 0 || deposits > 0) {
+                    const calculatedGrowth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    growthInput.value = calculatedGrowth.toFixed(2);
+                }
+            }
+            
+            // Add event listeners for auto-calculation
+            const fundStartingBalance = document.getElementById('fund-starting-balance');
+            const fundEndingBalance = document.getElementById('fund-ending-balance');
+            const fundDeposits = document.getElementById('fund-deposits');
+            const fundWithdrawals = document.getElementById('fund-withdrawals');
+            
+            if (fundStartingBalance) fundStartingBalance.addEventListener('input', updateFundGrowthPercentage);
+            if (fundEndingBalance) fundEndingBalance.addEventListener('input', updateFundGrowthPercentage);
+            if (fundDeposits) fundDeposits.addEventListener('input', updateFundGrowthPercentage);
+            if (fundWithdrawals) fundWithdrawals.addEventListener('input', updateFundGrowthPercentage);
+            
+            const editStartingBalance = document.getElementById('edit-starting-balance');
+            const editEndingBalance = document.getElementById('edit-ending-balance');
+            const editDeposits = document.getElementById('edit-deposits');
+            const editWithdrawals = document.getElementById('edit-withdrawals');
+            
+            if (editStartingBalance) editStartingBalance.addEventListener('input', updateEditGrowthPercentage);
+            if (editEndingBalance) editEndingBalance.addEventListener('input', updateEditGrowthPercentage);
+            if (editDeposits) editDeposits.addEventListener('input', updateEditGrowthPercentage);
+            if (editWithdrawals) editWithdrawals.addEventListener('input', updateEditGrowthPercentage);
+            
             // Fund Performance Form Handler
             const fundPerformanceForm = document.getElementById('fund-performance-form');
             if (fundPerformanceForm) {
@@ -1963,9 +2034,13 @@
                     const year = parseInt(document.getElementById('fund-year').value);
                     const starting = parseFloat(document.getElementById('fund-starting-balance').value);
                     const ending = parseFloat(document.getElementById('fund-ending-balance').value);
-                    const growth = parseFloat(document.getElementById('fund-growth').value);
                     const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
                     const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
+                    // Auto-calculate growth if not manually overridden
+                    let growth = parseFloat(document.getElementById('fund-growth').value);
+                    if (isNaN(growth) || growth === 0) {
+                        growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    }
                     
                     // Check if entry for this month/year already exists
                     const existingIndex = transactionData.findIndex(t => t.month === month && t.year === year);
@@ -3033,11 +3108,26 @@
                         const userData = investor.data;
                         const userId = investor.id;
                         
-                        // Get transaction count
+                        // Get transaction count and calculate total return from all transactions
                         const transactionsSnapshot = await db.collection('users').doc(userId)
                             .collection('transactions')
                             .get();
                         const transactionCount = transactionsSnapshot.size;
+                        
+                        // Calculate total return as sum of all monthly growth percentages
+                        let totalReturn = 0;
+                        if (!transactionsSnapshot.empty) {
+                            transactionsSnapshot.forEach((doc) => {
+                                const transData = doc.data();
+                                const growthPercent = transData.growth || 0;
+                                totalReturn += growthPercent;
+                            });
+                        }
+                        
+                        // If no transactions, use stored totalReturn or 0
+                        if (transactionCount === 0) {
+                            totalReturn = userData.totalReturn || 0;
+                        }
                         
                         const card = document.createElement('div');
                         card.className = 'investor-card';
@@ -3047,12 +3137,7 @@
                         const accountNumber = userData.accountNumber || 'N/A';
                         const initialInvestment = userData.initialInvestment || 0;
                         const currentBalance = userData.currentBalance || initialInvestment;
-                        const totalReturn = userData.totalReturn || 0;
                         const accountStatus = userData.accountStatus || 'Active';
-                        
-                        const returnPercent = initialInvestment > 0 
-                            ? ((currentBalance - initialInvestment) / initialInvestment * 100).toFixed(2)
-                            : '0.00';
                         
                         card.innerHTML = `
                             <div class="investor-card-header">
@@ -3064,7 +3149,7 @@
                                 <p><strong>Account:</strong> ${accountNumber}</p>
                                 <p><strong>Initial Investment:</strong> €${initialInvestment.toLocaleString('en-US')}</p>
                                 <p><strong>Current Balance:</strong> €${currentBalance.toLocaleString('en-US')}</p>
-                                <p><strong>Return:</strong> <span class="${totalReturn >= 0 ? 'return-positive' : 'return-negative'}">${totalReturn >= 0 ? '+' : ''}${returnPercent}%</span></p>
+                                <p><strong>Return:</strong> <span class="${totalReturn >= 0 ? 'return-positive' : 'return-negative'}">${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%</span></p>
                                 <p><strong>Performance Entries:</strong> ${transactionCount}</p>
                             </div>
                             <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
@@ -3462,17 +3547,16 @@
                             endingBalance = endingBalance + deposits;
                         }
                         
-                        // Calculate the growth percentage BEFORE subtracting withdrawals
-                        // Return (%) = (Ending balance - (Starting balance + Deposits)) / (Starting balance + Deposits) × 100
-                        // Note: Withdrawals do NOT affect the growth percentage calculation
-                        const denominator = startingBalance + deposits;
-                        const endingBalanceBeforeWithdrawals = endingBalance;
-                        const effectiveGrowthPercent = denominator > 0 
-                            ? ((endingBalanceBeforeWithdrawals - denominator) / denominator * 100) 
-                            : 0;
-                        
-                        // Subtract withdrawals (this affects ending balance but NOT growth %)
+                        // Subtract withdrawals first to get final ending balance
                         endingBalance = endingBalance - withdrawals;
+                        
+                        // Calculate the growth percentage
+                        // Return (%) = ((Ending balance + Withdrawals) - (Starting balance + Deposits)) / (Starting balance + Deposits) × 100
+                        // Note: Withdrawals are added back to ending balance for calculation, but NOT included in the denominator
+                        const denominator = startingBalance + deposits;
+                        const effectiveGrowthPercent = denominator > 0 
+                            ? (((endingBalance + withdrawals) - denominator) / denominator * 100) 
+                            : 0;
                         
                         // Month index for sorting (0-11)
                         // Reuse months array already defined above

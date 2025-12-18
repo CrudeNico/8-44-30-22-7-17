@@ -876,13 +876,22 @@
                     }
                     
                     if (profitSubMetric) {
-                        // Calculate profit excluding deposits - only count growth
-                        // Use transactions already loaded above
-                        const totalDeposits = transactions.reduce((sum, entry) => sum + (entry.deposits || 0), 0);
+                        // Calculate total gain: Sum of (Starting Balance + Deposit) - (Ending Balance + Withdrawals) for each month
+                        let totalGain = 0;
+                        if (transactions.length > 0) {
+                            transactions.forEach((entry) => {
+                                const startingBalance = entry.startingBalance || 0;
+                                const deposits = entry.deposits || 0;
+                                const endingBalance = entry.endingBalance || 0;
+                                const withdrawals = entry.withdrawals || 0;
+                                
+                                // Calculate gain for this month: (Starting Balance + Deposit) - (Ending Balance + Withdrawals)
+                                const monthGain = (startingBalance + deposits) - (endingBalance + withdrawals);
+                                totalGain += monthGain;
+                            });
+                        }
                         
-                        // Profit = current balance - initial investment - total deposits (only growth, not deposits)
-                        const profit = currentBalance - initialInvestment - totalDeposits;
-                        const profitText = profit >= 0 ? `€${Math.abs(profit).toLocaleString('en-US')} profit` : `€${Math.abs(profit).toLocaleString('en-US')} loss`;
+                        const profitText = `€${Math.abs(totalGain).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} profit`;
                         profitSubMetric.textContent = profitText;
                     }
                     
