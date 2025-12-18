@@ -971,12 +971,47 @@
                                 <label for="report-file">Upload PDF Report</label>
                                 <input type="file" id="report-file" class="admin-form-input" accept=".pdf" required>
                                 <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 10MB</span>
+                                <div id="file-selected-info" style="margin-top: 0.5rem; padding: 0.75rem; background: #eff6ff; border-radius: 6px; display: none;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                        </svg>
+                                        <div>
+                                            <div style="font-weight: 600; color: #1e40af;" id="selected-file-name"></div>
+                                            <div style="font-size: 0.75rem; color: #3b82f6;" id="selected-file-size"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="upload-progress" style="margin-top: 1rem; display: none;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.875rem; color: #374151;">Uploading...</span>
+                                        <span style="font-size: 0.875rem; font-weight: 600; color: #2563eb;" id="upload-progress-percent">0%</span>
+                                    </div>
+                                    <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                                        <div id="upload-progress-bar" style="height: 100%; background: #2563eb; width: 0%; transition: width 0.3s ease;"></div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="admin-form-actions">
                                 <button type="button" class="admin-btn-cancel" id="cancel-report-upload">Cancel</button>
-                                <button type="submit" class="admin-btn-save">Upload Report</button>
+                                <button type="submit" class="admin-btn-save" id="upload-report-btn">Upload Report</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports List Modal -->
+            <div id="reports-list-modal" class="admin-modal" style="display: none;">
+                <div class="admin-modal-overlay"></div>
+                <div class="admin-modal-container" style="max-width: 700px;">
+                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+                    <div class="admin-modal-content">
+                        <h2 class="admin-modal-title" id="reports-list-title">User Reports</h2>
+                        <div id="reports-list-container" style="margin-top: 1.5rem;">
+                            <!-- Reports list will be populated here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -987,8 +1022,9 @@
                 <div class="admin-modal-container" style="max-width: 90%; max-height: 90vh;">
                     <button class="admin-modal-close" aria-label="Close modal">&times;</button>
                     <div class="admin-modal-content" style="padding: 0;">
-                        <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                        <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
                             <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0;">Monthly Report</h2>
+                            <button id="download-report-btn" class="admin-btn-save" style="padding: 0.5rem 1rem;">Download</button>
                         </div>
                         <div style="padding: 2rem; overflow: auto; max-height: calc(90vh - 100px);">
                             <iframe id="report-viewer-iframe" style="width: 100%; height: 800px; border: 1px solid #e5e7eb; border-radius: 6px;"></iframe>
@@ -2628,26 +2664,12 @@
                             transactionCount = transactionsSnapshot.size;
                         }
                         
-                        // Get report count (from local reportsData for now)
-                        const userReports = reportsData[userId] || {};
-                        const reportCount = Object.keys(userReports).length;
+                        // Get reports from Firestore
+                        const reportsSnapshot = await db.collection('users').doc(userId)
+                            .collection('reports')
+                            .get();
                         
-                        // Get list of reports for this user
-                        const reportsList = Object.values(userReports).sort((a, b) => {
-                            const yearDiff = a.year - b.year;
-                            if (yearDiff !== 0) return yearDiff;
-                            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                            return months.indexOf(a.month) - months.indexOf(b.month);
-                        });
-                        
-                        let reportsHtml = '';
-                        if (reportsList.length > 0) {
-                            reportsHtml = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;"><strong style="font-size: 0.875rem; color: #374151;">Uploaded Reports:</strong><ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem; color: #6b7280;">';
-                            reportsList.forEach(report => {
-                                reportsHtml += `<li>${report.month} ${report.year}</li>`;
-                            });
-                            reportsHtml += '</ul></div>';
-                        }
+                        const reportCount = reportsSnapshot.size;
                         
                         const card = document.createElement('div');
                         card.className = 'investor-card';
@@ -2673,12 +2695,11 @@
                                     <p><strong>Performance Entries:</strong> ${transactionCount}</p>
                                 ` : ''}
                                 <p><strong>Reports Uploaded:</strong> ${reportCount}</p>
-                                ${reportsHtml}
                             </div>
                             <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                                 <button class="admin-btn-save" onclick="openReportUploadModal('${userId}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
                                 ${isAdmin ? `<button class="admin-btn-view" onclick="viewAdminReportsWidget()">View Admin Reports</button>` : ''}
-                                ${isAdmin && reportCount > 0 ? `<button class="admin-btn-view" onclick="viewAdminReport('${userId}')">View Report</button>` : ''}
+                                ${reportCount > 0 ? `<button class="admin-btn-view" onclick="viewUserReports('${userId}')">View Reports</button>` : ''}
                             </div>
                         `;
                         container.appendChild(card);
@@ -2689,16 +2710,28 @@
                 }
             }
             
-            function openReportUploadModal(userId) {
-                const user = usersData.find(u => u.id === userId);
-                if (!user) return;
-                
-                const modal = document.getElementById('report-upload-modal');
-                document.getElementById('report-upload-modal-title').textContent = `Upload Report - ${user.name}`;
-                document.getElementById('report-upload-form').reset();
-                modal.setAttribute('data-user-id', userId);
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
+            async function openReportUploadModal(userId) {
+                try {
+                    // Get user data from Firestore
+                    const userDoc = await db.collection('users').doc(userId).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
+                    }
+                    
+                    const userData = userDoc.data();
+                    const userName = userData.fullName || userData.username || 'Unknown';
+                    
+                    const modal = document.getElementById('report-upload-modal');
+                    document.getElementById('report-upload-modal-title').textContent = `Upload Report - ${userName}`;
+                    document.getElementById('report-upload-form').reset();
+                    modal.setAttribute('data-user-id', userId);
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error opening report upload modal:', error);
+                    alert('Error loading user data: ' + error.message);
+                }
             }
             
             function closeReportUploadModal() {
@@ -2706,40 +2739,216 @@
                 document.body.style.overflow = '';
             }
             
-            function viewAdminReport(userId) {
-                const userReports = reportsData[userId] || {};
-                const reportsList = Object.values(userReports).sort((a, b) => {
-                    const yearDiff = a.year - b.year;
-                    if (yearDiff !== 0) return yearDiff;
+            async function viewUserReports(userId) {
+                try {
+                    const userDoc = await db.collection('users').doc(userId).get();
+                    if (!userDoc.exists) {
+                        alert('User not found');
+                        return;
+                    }
+                    
+                    const userData = userDoc.data();
+                    const userName = userData.fullName || userData.username || 'Unknown';
+                    
+                    // Load reports from Firestore (without orderBy to avoid index requirement)
+                    const reportsSnapshot = await db.collection('users').doc(userId)
+                        .collection('reports')
+                        .get();
+                    
+                    if (reportsSnapshot.empty) {
+                        alert('No reports available for this user.');
+                        return;
+                    }
+                    
+                    const reportsList = [];
+                    reportsSnapshot.forEach((doc) => {
+                        const reportData = doc.data();
+                        // Handle base64 stored files
+                        let fileUrl = reportData.fileUrl;
+                        let fileBase64 = null;
+                        if (reportData.storageMethod === 'base64' && reportData.fileBase64) {
+                            fileBase64 = reportData.fileBase64;
+                            fileUrl = 'data:application/pdf;base64,' + reportData.fileBase64;
+                        }
+                        reportsList.push({
+                            id: doc.id,
+                            month: reportData.month,
+                            year: reportData.year,
+                            fileName: reportData.fileName,
+                            fileUrl: fileUrl,
+                            fileBase64: fileBase64,
+                            uploadDate: reportData.uploadDate,
+                            storageMethod: reportData.storageMethod || 'storage'
+                        });
+                    });
+                    
+                    // Sort by year (desc) and month (desc) to show newest first
                     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    return months.indexOf(a.month) - months.indexOf(b.month);
-                });
-                
-                if (reportsList.length === 0) {
-                    alert('No reports available for this account.');
-                    return;
+                    reportsList.sort((a, b) => {
+                        const yearDiff = b.year - a.year;
+                        if (yearDiff !== 0) return yearDiff;
+                        return months.indexOf(b.month) - months.indexOf(a.month);
+                    });
+                    
+                    // Show reports list modal
+                    const modal = document.getElementById('reports-list-modal');
+                    const title = document.getElementById('reports-list-title');
+                    const container = document.getElementById('reports-list-container');
+                    
+                    title.textContent = `Reports - ${userName}`;
+                    
+                    // Store reports data in a Map for easy access (especially for base64)
+                    window.reportsDataMap = window.reportsDataMap || new Map();
+                    reportsList.forEach((report, index) => {
+                        const reportKey = `${userId}_${report.id}`;
+                        window.reportsDataMap.set(reportKey, report);
+                    });
+                    
+                    // Build reports list HTML
+                    let reportsHtml = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+                    reportsList.forEach((report, index) => {
+                        const uploadDate = report.uploadDate ? (report.uploadDate.toDate ? report.uploadDate.toDate().toLocaleDateString() : new Date(report.uploadDate).toLocaleDateString()) : 'N/A';
+                        const reportKey = `${userId}_${report.id}`;
+                        reportsHtml += `
+                            <div style="padding: 1rem; border: 1px solid #e5e7eb; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #1f2937;">${report.month} ${report.year}</div>
+                                    <div style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">${report.fileName}</div>
+                                    <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">Uploaded: ${uploadDate}</div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="admin-btn-view report-view-btn" data-report-key="${reportKey}" data-title="${report.month} ${report.year}" style="padding: 0.5rem 1rem; font-size: 0.875rem;">View</button>
+                                    <button class="admin-btn-save report-download-btn" data-report-key="${reportKey}" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Download</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    reportsHtml += '</div>';
+                    
+                    container.innerHTML = reportsHtml;
+                    
+                    // Add event listeners to buttons
+                    container.querySelectorAll('.report-view-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const reportKey = this.getAttribute('data-report-key');
+                            const title = this.getAttribute('data-title');
+                            const report = window.reportsDataMap.get(reportKey);
+                            if (report) {
+                                viewReportFromList(report.fileUrl, title, report.fileName, report.fileBase64, report.storageMethod);
+                            }
+                        });
+                    });
+                    
+                    container.querySelectorAll('.report-download-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const reportKey = this.getAttribute('data-report-key');
+                            const report = window.reportsDataMap.get(reportKey);
+                            if (report) {
+                                downloadReportFromList(report.fileUrl, report.fileName, report.fileBase64, report.storageMethod);
+                            }
+                        });
+                    });
+                    
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                } catch (error) {
+                    console.error('Error loading user reports:', error);
+                    alert('Error loading reports: ' + error.message);
                 }
-                
-                // Get the most recent report
-                const latestReport = reportsList[reportsList.length - 1];
+            }
+            
+            function viewReportFromList(fileUrl, title, fileName, fileBase64 = null, storageMethod = 'storage') {
                 const modal = document.getElementById('report-viewer-modal');
                 const iframe = document.getElementById('report-viewer-iframe');
-                const title = document.getElementById('report-viewer-title');
+                const titleEl = document.getElementById('report-viewer-title');
+                const downloadBtn = document.getElementById('download-report-btn');
                 
-                title.textContent = `Monthly Report - ${latestReport.month} ${latestReport.year}`;
+                titleEl.textContent = `Monthly Report - ${title}`;
                 
-                // Create object URL from the file
-                if (latestReport.file) {
-                    const fileUrl = URL.createObjectURL(latestReport.file);
+                // Handle base64 files
+                if (storageMethod === 'base64' && fileBase64) {
+                    iframe.src = 'data:application/pdf;base64,' + fileBase64;
+                    downloadBtn.setAttribute('data-url', '');
+                    downloadBtn.setAttribute('data-filename', fileName || title.replace(' ', '_') + '.pdf');
+                    downloadBtn.setAttribute('data-base64', fileBase64);
+                    downloadBtn.setAttribute('data-storage-method', 'base64');
+                } else if (fileUrl.startsWith('data:')) {
                     iframe.src = fileUrl;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                } else if (latestReport.url) {
-                    // If stored as URL (for demo purposes)
-                    iframe.src = latestReport.url;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
+                    downloadBtn.setAttribute('data-url', fileUrl);
+                    downloadBtn.setAttribute('data-filename', fileName || title.replace(' ', '_') + '.pdf');
+                    downloadBtn.setAttribute('data-base64', '');
+                    downloadBtn.setAttribute('data-storage-method', 'storage');
+                } else {
+                    iframe.src = fileUrl;
+                    downloadBtn.setAttribute('data-url', fileUrl);
+                    downloadBtn.setAttribute('data-filename', fileName || title.replace(' ', '_') + '.pdf');
+                    downloadBtn.setAttribute('data-base64', '');
+                    downloadBtn.setAttribute('data-storage-method', 'storage');
                 }
+                
+                // Close reports list modal
+                document.getElementById('reports-list-modal').style.display = 'none';
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function downloadReportFromList(fileUrl, fileName, fileBase64 = null, storageMethod = 'storage') {
+                // Handle base64 files
+                if (storageMethod === 'base64' && fileBase64) {
+                    // Convert base64 to blob and download
+                    const byteCharacters = atob(fileBase64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName || 'report.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                } else if (fileUrl.startsWith('data:')) {
+                    // Convert data URL to blob and download
+                    const base64Data = fileUrl.split(',')[1];
+                    const byteCharacters = atob(base64Data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName || 'report.pdf';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                } else {
+                    // Regular download for Storage URLs
+                    const link = document.createElement('a');
+                    link.href = fileUrl;
+                    link.download = fileName || 'report.pdf';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+            
+            // Keep old function names for backward compatibility
+            function viewReport(fileUrl, title) {
+                viewReportFromList(fileUrl, title, null);
+            }
+            
+            function downloadReport(fileUrl, fileName) {
+                downloadReportFromList(fileUrl, fileName);
             }
             
             function closeReportViewerModal() {
@@ -2750,15 +2959,25 @@
                 document.body.style.overflow = '';
             }
             
+            function closeReportsListModal() {
+                const modal = document.getElementById('reports-list-modal');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
             window.openReportUploadModal = openReportUploadModal;
-            window.viewAdminReport = viewAdminReport;
+            window.viewUserReports = viewUserReports;
+            window.viewReport = viewReport;
+            window.viewReportFromList = viewReportFromList;
+            window.downloadReport = downloadReport;
+            window.downloadReportFromList = downloadReportFromList;
             
             // Report upload form handler
             const reportUploadForm = document.getElementById('report-upload-form');
             if (reportUploadForm) {
-                reportUploadForm.addEventListener('submit', function(e) {
+                reportUploadForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const userId = parseInt(document.getElementById('report-upload-modal').getAttribute('data-user-id'));
+                    const userId = document.getElementById('report-upload-modal').getAttribute('data-user-id');
                     const month = document.getElementById('report-month').value;
                     const year = parseInt(document.getElementById('report-year').value);
                     const fileInput = document.getElementById('report-file');
@@ -2779,22 +2998,168 @@
                         return;
                     }
                     
-                    if (!reportsData[userId]) {
-                        reportsData[userId] = {};
+                    if (!userId) {
+                        alert('Error: User ID not found');
+                        return;
                     }
                     
-                    const reportKey = `${year}-${String(month).padStart(2, '0')}`;
-                    reportsData[userId][reportKey] = {
-                        file: file,
-                        month: month,
-                        year: year,
-                        fileName: file.name,
-                        uploadDate: new Date().toISOString()
-                    };
-                    
-                    loadReportsUsersList();
-                    closeReportUploadModal();
-                    alert(`Report for ${month} ${year} uploaded successfully!`);
+                    try {
+                        // Show loading state
+                        const submitBtn = document.getElementById('upload-report-btn');
+                        const originalText = submitBtn.textContent;
+                        const progressDiv = document.getElementById('upload-progress');
+                        const progressBar = document.getElementById('upload-progress-bar');
+                        const progressPercent = document.getElementById('upload-progress-percent');
+                        
+                        submitBtn.textContent = 'Uploading...';
+                        submitBtn.disabled = true;
+                        progressDiv.style.display = 'block';
+                        
+                        // Sanitize file name to avoid encoding issues
+                        function sanitizeFileName(fileName) {
+                            // Remove extension
+                            const nameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
+                            // Replace special characters and spaces with underscores
+                            const sanitized = nameWithoutExt
+                                .replace(/[^a-zA-Z0-9_-]/g, '_')
+                                .replace(/_+/g, '_')
+                                .substring(0, 50); // Limit length
+                            // Get original extension
+                            const ext = fileName.substring(fileName.lastIndexOf('.'));
+                            return sanitized + ext;
+                        }
+                        
+                        // Check if Firebase Storage is available
+                        if (!firebase.storage) {
+                            throw new Error('Firebase Storage is not initialized. Please check your Firebase configuration.');
+                        }
+                        
+                        const reportKey = `${year}-${String(month).padStart(2, '0')}`;
+                        const sanitizedFileName = sanitizeFileName(file.name);
+                        let downloadURL;
+                        let useBase64 = false;
+                        
+                        // Check file size first - if too large, skip Storage attempt
+                        if (file.size > 900000) { // 900KB limit for base64 fallback
+                            console.warn('File too large for base64 fallback, attempting Storage only');
+                        }
+                        
+                        // Check file size - use base64 for files under 900KB to avoid CORS issues
+                        // Once Firebase Storage rules are configured, you can enable Storage uploads
+                        if (file.size > 900000) { // 900KB limit (Firestore has 1MB limit, leave buffer)
+                            throw new Error('File is too large (' + (file.size / 1024 / 1024).toFixed(2) + 'MB). Maximum size: 900KB. Please configure Firebase Storage rules to allow larger file uploads.');
+                        }
+                        
+                        // Use base64 storage (avoids CORS issues until Storage rules are configured)
+                        useBase64 = true;
+                        
+                        // Convert file to base64 and store in Firestore
+                        progressPercent.textContent = 'Converting file...';
+                        progressBar.style.width = '30%';
+                        
+                        const reader = new FileReader();
+                        const fileBase64 = await new Promise((resolve, reject) => {
+                            reader.onload = () => {
+                                const base64String = reader.result.split(',')[1]; // Remove data:application/pdf;base64, prefix
+                                resolve(base64String);
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                        });
+                        
+                        progressBar.style.width = '60%';
+                        progressPercent.textContent = 'Saving to database...';
+                        
+                        // Store base64 in Firestore
+                        downloadURL = 'data:application/pdf;base64,' + fileBase64;
+                        
+                        progressBar.style.width = '100%';
+                        progressPercent.textContent = '100%';
+                        
+                        // Save report metadata to Firestore
+                        const reportData = {
+                            month: month,
+                            year: year,
+                            fileName: file.name,
+                            fileSize: file.size,
+                            storageMethod: useBase64 ? 'base64' : 'storage',
+                            uploadDate: firebase.firestore.FieldValue.serverTimestamp(),
+                            uploadedBy: 'admin' // Could store admin user ID if needed
+                        };
+                        
+                        // If using base64, store it in the document
+                        if (useBase64 || downloadURL.startsWith('data:')) {
+                            // Store base64 data (Firestore has 1MB limit per document)
+                            const base64Data = downloadURL.split(',')[1];
+                            reportData.fileBase64 = base64Data;
+                            reportData.fileUrl = 'base64'; // Marker to indicate base64 storage
+                        } else {
+                            // Store Storage URL
+                            reportData.fileUrl = downloadURL;
+                        }
+                        
+                        // Save to reports subcollection for the user
+                        await db.collection('users').doc(userId)
+                            .collection('reports')
+                            .doc(reportKey)
+                            .set(reportData);
+                        
+                        // Hide progress and show success
+                        setTimeout(() => {
+                            progressDiv.style.display = 'none';
+                            
+                            // Reset form and close modal
+                            reportUploadForm.reset();
+                            document.getElementById('file-selected-info').style.display = 'none';
+                            closeReportUploadModal();
+                            
+                            // Reload reports list
+                            loadReportsUsersList();
+                            
+                            alert(`Report for ${month} ${year} uploaded successfully!`);
+                        }, 500);
+                    } catch (error) {
+                        console.error('Error uploading report:', error);
+                        
+                        // Hide progress
+                        document.getElementById('upload-progress').style.display = 'none';
+                        
+                        // Re-enable button
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        
+                        // Show error message
+                        let errorMessage = 'Error uploading report:\n\n';
+                        if (error.code === 'storage/unauthorized') {
+                            errorMessage += 'You do not have permission to upload files.\n\n';
+                            errorMessage += 'Please check Firebase Storage security rules in the Firebase Console.\n';
+                            errorMessage += 'Rules should allow authenticated users to write to the reports/ path.';
+                        } else if (error.code === 'storage/canceled') {
+                            errorMessage += 'Upload was canceled.';
+                        } else if (error.code === 'storage/quota-exceeded') {
+                            errorMessage += 'Storage quota exceeded. Please contact administrator.';
+                        } else if (error.code === 'storage/unauthenticated') {
+                            errorMessage += 'You must be authenticated to upload files.\n\n';
+                            errorMessage += 'Please ensure you are logged in as an admin.';
+                        } else if (error.message && error.message.includes('CORS')) {
+                            errorMessage += 'CORS error detected.\n\n';
+                            errorMessage += 'This usually means Firebase Storage security rules need to be configured.\n\n';
+                            errorMessage += 'Please check Firebase Console > Storage > Rules and ensure uploads are allowed.\n\n';
+                            errorMessage += 'Example rule:\n';
+                            errorMessage += 'match /reports/{userId}/{fileName} {\n';
+                            errorMessage += '  allow write: if request.auth != null;\n';
+                            errorMessage += '  allow read: if request.auth != null;\n';
+                            errorMessage += '}';
+                        } else if (error.code) {
+                            errorMessage += `Error code: ${error.code}\n`;
+                            errorMessage += `Message: ${error.message || 'Unknown error'}`;
+                        } else {
+                            errorMessage += error.message || 'Unknown error occurred.';
+                        }
+                        
+                        alert(errorMessage);
+                        console.error('Full error details:', error);
+                    }
                 });
             }
             
@@ -2867,11 +3232,52 @@
                     reportUploadModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportUploadModal);
                     reportUploadModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportUploadModal);
                     document.getElementById('cancel-report-upload')?.addEventListener('click', closeReportUploadModal);
+                    
+                    // File selection handler
+                    const fileInput = document.getElementById('report-file');
+                    if (fileInput) {
+                        fileInput.addEventListener('change', function(e) {
+                            const file = e.target.files[0];
+                            const fileInfoDiv = document.getElementById('file-selected-info');
+                            const fileNameDiv = document.getElementById('selected-file-name');
+                            const fileSizeDiv = document.getElementById('selected-file-size');
+                            
+                            if (file) {
+                                fileNameDiv.textContent = file.name;
+                                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                                fileSizeDiv.textContent = fileSizeMB + ' MB';
+                                fileInfoDiv.style.display = 'block';
+                            } else {
+                                fileInfoDiv.style.display = 'none';
+                            }
+                        });
+                    }
                 }
                 
                 const reportViewerModal = document.getElementById('report-viewer-modal');
                 if (reportViewerModal) {
                     reportViewerModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportViewerModal);
+                    
+                    // Reports list modal
+                    const reportsListModal = document.getElementById('reports-list-modal');
+                    if (reportsListModal) {
+                        reportsListModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportsListModal);
+                        reportsListModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportsListModal);
+                    }
+                    
+                    // Download report button
+                    const downloadReportBtn = document.getElementById('download-report-btn');
+                    if (downloadReportBtn) {
+                        downloadReportBtn.addEventListener('click', function() {
+                            const fileUrl = this.getAttribute('data-url');
+                            const fileName = this.getAttribute('data-filename') || 'report.pdf';
+                            const fileBase64 = this.getAttribute('data-base64');
+                            const storageMethod = this.getAttribute('data-storage-method') || 'storage';
+                            if (fileUrl || fileBase64) {
+                                downloadReportFromList(fileUrl, fileName, fileBase64, storageMethod);
+                            }
+                        });
+                    }
                     reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
                 }
                 
