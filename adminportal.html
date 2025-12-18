@@ -660,6 +660,7 @@
                                 <input type="date" id="edit-withdrawal-date" class="admin-form-input">
                             </div>
                             <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="delete-transaction-btn" style="background: #dc2626; color: white; margin-right: auto;">Delete Transaction</button>
                                 <button type="button" class="admin-btn-cancel" id="cancel-transaction-edit">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
                             </div>
@@ -1610,13 +1611,27 @@
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
                         dashboardView.style.display = 'block';
-                        loadInvestorsPaymentList();
+                        // Load transactions first, then update dashboard
+                        populateTransactionsTable().then(() => {
+                            updateDashboardMetrics();
+                            loadInvestorsPaymentList();
+                        }).catch(() => {
+                            // If load fails, still try to load payment list
+                            loadInvestorsPaymentList();
+                        });
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
-                        setTimeout(function() {
-                            drawPortfolioChart();
-                            calculateProjectionValue();
-                        }, 100);
+                        // Load transactions first, then update metrics and chart
+                        populateTransactionsTable().then(() => {
+                            setTimeout(function() {
+                                drawPortfolioChart();
+                            }, 100);
+                        }).catch(() => {
+                            // If load fails, still try to draw chart with existing data
+                            setTimeout(function() {
+                                drawPortfolioChart();
+                            }, 100);
+                        });
                     } else if (navText === 'Transactions' && transactionsView) {
                         transactionsView.style.display = 'block';
                         populateTransactionsTable();
@@ -1678,21 +1693,89 @@
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
-                // Sample data: Historical (12 months) + Projection (12 months) = 24 months total
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                // Get historical data from transactionData
+                let historicalData = [];
+                let initialInvestment = 0;
                 
-                // Historical data (past 12 months) - starting from initial fund investment
-                const initialInvestment = 8500000; // Fund total
-                const historicalData = [
-                    8500000, 8700000, 8800000, 8950000, 9100000, 9250000, 9400000, 9550000, 9750000, 9950000, 10150000, 10350000
-                ];
+                if (transactionData && transactionData.length > 0) {
+                    // Use actual transaction data - show final balance (ending balance - withdrawals)
+                    initialInvestment = transactionData[0].starting;
+                    
+                    // Calculate final balance for each entry: ending balance - withdrawals
+                    historicalData = transactionData.map(entry => {
+                        const finalBalance = entry.ending - (entry.withdrawals || 0);
+                        return finalBalance;
+                    });
+                } else {
+                    // Default fallback data
+                    initialInvestment = 8500000;
+                    historicalData = [
+                        8500000, 8700000, 8800000, 8950000, 9100000, 9250000, 9400000, 9550000, 9750000, 9950000, 10150000, 10350000
+                    ];
+                }
                 
-                // Projection data continues seamlessly from last historical value
+                // Calculate projection data based on average growth
+                let projectionData = [];
                 const lastHistoricalValue = historicalData[historicalData.length - 1];
-                const projectionData = [
-                    10550000, 10750000, 10950000, 11150000, 11350000, 11550000, 11750000, 11950000, 12150000, 12350000, 12550000, 12750000
-                ];
+                
+                if (transactionData && transactionData.length > 1) {
+                    // Calculate average monthly growth rate
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02;
+                    
+                    // Project 12 months forward
+                    let projectionValue = lastHistoricalValue;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                        projectionData.push(projectionValue);
+                    }
+                } else {
+                    // Default projection (2% monthly growth)
+                    let projectionValue = lastHistoricalValue;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * 1.02;
+                        projectionData.push(projectionValue);
+                    }
+                }
+                
+                // Month labels for chart
+                const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const totalMonths = historicalData.length + projectionData.length;
+                const months = [];
+                
+                // Generate month labels based on actual data
+                if (transactionData && transactionData.length > 0) {
+                    // Only add transaction months (one label per transaction entry)
+                    transactionData.forEach((entry) => {
+                        const monthAbbr = entry.month.substring(0, 3);
+                        const monthIndex = monthLabels.indexOf(monthAbbr);
+                        if (monthIndex >= 0) {
+                            months.push(monthLabels[monthIndex]);
+                        } else {
+                            months.push(monthAbbr);
+                        }
+                    });
+                    
+                    // Add projection months (12 months forward from last transaction)
+                    const lastTransactionMonth = transactionData[transactionData.length - 1].month.substring(0, 3);
+                    const lastMonthIndex = monthLabels.indexOf(lastTransactionMonth);
+                    let currentMonthIndex = (lastMonthIndex + 1) % 12; // Start from next month
+                    for (let i = 0; i < 12; i++) {
+                        months.push(monthLabels[currentMonthIndex]);
+                        currentMonthIndex = (currentMonthIndex + 1) % 12;
+                    }
+                } else {
+                    // Default labels
+                    months.push(...monthLabels, ...monthLabels);
+                }
                 
                 // Combine data
                 const allData = [...historicalData, ...projectionData];
@@ -1700,21 +1783,36 @@
                 const minValue = Math.min(...allData) * 0.9;
                 const valueRange = maxValue - minValue;
                 
-                // Store data points for hover interaction
+                // Store data points for hover interaction - only for transaction entries
                 chartDataPoints = [];
                 
-                // Calculate x and y positions for all points
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                // Historical data points (transaction entries only)
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
                     chartDataPoints.push({
                         x: x,
                         y: y,
                         value: value,
-                        month: months[index],
+                        month: months[index] || `M${index + 1}`,
                         growthPercent: growthPercent,
-                        isHistorical: index < 12
+                        isHistorical: true
+                    });
+                });
+                
+                // Projection data points
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    chartDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[historicalData.length + index] || `P${index + 1}`,
+                        growthPercent: growthPercent,
+                        isHistorical: false
                     });
                 });
                 
@@ -1730,79 +1828,99 @@
                 }
                 
                 // Draw area fill below the line (only historical section with gradient)
-                const gradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / 24) * 12, 
-                    padding.top + chartHeight
-                );
-                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
-                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-                
-                ctx.beginPath();
-                const firstX = padding.left + (chartWidth / 24) / 2;
-                const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(firstX, height - padding.bottom);
-                ctx.lineTo(firstX, firstY);
-                
-                // Historical area only
-                historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                // Close at the last historical point
-                const lastHistoricalX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                ctx.lineTo(lastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = gradient;
-                ctx.fill();
+                if (historicalData.length > 0) {
+                    const gradient = ctx.createLinearGradient(
+                        padding.left, 
+                        padding.top, 
+                        padding.left + (chartWidth / totalMonths) * historicalData.length, 
+                        padding.top + chartHeight
+                    );
+                    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                    
+                    ctx.beginPath();
+                    const firstX = padding.left + (chartWidth / totalMonths) / 2;
+                    const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
+                    ctx.moveTo(firstX, height - padding.bottom);
+                    ctx.lineTo(firstX, firstY);
+                    
+                    // Historical area only
+                    historicalData.forEach((value, index) => {
+                        const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        ctx.lineTo(x, y);
+                    });
+                    
+                    // Close at the last historical point
+                    const lastHistoricalIndex = historicalData.length - 1;
+                    const lastHistoricalX = padding.left + (chartWidth / totalMonths) * lastHistoricalIndex + (chartWidth / totalMonths) / 2;
+                    ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                    ctx.closePath();
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                }
                 
                 // Draw historical line
-                ctx.beginPath();
-                ctx.strokeStyle = '#2563eb';
-                ctx.lineWidth = 2.5;
-                historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                ctx.stroke();
+                if (historicalData.length > 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#2563eb';
+                    ctx.lineWidth = 2.5;
+                    historicalData.forEach((value, index) => {
+                        const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        
+                        if (index === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    ctx.stroke();
+                }
                 
                 // Draw projection line (dashed, green, continuing from historical)
-                ctx.beginPath();
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 2.5;
-                ctx.setLineDash([6, 4]);
-                projectionData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * (12 + index) + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    
-                    if (index === 0) {
-                        // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                        const lastHistY = padding.top + chartHeight - ((historicalData[11] - minValue) / valueRange) * chartHeight;
-                        ctx.moveTo(lastHistX, lastHistY);
-                    }
-                    ctx.lineTo(x, y);
-                });
-                ctx.stroke();
-                ctx.setLineDash([]);
+                if (projectionData.length > 0 && historicalData.length > 0) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#10b981';
+                    ctx.lineWidth = 2.5;
+                    ctx.setLineDash([6, 4]);
+                    projectionData.forEach((value, index) => {
+                        const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        
+                        if (index === 0) {
+                            // Connect to last historical point
+                            const lastHistX = padding.left + (chartWidth / totalMonths) * (historicalData.length - 1) + (chartWidth / totalMonths) / 2;
+                            const lastHistY = padding.top + chartHeight - ((historicalData[historicalData.length - 1] - minValue) / valueRange) * chartHeight;
+                            ctx.moveTo(lastHistX, lastHistY);
+                        }
+                        ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
                 
-                // Draw smaller, more formal data points (blue for historical, green for projection)
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                // Draw data points - only for transaction entries (one dot per transaction)
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 12;
                     
                     ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.strokeStyle = '#2563eb';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+                
+                // Draw projection data points
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#10b981';
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(x, y, 3, 0, Math.PI * 2);
@@ -1825,9 +1943,12 @@
                 // Draw X-axis labels
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                for (let i = 0; i < 24; i += 2) {
-                    const x = padding.left + (chartWidth / 24) * i + (chartWidth / 24) / 2;
-                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                const labelInterval = Math.max(1, Math.floor(totalMonths / 12)); // Show approximately 12 labels
+                for (let i = 0; i < totalMonths; i += labelInterval) {
+                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
+                    if (months[i]) {
+                        ctx.fillText(months[i], x, height - padding.bottom + 10);
+                    }
                 }
             }
             
@@ -1880,73 +2001,438 @@
             // Store transaction data globally for editing
             let transactionData = [];
             
+            // Admin Fund Performance Firestore Functions
+            const ADMIN_FUND_PERFORMANCE_COLLECTION = 'adminFundPerformance';
+            
+            // Save admin fund performance to Firestore
+            async function saveAdminFundPerformance(performanceData) {
+                try {
+                    const monthIndex = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(performanceData.month);
+                    
+                    const docData = {
+                        month: performanceData.month,
+                        year: performanceData.year,
+                        monthIndex: monthIndex,
+                        startingBalance: performanceData.starting,
+                        endingBalance: performanceData.ending,
+                        growth: performanceData.growth,
+                        deposits: performanceData.deposits || 0,
+                        withdrawals: performanceData.withdrawals || 0,
+                        depositDate: performanceData.depositDate ? firebase.firestore.Timestamp.fromDate(new Date(performanceData.depositDate)) : null,
+                        withdrawalDate: performanceData.withdrawalDate ? firebase.firestore.Timestamp.fromDate(new Date(performanceData.withdrawalDate)) : null,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    // Check if entry exists for this month/year
+                    const querySnapshot = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION)
+                        .where('month', '==', performanceData.month)
+                        .where('year', '==', performanceData.year)
+                        .get();
+                    
+                    if (!querySnapshot.empty) {
+                        // Update existing document
+                        const docId = querySnapshot.docs[0].id;
+                        await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).doc(docId).update({
+                            ...docData,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        return docId;
+                    } else {
+                        // Create new document
+                        const docRef = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).add(docData);
+                        return docRef.id;
+                    }
+                } catch (error) {
+                    console.error('Error saving admin fund performance:', error);
+                    throw error;
+                }
+            }
+            
+            // Load admin fund performance from Firestore
+            async function loadAdminFundPerformance() {
+                try {
+                    const snapshot = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION)
+                        .orderBy('year', 'asc')
+                        .orderBy('monthIndex', 'asc')
+                        .get();
+                    
+                    const performanceData = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        performanceData.push({
+                            id: doc.id,
+                            month: data.month,
+                            year: data.year,
+                            starting: data.startingBalance,
+                            ending: data.endingBalance,
+                            growth: data.growth,
+                            deposits: data.deposits || 0,
+                            withdrawals: data.withdrawals || 0,
+                            depositDate: data.depositDate ? data.depositDate.toDate().toISOString().split('T')[0] : null,
+                            withdrawalDate: data.withdrawalDate ? data.withdrawalDate.toDate().toISOString().split('T')[0] : null
+                        });
+                    });
+                    
+                    return performanceData;
+                } catch (error) {
+                    console.error('Error loading admin fund performance:', error);
+                    // If ordering fails, load all and sort in JavaScript
+                    try {
+                        const snapshot = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).get();
+                        const performanceData = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            performanceData.push({
+                                id: doc.id,
+                                month: data.month,
+                                year: data.year,
+                                starting: data.startingBalance,
+                                ending: data.endingBalance,
+                                growth: data.growth,
+                                deposits: data.deposits || 0,
+                                withdrawals: data.withdrawals || 0,
+                                depositDate: data.depositDate ? data.depositDate.toDate().toISOString().split('T')[0] : null,
+                                withdrawalDate: data.withdrawalDate ? data.withdrawalDate.toDate().toISOString().split('T')[0] : null
+                            });
+                        });
+                        
+                        // Sort in JavaScript
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        performanceData.sort((a, b) => {
+                            const yearDiff = a.year - b.year;
+                            if (yearDiff !== 0) return yearDiff;
+                            return months.indexOf(a.month) - months.indexOf(b.month);
+                        });
+                        
+                        return performanceData;
+                    } catch (fallbackError) {
+                        console.error('Error in fallback load:', fallbackError);
+                        return [];
+                    }
+                }
+            }
+            
+            // Update admin fund performance in Firestore
+            async function updateAdminFundPerformance(docId, performanceData) {
+                try {
+                    const monthIndex = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(performanceData.month);
+                    
+                    await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).doc(docId).update({
+                        month: performanceData.month,
+                        year: performanceData.year,
+                        monthIndex: monthIndex,
+                        startingBalance: performanceData.starting,
+                        endingBalance: performanceData.ending,
+                        growth: performanceData.growth,
+                        deposits: performanceData.deposits || 0,
+                        withdrawals: performanceData.withdrawals || 0,
+                        depositDate: performanceData.depositDate ? firebase.firestore.Timestamp.fromDate(new Date(performanceData.depositDate)) : null,
+                        withdrawalDate: performanceData.withdrawalDate ? firebase.firestore.Timestamp.fromDate(new Date(performanceData.withdrawalDate)) : null,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error('Error updating admin fund performance:', error);
+                    throw error;
+                }
+            }
+            
+            // Delete admin fund performance from Firestore
+            async function deleteAdminFundPerformance(docId) {
+                try {
+                    await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).doc(docId).delete();
+                    console.log('Admin fund performance deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting admin fund performance:', error);
+                    throw error;
+                }
+            }
+            
             // Transactions Table Population
-            function populateTransactionsTable() {
+            async function populateTransactionsTable() {
                 const tableBody = document.getElementById('transactions-table-body');
-                if (!tableBody) return;
+                if (!tableBody) return Promise.resolve();
 
-                // Initialize transaction data if empty
-                if (transactionData.length === 0) {
-                    const initialInvestment = 8500000;
-                    transactionData = [
-                        { month: 'January', year: 2024, starting: 8500000, ending: 8500000, growth: 0, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'February', year: 2024, starting: 8500000, ending: 8700000, growth: 2.35, deposits: 200000, withdrawals: 0, depositDate: '2024-02-15', withdrawalDate: null },
-                        { month: 'March', year: 2024, starting: 8700000, ending: 8800000, growth: 1.15, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'April', year: 2024, starting: 8800000, ending: 8950000, growth: 1.70, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'May', year: 2024, starting: 8950000, ending: 9100000, growth: 1.68, deposits: 150000, withdrawals: 0, depositDate: '2024-05-10', withdrawalDate: null },
-                        { month: 'June', year: 2024, starting: 9100000, ending: 9250000, growth: 1.65, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'July', year: 2024, starting: 9250000, ending: 9400000, growth: 1.62, deposits: 200000, withdrawals: 0, depositDate: '2024-07-20', withdrawalDate: null },
-                        { month: 'August', year: 2024, starting: 9400000, ending: 9550000, growth: 1.60, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'September', year: 2024, starting: 9550000, ending: 9750000, growth: 2.09, deposits: 200000, withdrawals: 0, depositDate: '2024-09-05', withdrawalDate: null },
-                        { month: 'October', year: 2024, starting: 9750000, ending: 9950000, growth: 2.05, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'November', year: 2024, starting: 9950000, ending: 10150000, growth: 2.01, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'December', year: 2024, starting: 10150000, ending: 10350000, growth: 1.97, deposits: 0, withdrawals: 200000, depositDate: null, withdrawalDate: '2024-12-18' }
-                    ];
+                // Load from Firestore
+                try {
+                    transactionData = await loadAdminFundPerformance();
+                    
+                    // If no data exists, initialize with empty array (no default data)
+                    if (transactionData.length === 0) {
+                        transactionData = [];
+                    }
+                } catch (error) {
+                    console.error('Error loading transactions:', error);
+                    transactionData = [];
                 }
 
                 tableBody.innerHTML = '';
 
-                transactionData.forEach((data, index) => {
-                    const startingBalance = data.starting;
-                    const endingBalance = data.ending;
-                    const growth = data.growth;
-                    const growthValue = parseFloat(growth);
-                    const monthYear = `${data.month} ${data.year}`;
-                    
+                if (transactionData.length === 0) {
                     const row = document.createElement('tr');
-                    row.setAttribute('data-index', index);
-                    
-                    // Format dates
-                    const depositDisplay = data.deposits > 0 && data.depositDate 
-                        ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
-                        : data.deposits > 0 ? `€${data.deposits.toLocaleString('en-US')}` : '-';
-                    
-                    const withdrawalDisplay = data.withdrawals > 0 && data.withdrawalDate 
-                        ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
-                        : data.withdrawals > 0 ? `€${data.withdrawals.toLocaleString('en-US')}` : '-';
-
-                    row.innerHTML = `
-                        <td>${monthYear}</td>
-                        <td>€${startingBalance.toLocaleString('en-US')}</td>
-                        <td>€${endingBalance.toLocaleString('en-US')}</td>
-                        <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
-                        <td class="transaction-cell">${depositDisplay}</td>
-                        <td class="transaction-cell">${withdrawalDisplay}</td>
-                        <td><button class="admin-edit-btn" data-index="${index}">Edit</button></td>
-                    `;
-                    
+                    row.innerHTML = '<td colspan="7" style="text-align: center; padding: 2rem; color: #6b7280;">No performance data available. Add your first performance entry above.</td>';
                     tableBody.appendChild(row);
+                } else {
+                    transactionData.forEach((data, index) => {
+                        const startingBalance = data.starting;
+                        const endingBalance = data.ending;
+                        const growth = data.growth;
+                        const growthValue = parseFloat(growth);
+                        const monthYear = `${data.month} ${data.year}`;
+                        
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-index', index);
+                        row.setAttribute('data-id', data.id || '');
+                        
+                        // Format dates
+                        const depositDisplay = data.deposits > 0 && data.depositDate 
+                            ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
+                            : data.deposits > 0 ? `€${data.deposits.toLocaleString('en-US')}` : '-';
+                        
+                        const withdrawalDisplay = data.withdrawals > 0 && data.withdrawalDate 
+                            ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
+                            : data.withdrawals > 0 ? `€${data.withdrawals.toLocaleString('en-US')}` : '-';
+
+                        const finalBalance = endingBalance - (data.withdrawals || 0);
+                        
+                        row.innerHTML = `
+                            <td>${monthYear}</td>
+                            <td>€${startingBalance.toLocaleString('en-US')}</td>
+                            <td>€${finalBalance.toLocaleString('en-US')}</td>
+                            <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
+                            <td class="transaction-cell">${depositDisplay}</td>
+                            <td class="transaction-cell">${withdrawalDisplay}</td>
+                            <td><button class="admin-edit-btn" data-index="${index}">Edit</button></td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Add edit button handlers
+                    document.querySelectorAll('.admin-edit-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            openTransactionEditModal(index);
+                        });
+                    });
+                }
+                
+                // Update Portfolio section after loading transactions
+                updatePortfolioMetrics();
+            }
+            
+            // Update Dashboard Metrics based on transaction data
+            function updateDashboardMetrics() {
+                if (!transactionData || transactionData.length === 0) {
+                    // Set default values if no data
+                    const dashboardBalanceEl = document.getElementById('dashboard-current-balance');
+                    const dashboardProjectionEl = document.getElementById('dashboard-projection-value');
+                    if (dashboardBalanceEl) dashboardBalanceEl.textContent = '€0';
+                    if (dashboardProjectionEl) dashboardProjectionEl.textContent = '€0';
+                    return;
+                }
+                
+                // Get latest final balance (ending balance - withdrawals)
+                const latestEntry = transactionData[transactionData.length - 1];
+                const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                
+                // Calculate total capital invested
+                let totalCapitalInvested = 0;
+                const firstStartingBalance = transactionData[0].starting;
+                transactionData.forEach(entry => {
+                    totalCapitalInvested += (entry.deposits || 0);
+                });
+                totalCapitalInvested += firstStartingBalance;
+                
+                // Calculate total fund gain percentage by summing all transaction growth percentages
+                let totalGain = 0;
+                transactionData.forEach(entry => {
+                    if (entry.growth) {
+                        totalGain += entry.growth;
+                    }
                 });
                 
-                // Add edit button handlers
-                document.querySelectorAll('.admin-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        openTransactionEditModal(index);
+                // Calculate 12-month projection
+                let projectionValue = currentBalance;
+                if (transactionData.length > 1) {
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
                     });
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                    }
+                } else {
+                    const monthlyGrowthRate = 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + monthlyGrowthRate);
+                    }
+                }
+                
+                // Update dashboard widgets
+                const dashboardBalanceEl = document.getElementById('dashboard-current-balance');
+                const dashboardGainEl = document.getElementById('dashboard-total-gain');
+                const dashboardProjectionEl = document.getElementById('dashboard-projection-value');
+                
+                if (dashboardBalanceEl) {
+                    dashboardBalanceEl.textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
+                }
+                if (dashboardGainEl) {
+                    dashboardGainEl.textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
+                    // Update profit text
+                    const profit = currentBalance - totalCapitalInvested;
+                    const profitElement = dashboardGainEl.nextElementSibling;
+                    if (profitElement && profitElement.classList.contains('dashboard-sub-metric')) {
+                        profitElement.textContent = '€' + Math.round(profit).toLocaleString('en-US') + ' profit';
+                    }
+                }
+                
+                // Update capital invested text
+                const dashboardCapitalEl = document.querySelector('#dashboard-view .dashboard-widget[style*="grid-column: 2"] .dashboard-sub-metric');
+                if (dashboardCapitalEl) {
+                    dashboardCapitalEl.textContent = 'Capital Invested: €' + Math.round(totalCapitalInvested).toLocaleString('en-US');
+                }
+                if (dashboardProjectionEl) {
+                    dashboardProjectionEl.textContent = '€' + Math.round(projectionValue).toLocaleString('en-US');
+                }
+                
+                // Update Latest Report section with latest transactions
+                updateLatestReports();
+            }
+            
+            // Update Latest Reports section with latest fund performance entries
+            function updateLatestReports() {
+                const reportContainer = document.querySelector('.dashboard-widget[style*="grid-column: 2; grid-row: 2"] .dashboard-widget-content');
+                if (!reportContainer || !transactionData || transactionData.length === 0) return;
+                
+                // Get last 3 transactions (most recent)
+                const latestTransactions = transactionData.slice(-3).reverse();
+                
+                reportContainer.innerHTML = '';
+                latestTransactions.forEach(entry => {
+                    const reportItem = document.createElement('div');
+                    reportItem.className = 'dashboard-report-item';
+                    
+                    const period = document.createElement('div');
+                    period.className = 'dashboard-report-period';
+                    period.textContent = `${entry.month} ${entry.year}`;
+                    
+                    const metrics = document.createElement('div');
+                    metrics.className = 'dashboard-report-metrics';
+                    
+                    const gain = document.createElement('span');
+                    gain.className = 'dashboard-report-gain';
+                    gain.textContent = (entry.growth >= 0 ? '+' : '') + entry.growth.toFixed(2) + '%';
+                    
+                    const balance = document.createElement('span');
+                    balance.className = 'dashboard-report-balance';
+                    const finalBalance = entry.ending - (entry.withdrawals || 0);
+                    balance.textContent = '€' + Math.round(finalBalance).toLocaleString('en-US');
+                    
+                    metrics.appendChild(gain);
+                    metrics.appendChild(balance);
+                    
+                    // Convert month name to number
+                    const monthMap = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                    };
+                    const monthNum = monthMap[entry.month] || '01';
+                    
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'dashboard-report-download';
+                    downloadBtn.setAttribute('data-month', `${entry.year}-${monthNum}`);
+                    downloadBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    `;
+                    
+                    reportItem.appendChild(period);
+                    reportItem.appendChild(metrics);
+                    reportItem.appendChild(downloadBtn);
+                    reportContainer.appendChild(reportItem);
                 });
             }
             
+            // Update Portfolio Metrics based on transaction data
+            function updatePortfolioMetrics() {
+                if (!transactionData || transactionData.length === 0) {
+                    // Set default values if no data
+                    document.getElementById('capital-invested').textContent = '€0';
+                    document.getElementById('current-balance').textContent = '€0';
+                    document.getElementById('total-gain').textContent = '0.00%';
+                    document.getElementById('portfolio-projection').textContent = '€0';
+                    return;
+                }
+                
+                // Calculate total capital invested (sum of all deposits)
+                let totalCapitalInvested = 0;
+                let firstStartingBalance = transactionData[0].starting;
+                
+                // Sum all deposits
+                transactionData.forEach(entry => {
+                    totalCapitalInvested += (entry.deposits || 0);
+                });
+                
+                // Initial capital is the first starting balance
+                totalCapitalInvested += firstStartingBalance;
+                
+                // Get latest final balance (ending balance - withdrawals)
+                const latestEntry = transactionData[transactionData.length - 1];
+                const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                
+                // Calculate total fund gain percentage by summing all transaction growth percentages
+                let totalGain = 0;
+                transactionData.forEach(entry => {
+                    if (entry.growth) {
+                        totalGain += entry.growth;
+                    }
+                });
+                
+                // Calculate 12-month projection based on average monthly growth
+                let projectionValue = currentBalance;
+                if (transactionData.length > 1) {
+                    // Calculate average monthly growth rate
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02; // Default to 2% if no growth data
+                    
+                    // Project 12 months forward with compound growth
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                    }
+                } else {
+                    // If only one entry, use 2% monthly growth as default
+                    const monthlyGrowthRate = 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + monthlyGrowthRate);
+                    }
+                }
+                
+                // Update UI elements
+                document.getElementById('capital-invested').textContent = '€' + Math.round(totalCapitalInvested).toLocaleString('en-US');
+                document.getElementById('current-balance').textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
+                document.getElementById('total-gain').textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
+                document.getElementById('portfolio-projection').textContent = '€' + Math.round(projectionValue).toLocaleString('en-US');
+            }
+            
+            // Update Dashboard Metrics based on transaction data
             // Transaction Edit Modal Functions
             function openTransactionEditModal(index) {
                 const data = transactionData[index];
@@ -1960,6 +2446,7 @@
                 // Auto-calculate growth percentage using the correct formula
                 updateEditGrowthPercentage();
                 modal.setAttribute('data-edit-index', index);
+                modal.setAttribute('data-transaction-id', data.id || '');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -1967,33 +2454,137 @@
             function closeTransactionEditModal() {
                 const modal = document.getElementById('transaction-edit-modal');
                 modal.style.display = 'none';
+                modal.removeAttribute('data-edit-index');
+                modal.removeAttribute('data-transaction-id');
                 document.body.style.overflow = '';
+            }
+            
+            // Delete transaction handler
+            const deleteTransactionBtn = document.getElementById('delete-transaction-btn');
+            if (deleteTransactionBtn) {
+                deleteTransactionBtn.addEventListener('click', async function() {
+                    const modal = document.getElementById('transaction-edit-modal');
+                    const transactionId = modal.getAttribute('data-transaction-id');
+                    const index = parseInt(modal.getAttribute('data-edit-index'));
+                    
+                    if (!transactionId) {
+                        alert('Cannot delete: Transaction ID not found.');
+                        return;
+                    }
+                    
+                    if (!confirm('Are you sure you want to delete this transaction? This action cannot be undone.')) {
+                        return;
+                    }
+                    
+                    try {
+                        // Disable button during deletion
+                        this.disabled = true;
+                        this.textContent = 'Deleting...';
+                        
+                        // Delete from Firestore
+                        await deleteAdminFundPerformance(transactionId);
+                        
+                        // Close modal
+                        closeTransactionEditModal();
+                        
+                        // Reload transactions table
+                        await populateTransactionsTable();
+                        
+                        // Update portfolio chart if Portfolio view is visible
+                        const portfolioView = document.getElementById('portfolio-view');
+                        if (portfolioView && portfolioView.style.display !== 'none') {
+                            setTimeout(() => {
+                                drawPortfolioChart();
+                            }, 100);
+                        }
+                        
+                        // Update dashboard if visible
+                        const dashboardView = document.getElementById('dashboard-view');
+                        if (dashboardView && dashboardView.style.display !== 'none') {
+                            updateDashboardMetrics();
+                        }
+                        
+                        alert('Transaction deleted successfully!');
+                    } catch (error) {
+                        console.error('Error deleting transaction:', error);
+                        alert('Error deleting transaction. Please try again.');
+                    } finally {
+                        this.disabled = false;
+                        this.textContent = 'Delete Transaction';
+                    }
+                });
             }
             
             // Transaction edit form handler
             const transactionEditForm = document.getElementById('transaction-edit-form');
             if (transactionEditForm) {
-                transactionEditForm.addEventListener('submit', function(e) {
+                transactionEditForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const index = parseInt(document.getElementById('transaction-edit-modal').getAttribute('data-edit-index'));
-                    const starting = parseFloat(document.getElementById('edit-starting-balance').value);
-                    const ending = parseFloat(document.getElementById('edit-ending-balance').value);
-                    const deposits = parseFloat(document.getElementById('edit-deposits').value) || 0;
-                    const withdrawals = parseFloat(document.getElementById('edit-withdrawals').value) || 0;
-                    // Auto-calculate growth if not manually overridden
-                    let growth = parseFloat(document.getElementById('edit-growth').value);
-                    if (isNaN(growth) || growth === 0) {
-                        growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    
+                    // Disable submit button
+                    const submitBtn = transactionEditForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+                    
+                    try {
+                        const index = parseInt(document.getElementById('transaction-edit-modal').getAttribute('data-edit-index'));
+                        const transaction = transactionData[index];
+                        const starting = parseFloat(document.getElementById('edit-starting-balance').value);
+                        const ending = parseFloat(document.getElementById('edit-ending-balance').value);
+                        const deposits = parseFloat(document.getElementById('edit-deposits').value) || 0;
+                        const withdrawals = parseFloat(document.getElementById('edit-withdrawals').value) || 0;
+                        // Auto-calculate growth if not manually overridden
+                        let growth = parseFloat(document.getElementById('edit-growth').value);
+                        if (isNaN(growth) || growth === 0) {
+                            growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                        }
+                        
+                        const updatedEntry = {
+                            month: transaction.month,
+                            year: transaction.year,
+                            starting: starting,
+                            ending: ending,
+                            growth: growth,
+                            deposits: deposits,
+                            withdrawals: withdrawals,
+                            depositDate: document.getElementById('edit-deposit-date').value || null,
+                            withdrawalDate: document.getElementById('edit-withdrawal-date').value || null
+                        };
+                        
+                        // Update in Firestore if document ID exists
+                        if (transaction.id) {
+                            await updateAdminFundPerformance(transaction.id, updatedEntry);
+                        } else {
+                            // If no ID, save as new entry
+                            await saveAdminFundPerformance(updatedEntry);
+                        }
+                        
+                        // Reload transactions table
+                        await populateTransactionsTable();
+                        
+                        // Update portfolio chart if Portfolio view is visible
+                        const portfolioView = document.getElementById('portfolio-view');
+                        if (portfolioView && portfolioView.style.display !== 'none') {
+                            setTimeout(() => {
+                                drawPortfolioChart();
+                            }, 100);
+                        }
+                        
+                        // Update dashboard if visible
+                        const dashboardView = document.getElementById('dashboard-view');
+                        if (dashboardView && dashboardView.style.display !== 'none') {
+                            updateDashboardMetrics();
+                        }
+                        
+                        closeTransactionEditModal();
+                    } catch (error) {
+                        console.error('Error updating transaction:', error);
+                        alert('Error updating transaction. Please try again.');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
                     }
-                    transactionData[index].starting = starting;
-                    transactionData[index].ending = ending;
-                    transactionData[index].growth = growth;
-                    transactionData[index].deposits = deposits;
-                    transactionData[index].withdrawals = parseFloat(document.getElementById('edit-withdrawals').value);
-                    transactionData[index].depositDate = document.getElementById('edit-deposit-date').value || null;
-                    transactionData[index].withdrawalDate = document.getElementById('edit-withdrawal-date').value || null;
-                    populateTransactionsTable();
-                    closeTransactionEditModal();
                 });
             }
             
@@ -2006,13 +2597,14 @@
             }
             
             // Helper function to calculate growth percentage
-            // Return (%) = ((Ending balance + Withdrawals) - (Starting balance + Deposit)) / (Starting balance + Deposit) × 100
-            // Note: Withdrawals are added back to ending balance for calculation, but NOT included in the denominator
+            // Return (%) = ((Ending balance - Starting balance - Deposits) / (Starting balance + Deposits)) × 100
+            // Note: Withdrawals do NOT affect the percentage calculation - they only reduce the ending balance
             function calculateGrowthPercentage(startingBalance, endingBalance, deposits, withdrawals) {
                 const denominator = startingBalance + deposits;
                 if (denominator > 0) {
-                    const withdrawalsAmount = withdrawals || 0;
-                    return (((endingBalance + withdrawalsAmount) - denominator) / denominator * 100);
+                    // Growth is based on performance, not affected by withdrawals
+                    // Withdrawals just reduce ending balance but don't change the growth percentage
+                    return ((endingBalance - startingBalance - deposits) / denominator * 100);
                 }
                 return 0;
             }
@@ -2069,55 +2661,75 @@
             // Fund Performance Form Handler
             const fundPerformanceForm = document.getElementById('fund-performance-form');
             if (fundPerformanceForm) {
-                fundPerformanceForm.addEventListener('submit', function(e) {
+                fundPerformanceForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const month = document.getElementById('fund-month').value;
-                    const year = parseInt(document.getElementById('fund-year').value);
-                    const starting = parseFloat(document.getElementById('fund-starting-balance').value);
-                    const ending = parseFloat(document.getElementById('fund-ending-balance').value);
-                    const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
-                    const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
-                    // Auto-calculate growth if not manually overridden
-                    let growth = parseFloat(document.getElementById('fund-growth').value);
-                    if (isNaN(growth) || growth === 0) {
-                        growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                    
+                    // Disable submit button to prevent double submission
+                    const submitBtn = fundPerformanceForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+                    
+                    try {
+                        const month = document.getElementById('fund-month').value;
+                        const year = parseInt(document.getElementById('fund-year').value);
+                        const starting = parseFloat(document.getElementById('fund-starting-balance').value);
+                        const ending = parseFloat(document.getElementById('fund-ending-balance').value);
+                        const deposits = parseFloat(document.getElementById('fund-deposits').value) || 0;
+                        const withdrawals = parseFloat(document.getElementById('fund-withdrawals').value) || 0;
+                        // Auto-calculate growth if not manually overridden
+                        let growth = parseFloat(document.getElementById('fund-growth').value);
+                        if (isNaN(growth) || growth === 0) {
+                            growth = calculateGrowthPercentage(starting, ending, deposits, withdrawals);
+                        }
+                        
+                        const depositDate = document.getElementById('fund-deposit-date').value || (deposits > 0 ? new Date().toISOString().split('T')[0] : null);
+                        const withdrawalDate = document.getElementById('fund-withdrawal-date').value || (withdrawals > 0 ? new Date().toISOString().split('T')[0] : null);
+                        
+                        const newEntry = {
+                            month: month,
+                            year: year,
+                            starting: starting,
+                            ending: ending,
+                            growth: growth,
+                            deposits: deposits,
+                            withdrawals: withdrawals,
+                            depositDate: depositDate,
+                            withdrawalDate: withdrawalDate
+                        };
+                        
+                        // Save to Firestore
+                        await saveAdminFundPerformance(newEntry);
+                        
+                        // Reload transactions table
+                        await populateTransactionsTable();
+                        
+                        // Update portfolio chart if Portfolio view is visible
+                        const portfolioView = document.getElementById('portfolio-view');
+                        if (portfolioView && portfolioView.style.display !== 'none') {
+                            setTimeout(() => {
+                                drawPortfolioChart();
+                            }, 100);
+                        }
+                        
+                        // Update dashboard if visible
+                        const dashboardView = document.getElementById('dashboard-view');
+                        if (dashboardView && dashboardView.style.display !== 'none') {
+                            updateDashboardMetrics();
+                        }
+                        
+                        // Reset form
+                        fundPerformanceForm.reset();
+                        document.getElementById('fund-year').value = new Date().getFullYear();
+                        
+                        alert('Fund performance saved successfully!');
+                    } catch (error) {
+                        console.error('Error saving fund performance:', error);
+                        alert('Error saving fund performance. Please try again.');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
                     }
-                    
-                    // Check if entry for this month/year already exists
-                    const existingIndex = transactionData.findIndex(t => t.month === month && t.year === year);
-                    
-                    const depositDate = document.getElementById('fund-deposit-date').value || (deposits > 0 ? new Date().toISOString().split('T')[0] : null);
-                    const withdrawalDate = document.getElementById('fund-withdrawal-date').value || (withdrawals > 0 ? new Date().toISOString().split('T')[0] : null);
-                    
-                    const newEntry = {
-                        month: month,
-                        year: year,
-                        starting: starting,
-                        ending: ending,
-                        growth: growth,
-                        deposits: deposits,
-                        withdrawals: withdrawals,
-                        depositDate: depositDate,
-                        withdrawalDate: withdrawalDate
-                    };
-                    
-                    if (existingIndex >= 0) {
-                        transactionData[existingIndex] = newEntry;
-                    } else {
-                        transactionData.push(newEntry);
-                    }
-                    
-                    // Sort by year and month
-                    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    transactionData.sort((a, b) => {
-                        const yearDiff = a.year - b.year;
-                        if (yearDiff !== 0) return yearDiff;
-                        return months.indexOf(a.month) - months.indexOf(b.month);
-                    });
-                    
-                    populateTransactionsTable();
-                    fundPerformanceForm.reset();
-                    alert('Fund performance added successfully!');
                 });
             }
 

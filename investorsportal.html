@@ -805,9 +805,10 @@
                                     return (a.monthIndex || 0) - (b.monthIndex || 0);
                                 });
                                 
-                                // Get most recent transaction's ending balance
+                                // Get most recent transaction's final balance (ending balance - withdrawals)
                                 if (transactions.length > 0) {
-                                    currentBalance = transactions[transactions.length - 1].endingBalance;
+                                    const lastTransaction = transactions[transactions.length - 1];
+                                    currentBalance = lastTransaction.endingBalance - (lastTransaction.withdrawals || 0);
                                 }
                                 
                                 // Sum all growth percentages
@@ -857,22 +858,35 @@
                     }
                     
                     if (profitSubMetric) {
-                        // Calculate total gain: Sum of (Starting Balance + Deposit) - (Ending Balance + Withdrawals) for each month
-                        let totalGain = 0;
+                        // Calculate profit: Most current Ending Balance - First ever Starting Balance - all Deposits + all Withdrawals
+                        let profit = 0;
                         if (transactions.length > 0) {
+                            // Get most current ending balance (final balance after withdrawals)
+                            const mostCurrentEntry = transactions[transactions.length - 1];
+                            const mostCurrentEndingBalance = mostCurrentEntry.endingBalance || 0;
+                            const mostCurrentWithdrawals = mostCurrentEntry.withdrawals || 0;
+                            const mostCurrentFinalBalance = mostCurrentEndingBalance - mostCurrentWithdrawals;
+                            
+                            // Get first ever starting balance
+                            const firstStartingBalance = transactions[0].startingBalance || 0;
+                            
+                            // Sum all deposits
+                            let totalDeposits = 0;
                             transactions.forEach((entry) => {
-                                const startingBalance = entry.startingBalance || 0;
-                                const deposits = entry.deposits || 0;
-                                const endingBalance = entry.endingBalance || 0;
-                                const withdrawals = entry.withdrawals || 0;
-                                
-                                // Calculate gain for this month: (Starting Balance + Deposit) - (Ending Balance + Withdrawals)
-                                const monthGain = (startingBalance + deposits) - (endingBalance + withdrawals);
-                                totalGain += monthGain;
+                                totalDeposits += (entry.deposits || 0);
                             });
+                            
+                            // Sum all withdrawals
+                            let totalWithdrawals = 0;
+                            transactions.forEach((entry) => {
+                                totalWithdrawals += (entry.withdrawals || 0);
+                            });
+                            
+                            // Calculate profit: Most current Ending Balance - First ever Starting Balance - all Deposits + all Withdrawals
+                            profit = mostCurrentFinalBalance - firstStartingBalance - totalDeposits + totalWithdrawals;
                         }
                         
-                        const profitText = `€${Math.abs(totalGain).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} profit`;
+                        const profitText = `€${profit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} profit`;
                         profitSubMetric.textContent = profitText;
                     }
                     
