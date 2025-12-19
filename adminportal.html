@@ -1480,6 +1480,31 @@
                 };
             },
             
+            // Update user balance and return
+            updateUserBalance: async function(userId, newBalance) {
+                try {
+                    const userRef = db.collection(this.USERS_COLLECTION).doc(userId);
+                    const userSnap = await userRef.get();
+                    
+                    if (userSnap.exists) {
+                        const userData = userSnap.data();
+                        const initialInvestment = userData.initialInvestment || 0;
+                        const totalReturn = initialInvestment > 0 
+                            ? ((newBalance - initialInvestment) / initialInvestment * 100) 
+                            : 0;
+                        
+                        await userRef.update({
+                            currentBalance: newBalance,
+                            totalReturn: totalReturn,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error updating user balance:', error);
+                    throw error;
+                }
+            },
+            
             // Market News Functions
             NEWS_COLLECTION: 'marketNews',
             
@@ -1611,14 +1636,33 @@
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
                         dashboardView.style.display = 'block';
-                        // Load transactions first, then update dashboard
-                        populateTransactionsTable().then(() => {
-                            updateDashboardMetrics();
-                            loadInvestorsPaymentList();
-                        }).catch(() => {
-                            // If load fails, still try to load payment list
-                            loadInvestorsPaymentList();
-                        });
+                        // Load users first if not already loaded, then load transactions and payment list
+                        const loadDashboardData = async () => {
+                            try {
+                                // Load users if not already loaded
+                                if (!usersData || usersData.length === 0) {
+                                    if (window.firestoreService) {
+                                        const firestoreUsers = await window.firestoreService.getAllUsers();
+                                        usersData = firestoreUsers.map(user => 
+                                            window.firestoreService.formatUserForAdminPortal(user)
+                                        );
+                                    }
+                                }
+                                // Load transactions first, then update dashboard
+                                await populateTransactionsTable();
+                                updateDashboardMetrics();
+                                loadInvestorsPaymentList();
+                                // Load latest news widget
+                                setTimeout(loadDashboardLatestNews, 100);
+                            } catch (error) {
+                                console.error('Error loading dashboard data:', error);
+                                // If load fails, still try to load payment list
+                                loadInvestorsPaymentList();
+                                // Load latest news widget
+                                setTimeout(loadDashboardLatestNews, 100);
+                            }
+                        };
+                        loadDashboardData();
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
                         // Load transactions first, then update metrics and chart
@@ -1641,6 +1685,8 @@
                     } else if (navText === 'Market News' && marketNewsView) {
                         marketNewsView.style.display = 'block';
                         loadMarketNews();
+                        // Update dashboard latest news widget
+                        setTimeout(loadDashboardLatestNews, 100);
                     } else if (navText === 'Account Settings' && accountSettingsView) {
                         accountSettingsView.style.display = 'block';
                         // Wait for Firestore service if needed
@@ -4077,11 +4123,147 @@
             }, 100);
             
             // Investors Payment Tracking
-            let investorsPaymentStatus = {}; // Store payment status: { investorId: { paid: true/false } }
+            let investorsPaymentStatus = {}; // Store payment status: { investorId: { paid: true/false, month: YYYY-MM } }
+            const PAYMENT_STATUS_COLLECTION = 'investorPaymentStatus';
             
-            function loadInvestorsPaymentList() {
+            // Get current month in YYYY-MM format
+            function getCurrentMonth() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                return `${year}-${month}`;
+            }
+            
+            // Check if we need to reset payment statuses for new month
+            async function checkAndResetMonthlyPayments() {
+                try {
+                    if (!db) {
+                        console.warn('Firestore not initialized');
+                        return;
+                    }
+                    
+                    const currentMonth = getCurrentMonth();
+                    const statusSnapshot = await db.collection(PAYMENT_STATUS_COLLECTION).get();
+                    
+                    // Check if any status exists for current month
+                    let hasCurrentMonthData = false;
+                    statusSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.month === currentMonth) {
+                            hasCurrentMonthData = true;
+                        }
+                    });
+                    
+                    // If no current month data exists, reset all payments and update balances
+                    if (!hasCurrentMonthData && statusSnapshot.size > 0) {
+                        console.log('New month detected, resetting payment statuses and updating balances...');
+                        
+                        // Get all investors
+                        if (window.firestoreService) {
+                            const investors = await window.firestoreService.getAllUsers('investor');
+                            
+                            // Update each investor's balance and reset payment status
+                            for (const investor of investors) {
+                                const investmentStrategy = investor.investmentStrategy || 'Low risk 2% a month';
+                                let growthRate = 0.02; // Default 2%
+                                
+                                if (investmentStrategy === 'High risk 4% a month') {
+                                    growthRate = 0.04; // 4%
+                                } else if (investmentStrategy === 'Personalized') {
+                                    // For personalized, we'd need to get the last transaction's growth rate
+                                    // For now, default to 2%
+                                    growthRate = 0.02;
+                                }
+                                
+                                // Calculate new balance with monthly growth
+                                const currentBalance = investor.currentBalance || investor.initialInvestment || 0;
+                                const newBalance = currentBalance * (1 + growthRate);
+                                
+                                // Update balance in Firestore
+                                await window.firestoreService.updateUserBalance(investor.id, newBalance);
+                                
+                                // Reset payment status for new month
+                                await db.collection(PAYMENT_STATUS_COLLECTION)
+                                    .doc(investor.id)
+                                    .set({
+                                        paid: false,
+                                        month: currentMonth,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    }, { merge: true });
+                            }
+                            
+                            // Reload users data to reflect updated balances
+                            const firestoreUsers = await window.firestoreService.getAllUsers();
+                            usersData = firestoreUsers.map(user => 
+                                window.firestoreService.formatUserForAdminPortal(user)
+                            );
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking/resetting monthly payments:', error);
+                }
+            }
+            
+            // Load payment statuses from Firestore
+            async function loadPaymentStatuses() {
+                try {
+                    if (!db) {
+                        console.warn('Firestore not initialized');
+                        return;
+                    }
+                    
+                    // Check and reset if needed
+                    await checkAndResetMonthlyPayments();
+                    
+                    const currentMonth = getCurrentMonth();
+                    const statusSnapshot = await db.collection(PAYMENT_STATUS_COLLECTION).get();
+                    investorsPaymentStatus = {};
+                    
+                    statusSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const investorId = doc.id; // Use string ID directly
+                        const statusMonth = data.month || currentMonth;
+                        
+                        // Only show as paid if it's for the current month
+                        investorsPaymentStatus[investorId] = {
+                            paid: (data.paid || false) && (statusMonth === currentMonth),
+                            month: statusMonth,
+                            updatedAt: data.updatedAt
+                        };
+                    });
+                } catch (error) {
+                    console.error('Error loading payment statuses:', error);
+                }
+            }
+            
+            // Save payment status to Firestore
+            async function savePaymentStatus(investorId, isPaid) {
+                try {
+                    if (!db) {
+                        console.warn('Firestore not initialized');
+                        return;
+                    }
+                    
+                    const currentMonth = getCurrentMonth();
+                    await db.collection(PAYMENT_STATUS_COLLECTION)
+                        .doc(investorId) // Use string ID directly
+                        .set({
+                            paid: isPaid,
+                            month: currentMonth,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                } catch (error) {
+                    console.error('Error saving payment status:', error);
+                    alert('Error saving payment status: ' + error.message);
+                }
+            }
+            
+            async function loadInvestorsPaymentList() {
                 const container = document.getElementById('investors-payment-list');
                 if (!container) return;
+                
+                // Load payment statuses from database first
+                await loadPaymentStatuses();
                 
                 // Get all investors (exclude admin)
                 const investors = usersData.filter(user => user.type === 'investor');
@@ -4094,25 +4276,36 @@
                 container.innerHTML = '';
                 
                 investors.forEach(investor => {
-                    // Determine growth rate (2% or 4%) - default to 2% if not specified
-                    const growthRate = investor.growthRate || 2; // Can be 2 or 4
+                    // Determine growth rate from investment strategy (2% or 4%) - default to 2% if not specified
+                    const investmentStrategy = investor.strategy || 'Low risk 2% a month';
+                    let growthRate = 2; // Default 2%
+                    
+                    if (investmentStrategy === 'High risk 4% a month') {
+                        growthRate = 4; // 4%
+                    } else if (investmentStrategy === 'Personalized') {
+                        // For personalized, try to get from last transaction or default to 2%
+                        growthRate = investor.growthRate || 2;
+                    }
+                    
                     const growthPercent = growthRate;
                     const paymentAmount = (investor.balance * (growthRate / 100)).toFixed(2);
                     const isPaid = investorsPaymentStatus[investor.id]?.paid || false;
                     
                     const item = document.createElement('div');
                     item.className = 'investor-payment-item';
+                    item.setAttribute('data-investor-id', investor.id);
                     item.style.cssText = 'display: grid; grid-template-columns: 2fr 1.5fr 0.8fr 1.5fr 0.8fr; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb; gap: 1rem;';
                     if (isPaid) {
                         item.style.opacity = '0.6';
                         item.style.textDecoration = 'line-through';
+                        item.style.textDecorationColor = '#6b7280';
                     }
                     
                     item.innerHTML = `
-                        <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem;">${investor.name}</div>
-                        <div style="color: #374151; font-size: 0.875rem; text-align: right;">€${investor.balance.toLocaleString('en-US')}</div>
-                        <div style="color: #374151; font-size: 0.875rem; text-align: center;">${growthPercent}%</div>
-                        <div style="color: #2563eb; font-weight: 600; font-size: 0.875rem; text-align: right;">€${parseFloat(paymentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        <div style="font-weight: 600; color: #1f2937; font-size: 0.875rem; ${isPaid ? 'text-decoration: line-through;' : ''}">${investor.name}</div>
+                        <div style="color: #374151; font-size: 0.875rem; text-align: right; ${isPaid ? 'text-decoration: line-through;' : ''}">€${investor.balance.toLocaleString('en-US')}</div>
+                        <div style="color: #374151; font-size: 0.875rem; text-align: center; ${isPaid ? 'text-decoration: line-through;' : ''}">${growthPercent}%</div>
+                        <div style="color: #2563eb; font-weight: 600; font-size: 0.875rem; text-align: right; ${isPaid ? 'text-decoration: line-through;' : ''}">€${parseFloat(paymentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                         <div style="text-align: center;">
                             <input type="checkbox" 
                                    class="payment-checkbox" 
@@ -4127,13 +4320,38 @@
                 
                 // Add event listeners to checkboxes
                 container.querySelectorAll('.payment-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const investorId = parseInt(this.getAttribute('data-investor-id'));
+                    checkbox.addEventListener('change', async function() {
+                        const investorId = this.getAttribute('data-investor-id'); // Use string ID directly
+                        const isPaid = this.checked;
+                        
+                        // Update local state
                         if (!investorsPaymentStatus[investorId]) {
                             investorsPaymentStatus[investorId] = {};
                         }
-                        investorsPaymentStatus[investorId].paid = this.checked;
-                        loadInvestorsPaymentList(); // Reload to update styling
+                        investorsPaymentStatus[investorId].paid = isPaid;
+                        
+                        // Save to database
+                        await savePaymentStatus(investorId, isPaid);
+                        
+                        // Update the row styling immediately
+                        const rowItem = this.closest('.investor-payment-item');
+                        if (rowItem) {
+                            if (isPaid) {
+                                rowItem.style.opacity = '0.6';
+                                rowItem.style.textDecoration = 'line-through';
+                                rowItem.style.textDecorationColor = '#6b7280';
+                                // Also add line-through to all child elements
+                                rowItem.querySelectorAll('div').forEach(div => {
+                                    div.style.textDecoration = 'line-through';
+                                });
+                            } else {
+                                rowItem.style.opacity = '1';
+                                rowItem.style.textDecoration = 'none';
+                                rowItem.querySelectorAll('div').forEach(div => {
+                                    div.style.textDecoration = 'none';
+                                });
+                            }
+                        }
                     });
                 });
             }
@@ -4141,10 +4359,23 @@
             // Load investors payment list when dashboard view is shown
             // Use the dashboardView already declared in navigation handler
             if (dashboardView) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
+                const observer = new MutationObserver(async function(mutations) {
+                    mutations.forEach(async function(mutation) {
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             if (dashboardView.style.display !== 'none') {
+                                // Load users if not already loaded
+                                if (!usersData || usersData.length === 0) {
+                                    if (window.firestoreService) {
+                                        try {
+                                            const firestoreUsers = await window.firestoreService.getAllUsers();
+                                            usersData = firestoreUsers.map(user => 
+                                                window.firestoreService.formatUserForAdminPortal(user)
+                                            );
+                                        } catch (error) {
+                                            console.error('Error loading users in observer:', error);
+                                        }
+                                    }
+                                }
                                 loadInvestorsPaymentList();
                             }
                         }
@@ -4154,7 +4385,22 @@
                 
                 // Also load on initial page load if dashboard is visible
                 if (dashboardView.style.display !== 'none') {
-                    setTimeout(loadInvestorsPaymentList, 100);
+                    // Wait a bit for Firestore to be ready, then load users and payment list
+                    setTimeout(async () => {
+                        if (!usersData || usersData.length === 0) {
+                            if (window.firestoreService) {
+                                try {
+                                    const firestoreUsers = await window.firestoreService.getAllUsers();
+                                    usersData = firestoreUsers.map(user => 
+                                        window.firestoreService.formatUserForAdminPortal(user)
+                                    );
+                                } catch (error) {
+                                    console.error('Error loading users on initial load:', error);
+                                }
+                            }
+                        }
+                        loadInvestorsPaymentList();
+                    }, 500);
                 }
             }
             
@@ -4210,12 +4456,18 @@
             // Draw dashboard charts when dashboard is shown
             const dashboardViewEl = document.getElementById('dashboard-view');
             if (dashboardViewEl) {
+                // Load latest news on initial page load if dashboard is visible
+                if (dashboardViewEl.style.display !== 'none') {
+                    setTimeout(loadDashboardLatestNews, 500);
+                }
+                
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             if (dashboardViewEl.style.display !== 'none') {
                                 setTimeout(function() {
                                     calculateProjectionValue();
+                                    loadDashboardLatestNews();
                                 }, 100);
                             }
                         }
@@ -5496,6 +5748,9 @@
                     `;
                     container.appendChild(wrapper);
                 });
+                
+                // Update dashboard latest news widget when market news is loaded
+                setTimeout(loadDashboardLatestNews, 100);
             }
             
             function openNewsEditModal(newsId) {
@@ -5555,6 +5810,8 @@
                         await window.firestoreService.deleteNews(newsId);
                         closeNewsEditModal();
                         await loadMarketNews();
+                        // Update dashboard latest news widget
+                        await loadDashboardLatestNews();
                     } else {
                         alert('Firestore service not available. Please refresh the page.');
                     }
@@ -5615,6 +5872,8 @@
                         
                         closeNewsEditModal();
                         await loadMarketNews();
+                        // Update dashboard latest news widget
+                        await loadDashboardLatestNews();
                         
                     } catch (error) {
                         console.error('Error saving news:', error);
@@ -5626,9 +5885,59 @@
                 });
             }
             
+            // Load Latest News titles in Dashboard widget from Market News
+            async function loadDashboardLatestNews() {
+                const newsWidget = document.getElementById('dashboard-news-widget');
+                if (!newsWidget) return;
+                
+                const newsContent = newsWidget.querySelector('.dashboard-widget-content');
+                if (!newsContent) return;
+                
+                try {
+                    let newsData = [];
+                    if (window.firestoreService) {
+                        newsData = await window.firestoreService.getAllNews();
+                    } else {
+                        console.warn('Firestore service not available');
+                        return;
+                    }
+                    
+                    // Clear existing content
+                    newsContent.innerHTML = '';
+                    
+                    if (newsData.length === 0) {
+                        newsContent.innerHTML = '<div class="dashboard-news-item"><div class="dashboard-news-title" style="color: #9ca3af;">No news available</div></div>';
+                        return;
+                    }
+                    
+                    // Show up to 4 latest news items
+                    const latestNews = newsData.slice(0, 4);
+                    
+                    latestNews.forEach((news) => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'dashboard-news-item';
+                        newsItem.style.cursor = 'pointer';
+                        newsItem.innerHTML = `<div class="dashboard-news-title">${news.title}</div>`;
+                        
+                        // Make it clickable to open the news link
+                        newsItem.addEventListener('click', function() {
+                            if (news.link) {
+                                window.open(news.link, '_blank', 'noopener,noreferrer');
+                            }
+                        });
+                        
+                        newsContent.appendChild(newsItem);
+                    });
+                } catch (error) {
+                    console.error('Error loading dashboard news:', error);
+                    newsContent.innerHTML = '<div class="dashboard-news-item"><div class="dashboard-news-title" style="color: #dc2626;">Error loading news</div></div>';
+                }
+            }
+            
             window.openNewsEditModal = openNewsEditModal;
             window.deleteNews = deleteNews;
             window.closeNewsEditModal = closeNewsEditModal;
+            window.loadDashboardLatestNews = loadDashboardLatestNews;
             
             // Admin Profile Picture Functions
             function loadAdminProfilePicture(profilePictureUrl) {
