@@ -2757,9 +2757,7 @@
                     
                     try {
                         if (window.admin2FirestoreService) {
-                            console.log('Loading Admin2 settings for widget display...');
                             const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
-                            console.log('Admin2 settings loaded for widget:', settings);
                             
                             if (settings) {
                                 if (settings.profileName) admin2Data.name = settings.profileName;
@@ -2951,9 +2949,7 @@
                 
                 try {
                     if (window.admin2FirestoreService) {
-                        console.log('Loading Admin2 data from Firestore...');
                         const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
-                        console.log('Loaded Admin2 settings from Firestore:', settings);
                         
                         if (settings) {
                             // Load all saved values with proper fallbacks
@@ -2986,8 +2982,6 @@
                     console.error('Error loading Admin2 data:', error);
                     alert('Error loading Admin2 data: ' + error.message);
                 }
-                
-                console.log('Populating form with Admin2 data:', admin2Data);
                 
                 // Populate form fields with loaded data
                 document.getElementById('edit-user-name').value = admin2Data.name || '';
@@ -3104,7 +3098,6 @@
                             
                             // Create account in Firestore
                             const accountId = await window.admin2FirestoreService.createAdmin2Account(formData);
-                            console.log('Account created with ID:', accountId);
                             
                             // Reload the list
                             await loadUsersList();
@@ -3141,19 +3134,14 @@
                                     admin2Strategy: updateData.strategy
                                 };
                                 
-                                console.log('Saving Admin2 settings to Firestore:', settingsToSave);
-                                
                                 await window.admin2FirestoreService.updateAdmin2ProfileSettings(settingsToSave);
                                 
                                 // Verify the save by reading it back
                                 const savedSettings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
-                                console.log('Verified saved Admin2 settings from Firestore:', savedSettings);
                                 
                                 if (!savedSettings || savedSettings.profileName !== updateData.name) {
                                     throw new Error('Failed to verify saved data. Please try again.');
                                 }
-                                
-                                console.log('Admin2 account updated successfully in Firestore and verified');
                             } catch (error) {
                                 console.error('Error updating Admin2 profile settings:', error);
                                 alert('Error saving Admin2 account: ' + error.message);

@@ -413,7 +413,6 @@ async function updateAdmin2ProfileSettings(settings) {
         
         // Use set with merge to create if doesn't exist, or update if exists
         await settingsRef.set(updateData, { merge: true });
-        console.log('Admin2 profile settings updated successfully');
     } catch (error) {
         console.error('Error updating admin2 profile settings:', error);
         throw error;
