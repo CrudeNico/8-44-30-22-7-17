@@ -1025,7 +1025,7 @@
                     <div class="admin-modal-content" style="padding: 0;">
                         <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
                             <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0;">Monthly Report</h2>
-                            <button id="download-report-btn" class="admin-btn-save" style="padding: 0.5rem 1rem;">Download</button>
+                            <button id="download-report-btn" class="admin-btn-save" style="padding: 0.5rem 1rem; margin-right: 2.5rem;">Download</button>
                         </div>
                         <div style="padding: 2rem; overflow: auto; max-height: calc(90vh - 100px);">
                             <iframe id="report-viewer-iframe" style="width: 100%; height: 800px; border: 1px solid #e5e7eb; border-radius: 6px;"></iframe>
@@ -1790,13 +1790,19 @@
                 historicalData.forEach((value, index) => {
                     const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
+                    // Use the growth percentage directly from transactionData - exactly as stored, no calculations
+                    // This matches exactly how the transactions table displays it: growth.toFixed(2)
+                    // The growth value is stored as a number (e.g., 5.5 for 5.5%), same as in transactions table
+                    const growth = transactionData && transactionData[index] ? (transactionData[index].growth || 0) : 0;
+                    const growthValue = parseFloat(growth);
+                    const growthPercent = growthValue.toFixed(2);
                     chartDataPoints.push({
                         x: x,
                         y: y,
                         value: value,
                         month: months[index] || `M${index + 1}`,
                         growthPercent: growthPercent,
+                        growthValue: growthValue, // Store the numeric value for sign calculation
                         isHistorical: true
                     });
                 });
@@ -1977,10 +1983,13 @@
                     
                     if (nearestPoint) {
                         const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
-                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        // Match the exact format from transactions table: ${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%
+                        const growthValue = nearestPoint.growthValue !== undefined ? nearestPoint.growthValue : parseFloat(nearestPoint.growthPercent);
+                        const growthSign = growthValue >= 0 ? '+' : '';
+                        const growthDisplay = growthValue.toFixed(2);
                         tooltip.innerHTML = `
                             <div class="tooltip-balance">${formattedValue}</div>
-                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                            <div class="tooltip-growth">${growthSign}${growthDisplay}%</div>
                         `;
                         tooltip.style.display = 'block';
                         tooltip.style.left = (nearestPoint.x + 10) + 'px';
@@ -2305,62 +2314,125 @@
                 updateLatestReports();
             }
             
-            // Update Latest Reports section with latest fund performance entries
-            function updateLatestReports() {
+            // Update Latest Reports section with latest admin reports
+            async function updateLatestReports() {
                 const reportContainer = document.querySelector('.dashboard-widget[style*="grid-column: 2; grid-row: 2"] .dashboard-widget-content');
-                if (!reportContainer || !transactionData || transactionData.length === 0) return;
+                if (!reportContainer) return;
                 
-                // Get last 3 transactions (most recent)
-                const latestTransactions = transactionData.slice(-3).reverse();
+                reportContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: #6b7280;">Loading reports...</div>';
                 
-                reportContainer.innerHTML = '';
-                latestTransactions.forEach(entry => {
-                    const reportItem = document.createElement('div');
-                    reportItem.className = 'dashboard-report-item';
+                try {
+                    // Load admin reports from Firestore
+                    const adminReportsSnapshot = await db.collection('users').doc(ADMIN_ACCOUNT_ID)
+                        .collection('reports')
+                        .get();
                     
-                    const period = document.createElement('div');
-                    period.className = 'dashboard-report-period';
-                    period.textContent = `${entry.month} ${entry.year}`;
+                    const reportsList = [];
+                    adminReportsSnapshot.forEach((doc) => {
+                        const reportData = doc.data();
+                        reportsList.push({
+                            id: doc.id,
+                            month: reportData.month,
+                            year: reportData.year,
+                            fileName: reportData.fileName,
+                            fileUrl: reportData.fileUrl || (reportData.fileBase64 ? 'data:application/pdf;base64,' + reportData.fileBase64 : ''),
+                            fileBase64: reportData.fileBase64,
+                            storageMethod: reportData.storageMethod || 'storage'
+                        });
+                    });
                     
-                    const metrics = document.createElement('div');
-                    metrics.className = 'dashboard-report-metrics';
+                    // Sort by year and month (most recent first)
+                    reportsList.sort((a, b) => {
+                        const monthMap = {
+                            'January': 1, 'February': 2, 'March': 3, 'April': 4,
+                            'May': 5, 'June': 6, 'July': 7, 'August': 8,
+                            'September': 9, 'October': 10, 'November': 11, 'December': 12
+                        };
+                        const aMonth = monthMap[a.month] || 1;
+                        const bMonth = monthMap[b.month] || 1;
+                        if (b.year !== a.year) return b.year - a.year;
+                        return bMonth - aMonth;
+                    });
                     
-                    const gain = document.createElement('span');
-                    gain.className = 'dashboard-report-gain';
-                    gain.textContent = (entry.growth >= 0 ? '+' : '') + entry.growth.toFixed(2) + '%';
+                    // Get last 3 reports (most recent)
+                    const latestReports = reportsList.slice(0, 3);
                     
-                    const balance = document.createElement('span');
-                    balance.className = 'dashboard-report-balance';
-                    const finalBalance = entry.ending - (entry.withdrawals || 0);
-                    balance.textContent = '€' + Math.round(finalBalance).toLocaleString('en-US');
+                    reportContainer.innerHTML = '';
                     
-                    metrics.appendChild(gain);
-                    metrics.appendChild(balance);
+                    if (latestReports.length === 0) {
+                        reportContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: #6b7280;">No reports available</div>';
+                        return;
+                    }
                     
-                    // Convert month name to number
-                    const monthMap = {
-                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
-                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
-                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
-                    };
-                    const monthNum = monthMap[entry.month] || '01';
-                    
-                    const downloadBtn = document.createElement('button');
-                    downloadBtn.className = 'dashboard-report-download';
-                    downloadBtn.setAttribute('data-month', `${entry.year}-${monthNum}`);
-                    downloadBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                    `;
-                    
-                    reportItem.appendChild(period);
-                    reportItem.appendChild(metrics);
-                    reportItem.appendChild(downloadBtn);
-                    reportContainer.appendChild(reportItem);
-                });
+                    latestReports.forEach(report => {
+                        const reportItem = document.createElement('div');
+                        reportItem.className = 'dashboard-report-item';
+                        
+                        const period = document.createElement('div');
+                        period.className = 'dashboard-report-period';
+                        period.textContent = `${report.month} ${report.year}`;
+                        
+                        const metrics = document.createElement('div');
+                        metrics.className = 'dashboard-report-metrics';
+                        
+                        // For admin reports, we don't have growth/balance data, so show placeholder or empty
+                        const gain = document.createElement('span');
+                        gain.className = 'dashboard-report-gain';
+                        gain.textContent = '—';
+                        gain.style.opacity = '0.5';
+                        
+                        const balance = document.createElement('span');
+                        balance.className = 'dashboard-report-balance';
+                        balance.textContent = 'Admin Report';
+                        balance.style.fontSize = '0.875rem';
+                        balance.style.opacity = '0.7';
+                        
+                        metrics.appendChild(gain);
+                        metrics.appendChild(balance);
+                        
+                        // Convert month name to number for data attribute
+                        const monthMap = {
+                            'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                            'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                            'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                        };
+                        const monthNum = monthMap[report.month] || '01';
+                        
+                        const downloadBtn = document.createElement('button');
+                        downloadBtn.className = 'dashboard-report-download';
+                        downloadBtn.setAttribute('data-report-id', report.id);
+                        downloadBtn.setAttribute('data-file-url', report.fileUrl || '');
+                        downloadBtn.setAttribute('data-file-name', report.fileName || `Report_${report.month}_${report.year}.pdf`);
+                        downloadBtn.setAttribute('data-file-base64', report.fileBase64 || '');
+                        downloadBtn.setAttribute('data-storage-method', report.storageMethod || 'storage');
+                        downloadBtn.setAttribute('data-month', `${report.year}-${monthNum}`);
+                        downloadBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        `;
+                        
+                        // Add click handler for admin report download
+                        downloadBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const fileUrl = this.getAttribute('data-file-url');
+                            const fileName = this.getAttribute('data-file-name');
+                            const fileBase64 = this.getAttribute('data-file-base64');
+                            const storageMethod = this.getAttribute('data-storage-method');
+                            downloadReportFromList(fileUrl, fileName, fileBase64, storageMethod);
+                        });
+                        
+                        reportItem.appendChild(period);
+                        reportItem.appendChild(metrics);
+                        reportItem.appendChild(downloadBtn);
+                        reportContainer.appendChild(reportItem);
+                    });
+                } catch (error) {
+                    console.error('Error loading admin reports:', error);
+                    reportContainer.innerHTML = '<div style="text-align: center; padding: 1rem; color: #dc2626;">Error loading reports</div>';
+                }
             }
             
             // Update Portfolio Metrics based on transaction data
@@ -3241,6 +3313,9 @@
             // Reports Section - Store reports data
             let reportsData = {}; // Structure: { userId: { '2024-01': { file: File, month: 'January', year: 2024 }, ... } }
             
+            // Predetermined Admin Account ID
+            const ADMIN_ACCOUNT_ID = 'admin';
+            
             async function loadReportsUsersList() {
                 const container = document.getElementById('reports-users-grid');
                 if (!container) return;
@@ -3248,15 +3323,45 @@
                 container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading users...</div>';
                 
                 try {
+                    // First, add the predetermined admin account card
+                    container.innerHTML = '';
+                    
+                    // Get admin reports count
+                    let adminReportCount = 0;
+                    try {
+                        const adminReportsSnapshot = await db.collection('users').doc(ADMIN_ACCOUNT_ID)
+                            .collection('reports')
+                            .get();
+                        adminReportCount = adminReportsSnapshot.size;
+                    } catch (error) {
+                        console.log('Admin reports collection may not exist yet:', error);
+                    }
+                    
+                    // Create admin account card
+                    const adminCard = document.createElement('div');
+                    adminCard.className = 'investor-card';
+                    adminCard.innerHTML = `
+                        <div class="investor-card-header">
+                            <h3>Admin</h3>
+                            <span class="investor-status investor-status-active">Admin</span>
+                        </div>
+                        <div class="investor-card-body">
+                            <p><strong>Email:</strong> admin@opessocius.com</p>
+                            <p><strong>Reports Uploaded:</strong> ${adminReportCount}</p>
+                        </div>
+                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="admin-btn-save" onclick="openReportUploadModal('${ADMIN_ACCOUNT_ID}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Upload Report</button>
+                            ${adminReportCount > 0 ? `<button class="admin-btn-view" onclick="viewUserReports('${ADMIN_ACCOUNT_ID}')">View Reports</button>` : ''}
+                        </div>
+                    `;
+                    container.appendChild(adminCard);
+                    
                     // Load users from Firestore
                     const usersSnapshot = await db.collection('users')
                         .orderBy('createdAt', 'desc')
                         .get();
                     
-                    container.innerHTML = '';
-                    
                     if (usersSnapshot.empty) {
-                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">No users found</div>';
                         return;
                     }
                     
@@ -3324,15 +3429,21 @@
             
             async function openReportUploadModal(userId) {
                 try {
-                    // Get user data from Firestore
-                    const userDoc = await db.collection('users').doc(userId).get();
-                    if (!userDoc.exists) {
-                        alert('User not found');
-                        return;
-                    }
+                    let userName = 'Unknown';
                     
-                    const userData = userDoc.data();
-                    const userName = userData.fullName || userData.username || 'Unknown';
+                    // Handle admin account
+                    if (userId === ADMIN_ACCOUNT_ID) {
+                        userName = 'Admin';
+                    } else {
+                        // Get user data from Firestore
+                        const userDoc = await db.collection('users').doc(userId).get();
+                        if (!userDoc.exists) {
+                            alert('User not found');
+                            return;
+                        }
+                        const userData = userDoc.data();
+                        userName = userData.fullName || userData.username || 'Unknown';
+                    }
                     
                     const modal = document.getElementById('report-upload-modal');
                     document.getElementById('report-upload-modal-title').textContent = `Upload Report - ${userName}`;
@@ -3353,14 +3464,20 @@
             
             async function viewUserReports(userId) {
                 try {
-                    const userDoc = await db.collection('users').doc(userId).get();
-                    if (!userDoc.exists) {
-                        alert('User not found');
-                        return;
-                    }
+                    let userName = 'Unknown';
                     
-                    const userData = userDoc.data();
-                    const userName = userData.fullName || userData.username || 'Unknown';
+                    // Handle admin account
+                    if (userId === ADMIN_ACCOUNT_ID) {
+                        userName = 'Admin';
+                    } else {
+                        const userDoc = await db.collection('users').doc(userId).get();
+                        if (!userDoc.exists) {
+                            alert('User not found');
+                            return;
+                        }
+                        const userData = userDoc.data();
+                        userName = userData.fullName || userData.username || 'Unknown';
+                    }
                     
                     // Load reports from Firestore (without orderBy to avoid index requirement)
                     const reportsSnapshot = await db.collection('users').doc(userId)
@@ -3416,6 +3533,9 @@
                         window.reportsDataMap.set(reportKey, report);
                     });
                     
+                    // Store userId for delete operations
+                    container.setAttribute('data-user-id', userId);
+                    
                     // Build reports list HTML
                     let reportsHtml = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
                     reportsList.forEach((report, index) => {
@@ -3431,6 +3551,7 @@
                                 <div style="display: flex; gap: 0.5rem;">
                                     <button class="admin-btn-view report-view-btn" data-report-key="${reportKey}" data-title="${report.month} ${report.year}" style="padding: 0.5rem 1rem; font-size: 0.875rem;">View</button>
                                     <button class="admin-btn-save report-download-btn" data-report-key="${reportKey}" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Download</button>
+                                    <button class="admin-btn-cancel report-delete-btn" data-report-id="${report.id}" data-report-key="${reportKey}" data-month="${report.month}" data-year="${report.year}" style="padding: 0.5rem 1rem; font-size: 0.875rem; background: #dc2626; color: white;">Delete</button>
                                 </div>
                             </div>
                         `;
@@ -3457,6 +3578,56 @@
                             const report = window.reportsDataMap.get(reportKey);
                             if (report) {
                                 downloadReportFromList(report.fileUrl, report.fileName, report.fileBase64, report.storageMethod);
+                            }
+                        });
+                    });
+                    
+                    // Add delete button event listeners
+                    container.querySelectorAll('.report-delete-btn').forEach(btn => {
+                        btn.addEventListener('click', async function() {
+                            const reportId = this.getAttribute('data-report-id');
+                            const reportKey = this.getAttribute('data-report-key');
+                            const month = this.getAttribute('data-month');
+                            const year = this.getAttribute('data-year');
+                            const userId = container.getAttribute('data-user-id');
+                            
+                            if (!confirm(`Are you sure you want to delete the report for ${month} ${year}? This action cannot be undone.`)) {
+                                return;
+                            }
+                            
+                            try {
+                                // Disable button during deletion
+                                this.disabled = true;
+                                this.textContent = 'Deleting...';
+                                
+                                // Delete report from Firestore
+                                await db.collection('users').doc(userId)
+                                    .collection('reports')
+                                    .doc(reportId)
+                                    .delete();
+                                
+                                // Remove from reportsDataMap
+                                if (window.reportsDataMap) {
+                                    window.reportsDataMap.delete(reportKey);
+                                }
+                                
+                                // Reload the reports list
+                                await viewUserReports(userId);
+                                
+                                // Reload reports users list to update counts
+                                loadReportsUsersList();
+                                
+                                // Update dashboard widget if this is an admin report
+                                if (userId === ADMIN_ACCOUNT_ID) {
+                                    updateLatestReports();
+                                }
+                                
+                                alert(`Report for ${month} ${year} deleted successfully!`);
+                            } catch (error) {
+                                console.error('Error deleting report:', error);
+                                alert('Error deleting report: ' + error.message);
+                                this.disabled = false;
+                                this.textContent = 'Delete';
                             }
                         });
                     });
@@ -3727,6 +3898,11 @@
                             
                             // Reload reports list
                             loadReportsUsersList();
+                            
+                            // Update dashboard widget if this is an admin report
+                            if (userId === ADMIN_ACCOUNT_ID) {
+                                updateLatestReports();
+                            }
                             
                             alert(`Report for ${month} ${year} uploaded successfully!`);
                         }, 500);
