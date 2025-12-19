@@ -908,9 +908,10 @@
                         <table class="users-table" id="users-table" style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Type</th>
                                     <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Username</th>
                                     <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Email</th>
-                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Role</th>
+                                    <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Tier</th>
                                     <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Status</th>
                                     <th style="padding: 1rem; text-align: left; font-weight: 600; color: #374151; font-size: 0.875rem;">Actions</th>
                                 </tr>
@@ -1012,13 +1013,16 @@
                             </div>
                             
                             <div class="admin-form-group">
-                                <label for="user-role">Role</label>
+                                <label for="user-role">Tier</label>
                                 <select id="user-role" class="admin-form-input" required>
-                                    <option value="">Select a role</option>
+                                    <option value="">Select a tier</option>
                                     <option value="tier1">Tier 1</option>
                                     <option value="tier2">Tier 2</option>
                                     <option value="tier3">Tier 3</option>
                                 </select>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">
+                                    Tier 1: Learning + Community (view only). Tier 2: + Weekly Reports. Tier 3: + Training.
+                                </span>
                             </div>
                             
                             <div class="admin-form-group">
@@ -1034,13 +1038,6 @@
                             <div class="admin-form-group">
                                 <label for="user-phone">Phone Number</label>
                                 <input type="tel" id="user-phone" class="admin-form-input" placeholder="Enter phone number">
-                            </div>
-                            
-                            <div class="admin-form-group">
-                                <label>
-                                    <input type="checkbox" id="user-active" style="margin-right: 0.5rem;" checked>
-                                    Active (user can log in)
-                                </label>
                             </div>
                             
                             <div class="admin-form-actions">
@@ -1148,6 +1145,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Learning Users Firestore Service -->
+    <script src="firestore-service-learning-users.js"></script>
     
     <!-- Firebase Configuration and Service -->
     <script>
@@ -3622,60 +3622,98 @@
             }
             
             // Users Management Section
-            let usersData = [
-                {
-                    id: 1,
-                    username: 'admin',
-                    email: 'admin@example.com',
-                    password: 'admin123',
-                    role: 'tier3',
-                    firstname: 'Admin',
-                    lastname: 'User',
-                    phone: '+1234567890',
-                    company: 'Opessocius',
-                    notes: 'Main administrator account',
-                    active: true,
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 2,
-                    username: 'john_doe',
-                    email: 'john.doe@example.com',
-                    password: 'password123',
-                    role: 'tier2',
-                    firstname: 'John',
-                    lastname: 'Doe',
-                    phone: '+1234567891',
-                    company: 'ABC Corp',
-                    notes: 'Premium tier user',
-                    active: true,
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 3,
-                    username: 'jane_smith',
-                    email: 'jane.smith@example.com',
-                    password: 'password123',
-                    role: 'tier1',
-                    firstname: 'Jane',
-                    lastname: 'Smith',
-                    phone: '+1234567892',
-                    company: 'XYZ Ltd',
-                    notes: 'Standard tier user',
-                    active: true,
-                    createdAt: new Date().toISOString()
-                }
-            ];
+            let usersData = [];
             
-            function loadUsersList() {
+            async function loadUsersList() {
                 const tbody = document.getElementById('users-table-body');
                 if (!tbody) return;
                 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">Loading users...</td></tr>';
+                
+                try {
+                    usersData = [];
+                    
+                    // Load investors from 'users' collection
+                    if (window.firebaseDb) {
+                        try {
+                            const investorsSnapshot = await window.firebaseDb.collection('users')
+                                .orderBy('createdAt', 'desc')
+                                .get();
+                            
+                            investorsSnapshot.forEach((doc) => {
+                                const data = doc.data();
+                                usersData.push({
+                                    id: doc.id,
+                                    type: 'investor',
+                                    username: data.username || '',
+                                    email: data.email || '',
+                                    tier: data.tier || 'tier1', // Default tier if not set
+                                    active: data.accountStatus === 'Active',
+                                    firstname: data.fullName ? data.fullName.split(' ')[0] : '',
+                                    lastname: data.fullName ? data.fullName.split(' ').slice(1).join(' ') : '',
+                                    phone: data.phone || '',
+                                    firestoreData: data
+                                });
+                            });
+                        } catch (error) {
+                            console.error('Error loading investors:', error);
+                            // Continue loading learning users even if investors fail
+                        }
+                    }
+                    
+                    // Load learning users from 'learningUsers' collection
+                    if (window.learningUsersFirestoreService) {
+                        try {
+                            const learningUsers = await window.learningUsersFirestoreService.getAllLearningUsers();
+                            learningUsers.forEach((user) => {
+                                usersData.push({
+                                    id: user.id,
+                                    type: 'learning',
+                                    username: user.username || '',
+                                    email: user.email || '',
+                                    tier: user.tier || 'tier1',
+                                    active: user.active !== false,
+                                    firstname: user.firstName || '',
+                                    lastname: user.lastName || '',
+                                    phone: user.phone || '',
+                                    firestoreData: user
+                                });
+                            });
+                        } catch (error) {
+                            console.error('Error loading learning users:', error);
+                            // Continue even if learning users fail
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading users:', error);
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #dc2626;">Error loading users. Please refresh the page.</td></tr>';
+                    return;
+                }
+                
                 tbody.innerHTML = '';
+                
+                if (usersData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No users found.</td></tr>';
+                    return;
+                }
                 
                 usersData.forEach(user => {
                     const row = document.createElement('tr');
                     row.style.borderBottom = '1px solid #e5e7eb';
+                    
+                    // Type
+                    const typeCell = document.createElement('td');
+                    typeCell.style.padding = '1rem';
+                    const typeBadge = document.createElement('span');
+                    typeBadge.textContent = user.type === 'investor' ? 'Investor' : 'Learning';
+                    typeBadge.style.padding = '0.25rem 0.75rem';
+                    typeBadge.style.borderRadius = '12px';
+                    typeBadge.style.fontSize = '0.75rem';
+                    typeBadge.style.fontWeight = '600';
+                    typeBadge.style.background = user.type === 'investor' ? '#fef3c7' : '#dbeafe';
+                    typeBadge.style.color = user.type === 'investor' ? '#92400e' : '#1e40af';
+                    typeCell.appendChild(typeBadge);
+                    row.appendChild(typeCell);
                     
                     // Username
                     const usernameCell = document.createElement('td');
@@ -3691,27 +3729,27 @@
                     emailCell.style.color = '#1f2937';
                     row.appendChild(emailCell);
                     
-                    // Role
-                    const roleCell = document.createElement('td');
-                    roleCell.style.padding = '1rem';
-                    const roleBadge = document.createElement('span');
-                    roleBadge.textContent = user.role.toUpperCase().replace('TIER', 'Tier ');
-                    roleBadge.style.padding = '0.25rem 0.75rem';
-                    roleBadge.style.borderRadius = '12px';
-                    roleBadge.style.fontSize = '0.75rem';
-                    roleBadge.style.fontWeight = '600';
-                    if (user.role === 'tier3') {
-                        roleBadge.style.background = '#dbeafe';
-                        roleBadge.style.color = '#1e40af';
-                    } else if (user.role === 'tier2') {
-                        roleBadge.style.background = '#e0e7ff';
-                        roleBadge.style.color = '#3730a3';
+                    // Tier
+                    const tierCell = document.createElement('td');
+                    tierCell.style.padding = '1rem';
+                    const tierBadge = document.createElement('span');
+                    tierBadge.textContent = user.tier.toUpperCase().replace('TIER', 'Tier ');
+                    tierBadge.style.padding = '0.25rem 0.75rem';
+                    tierBadge.style.borderRadius = '12px';
+                    tierBadge.style.fontSize = '0.75rem';
+                    tierBadge.style.fontWeight = '600';
+                    if (user.tier === 'tier3') {
+                        tierBadge.style.background = '#dbeafe';
+                        tierBadge.style.color = '#1e40af';
+                    } else if (user.tier === 'tier2') {
+                        tierBadge.style.background = '#e0e7ff';
+                        tierBadge.style.color = '#3730a3';
                     } else {
-                        roleBadge.style.background = '#f3f4f6';
-                        roleBadge.style.color = '#374151';
+                        tierBadge.style.background = '#f3f4f6';
+                        tierBadge.style.color = '#374151';
                     }
-                    roleCell.appendChild(roleBadge);
-                    row.appendChild(roleCell);
+                    tierCell.appendChild(tierBadge);
+                    row.appendChild(tierCell);
                     
                     // Status
                     const statusCell = document.createElement('td');
@@ -3740,22 +3778,26 @@
                     editBtn.style.padding = '0.5rem 1rem';
                     editBtn.style.fontSize = '0.875rem';
                     editBtn.onclick = function() {
-                        editUser(user.id);
-                    };
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'Delete';
-                    deleteBtn.className = 'admin-btn-cancel';
-                    deleteBtn.style.padding = '0.5rem 1rem';
-                    deleteBtn.style.fontSize = '0.875rem';
-                    deleteBtn.onclick = function() {
-                        if (confirm('Are you sure you want to delete this user?')) {
-                            deleteUser(user.id);
-                        }
+                        editUser(user.id, user.type);
                     };
                     
                     actionsDiv.appendChild(editBtn);
-                    actionsDiv.appendChild(deleteBtn);
+                    
+                    // Only show delete button for learning users
+                    if (user.type === 'learning') {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.className = 'admin-btn-cancel';
+                        deleteBtn.style.padding = '0.5rem 1rem';
+                        deleteBtn.style.fontSize = '0.875rem';
+                        deleteBtn.onclick = function() {
+                            if (confirm('Are you sure you want to delete this user?')) {
+                                deleteUser(user.id, user.type);
+                            }
+                        };
+                        actionsDiv.appendChild(deleteBtn);
+                    }
+                    
                     actionsCell.appendChild(actionsDiv);
                     row.appendChild(actionsCell);
                     
@@ -3763,34 +3805,77 @@
                 });
             }
             
-            function editUser(userId) {
-                const user = usersData.find(u => u.id === userId);
+            function editUser(userId, userType) {
+                const user = usersData.find(u => u.id === userId && u.type === userType);
                 if (!user) return;
                 
                 const modal = document.getElementById('user-modal');
                 const form = document.getElementById('user-form');
+                const passwordField = document.getElementById('user-password');
+                const passwordHint = document.getElementById('user-password-hint');
                 
-                document.getElementById('user-modal-title').textContent = 'Edit User';
+                document.getElementById('user-modal-title').textContent = userType === 'investor' ? 'Edit Investor (Tier Only)' : 'Edit User';
                 document.getElementById('user-username').value = user.username;
                 document.getElementById('user-email').value = user.email;
-                document.getElementById('user-password').value = '';
-                document.getElementById('user-password').required = false;
-                document.getElementById('user-password-hint').textContent = 'Leave blank to keep current password';
-                document.getElementById('user-role').value = user.role;
+                document.getElementById('user-role').value = user.tier;
                 document.getElementById('user-firstname').value = user.firstname || '';
                 document.getElementById('user-lastname').value = user.lastname || '';
                 document.getElementById('user-phone').value = user.phone || '';
-                document.getElementById('user-active').checked = user.active !== false;
+                
+                // For investors, disable all fields except tier and hide password
+                const isInvestor = userType === 'investor';
+                document.getElementById('user-username').disabled = isInvestor;
+                document.getElementById('user-email').disabled = isInvestor;
+                document.getElementById('user-firstname').disabled = isInvestor;
+                document.getElementById('user-lastname').disabled = isInvestor;
+                document.getElementById('user-phone').disabled = isInvestor;
+                
+                // Password field handling
+                if (isInvestor) {
+                    // Hide password field for investors
+                    passwordField.style.display = 'none';
+                    passwordField.parentElement.style.display = 'none';
+                } else {
+                    // Show password field for learning users, but make it read-only (view only)
+                    passwordField.parentElement.style.display = 'block';
+                    passwordField.style.display = 'block';
+                    passwordField.type = 'password';
+                    passwordField.value = '••••••••'; // Show dots to indicate password exists
+                    passwordField.readOnly = true;
+                    passwordField.disabled = false; // Keep enabled for styling
+                    passwordField.style.backgroundColor = '#f3f4f6';
+                    passwordField.style.cursor = 'not-allowed';
+                    passwordField.required = false;
+                    passwordHint.textContent = 'Password is hidden for security. Contact system administrator to change password.';
+                }
                 
                 modal.setAttribute('data-edit-id', userId);
+                modal.setAttribute('data-edit-type', userType);
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
             
-            function deleteUser(userId) {
-                usersData = usersData.filter(u => u.id !== userId);
-                loadUsersList();
-                alert('User deleted successfully!');
+            async function deleteUser(userId, userType) {
+                if (userType === 'investor') {
+                    alert('Investors cannot be deleted from this portal.');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    if (window.learningUsersFirestoreService) {
+                        await window.learningUsersFirestoreService.deleteLearningUser(userId);
+                        await loadUsersList();
+                    } else {
+                        alert('Firestore service not available. Please refresh the page.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user: ' + error.message);
+                }
             }
             
             // Add user button
@@ -3800,13 +3885,33 @@
                     const modal = document.getElementById('user-modal');
                     const form = document.getElementById('user-form');
                     
-                    document.getElementById('user-modal-title').textContent = 'Add New User';
+                    document.getElementById('user-modal-title').textContent = 'Add New Learning User';
                     form.reset();
-                    document.getElementById('user-password').required = true;
-                    document.getElementById('user-password-hint').textContent = 'Enter password for new user';
-                    document.getElementById('user-active').checked = true;
+                    
+                    const passwordField = document.getElementById('user-password');
+                    const passwordHint = document.getElementById('user-password-hint');
+                    
+                    // Show and enable password field for new users
+                    passwordField.parentElement.style.display = 'block';
+                    passwordField.style.display = 'block';
+                    passwordField.type = 'password';
+                    passwordField.value = '';
+                    passwordField.readOnly = false;
+                    passwordField.disabled = false;
+                    passwordField.required = true;
+                    passwordField.style.backgroundColor = '';
+                    passwordField.style.cursor = '';
+                    passwordHint.textContent = 'Enter password for new user';
+                    
+                    // Enable all fields for new user
+                    document.getElementById('user-username').disabled = false;
+                    document.getElementById('user-email').disabled = false;
+                    document.getElementById('user-firstname').disabled = false;
+                    document.getElementById('user-lastname').disabled = false;
+                    document.getElementById('user-phone').disabled = false;
                     
                     modal.removeAttribute('data-edit-id');
+                    modal.removeAttribute('data-edit-type');
                     modal.style.display = 'block';
                     document.body.style.overflow = 'hidden';
                 });
@@ -3822,6 +3927,13 @@
                     userModalClose.addEventListener('click', function() {
                         userModal.style.display = 'none';
                         document.body.style.overflow = '';
+                        // Reset password field state
+                        const passwordField = document.getElementById('user-password');
+                        if (passwordField) {
+                            passwordField.readOnly = false;
+                            passwordField.style.backgroundColor = '';
+                            passwordField.style.cursor = '';
+                        }
                     });
                 }
                 
@@ -3829,94 +3941,209 @@
                     userModalCancel.addEventListener('click', function() {
                         userModal.style.display = 'none';
                         document.body.style.overflow = '';
+                        // Reset password field state
+                        const passwordField = document.getElementById('user-password');
+                        if (passwordField) {
+                            passwordField.readOnly = false;
+                            passwordField.style.backgroundColor = '';
+                            passwordField.style.cursor = '';
+                        }
                     });
                 }
                 
                 userModal.querySelector('.admin-modal-overlay').addEventListener('click', function() {
                     userModal.style.display = 'none';
                     document.body.style.overflow = '';
+                    // Reset password field state
+                    const passwordField = document.getElementById('user-password');
+                    if (passwordField) {
+                        passwordField.readOnly = false;
+                        passwordField.style.backgroundColor = '';
+                        passwordField.style.cursor = '';
+                    }
                 });
             }
             
             // User form handler
             const userForm = document.getElementById('user-form');
             if (userForm) {
-                userForm.addEventListener('submit', function(e) {
+                userForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const modal = document.getElementById('user-modal');
                     const isEditMode = modal.hasAttribute('data-edit-id');
-                    const editId = isEditMode ? parseInt(modal.getAttribute('data-edit-id')) : null;
+                    const editId = isEditMode ? modal.getAttribute('data-edit-id') : null;
+                    const editType = isEditMode ? modal.getAttribute('data-edit-type') : null;
                     
-                    const username = document.getElementById('user-username').value;
-                    const email = document.getElementById('user-email').value;
-                    const password = document.getElementById('user-password').value;
-                    const role = document.getElementById('user-role').value;
-                    const firstname = document.getElementById('user-firstname').value;
-                    const lastname = document.getElementById('user-lastname').value;
-                    const phone = document.getElementById('user-phone').value;
-                    const active = document.getElementById('user-active').checked;
+                    const username = document.getElementById('user-username').value.trim();
+                    const email = document.getElementById('user-email').value.trim();
+                    const passwordField = document.getElementById('user-password');
+                    // If password field is read-only (view mode), ignore its value
+                    const password = passwordField.readOnly ? '' : passwordField.value;
+                    const tier = document.getElementById('user-role').value;
+                    const firstname = document.getElementById('user-firstname').value.trim();
+                    const lastname = document.getElementById('user-lastname').value.trim();
+                    const phone = document.getElementById('user-phone').value.trim();
                     
-                    // Validate password for new users
+                    // Validate password for new users only (not when editing with read-only field)
                     if (!isEditMode && !password) {
                         alert('Password is required for new users');
                         return;
                     }
                     
-                    if (isEditMode) {
-                        // Update existing user
-                        const userIndex = usersData.findIndex(u => u.id === editId);
-                        if (userIndex !== -1) {
-                            const updatedUser = {
-                                ...usersData[userIndex],
-                                username,
-                                email,
-                                role,
-                                firstname,
-                                lastname,
-                                phone,
-                                active
-                            };
-                            // Only update password if provided
-                            if (password) {
-                                updatedUser.password = password;
-                            }
-                            usersData[userIndex] = updatedUser;
-                        }
-                    } else {
-                        // Check if username already exists
-                        if (usersData.some(u => u.username === username)) {
-                            alert('Username already exists. Please choose a different username.');
-                            return;
-                        }
-                        
-                        // Check if email already exists
-                        if (usersData.some(u => u.email === email)) {
-                            alert('Email already exists. Please use a different email address.');
-                            return;
-                        }
-                        
-                        // Create new user
-                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
-                        usersData.push({
-                            id: newId,
-                            username,
-                            email,
-                            password,
-                            role,
-                            firstname,
-                            lastname,
-                            phone,
-                            active,
-                            createdAt: new Date().toISOString()
-                        });
+                    // Validate required fields
+                    if (!username || !email || !tier) {
+                        alert('Please fill in all required fields');
+                        return;
                     }
                     
-                    loadUsersList();
-                    modal.style.display = 'none';
-                    document.body.style.overflow = '';
-                    form.reset();
-                    alert(isEditMode ? 'User updated successfully!' : 'User created successfully!');
+                    const submitBtn = userForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = isEditMode ? 'Saving...' : 'Creating...';
+                    
+                    try {
+                        if (isEditMode) {
+                            // Update existing user
+                            if (editType === 'investor') {
+                                // Only update tier for investors
+                                if (window.firebaseDb) {
+                                    await window.firebaseDb.collection('users').doc(editId).update({
+                                        tier: tier,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                    await loadUsersList();
+                                    modal.style.display = 'none';
+                                    document.body.style.overflow = '';
+                                    userForm.reset();
+                                    // Reset password field state
+                                    const passwordFieldReset = document.getElementById('user-password');
+                                    if (passwordFieldReset) {
+                                        passwordFieldReset.readOnly = false;
+                                        passwordFieldReset.style.backgroundColor = '';
+                                        passwordFieldReset.style.cursor = '';
+                                    }
+                                } else {
+                                    alert('Firestore service not available. Please refresh the page.');
+                                }
+                            } else {
+                                // Update learning user
+                                if (window.learningUsersFirestoreService) {
+                                    // Check for username/email conflicts (excluding current user)
+                                    const existingByUsername = await window.learningUsersFirestoreService.getLearningUserByUsername(username);
+                                    if (existingByUsername && existingByUsername.id !== editId) {
+                                        alert('Username already exists. Please choose a different username.');
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                        return;
+                                    }
+                                    
+                                    const existingByEmail = await window.learningUsersFirestoreService.getLearningUserByEmail(email);
+                                    if (existingByEmail && existingByEmail.id !== editId) {
+                                        alert('Email already exists. Please use a different email address.');
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                        return;
+                                    }
+                                    
+                                    await window.learningUsersFirestoreService.updateLearningUser(editId, {
+                                        username,
+                                        email,
+                                        firstname,
+                                        lastname,
+                                        phone,
+                                        tier,
+                                        active: true // Learning users are always active
+                                    });
+                                    
+                                    // Note: Password updates in Firebase Auth should be handled server-side
+                                    // For now, we only update the Firestore document
+                                    
+                                    await loadUsersList();
+                                    modal.style.display = 'none';
+                                    document.body.style.overflow = '';
+                                    userForm.reset();
+                                    // Reset password field state
+                                    const passwordFieldReset2 = document.getElementById('user-password');
+                                    if (passwordFieldReset2) {
+                                        passwordFieldReset2.readOnly = false;
+                                        passwordFieldReset2.style.backgroundColor = '';
+                                        passwordFieldReset2.style.cursor = '';
+                                    }
+                                } else {
+                                    alert('Firestore service not available. Please refresh the page.');
+                                }
+                            }
+                        } else {
+                            // Create new learning user
+                            if (window.learningUsersFirestoreService) {
+                                // Check for username/email conflicts
+                                const existingByUsername = await window.learningUsersFirestoreService.getLearningUserByUsername(username);
+                                if (existingByUsername) {
+                                    alert('Username already exists. Please choose a different username.');
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = originalText;
+                                    return;
+                                }
+                                
+                                const existingByEmail = await window.learningUsersFirestoreService.getLearningUserByEmail(email);
+                                if (existingByEmail) {
+                                    alert('Email already exists. Please use a different email address.');
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = originalText;
+                                    return;
+                                }
+                                
+                                // Also check investors collection for email conflicts
+                                if (window.firebaseDb) {
+                                    const investorSnapshot = await window.firebaseDb.collection('users')
+                                        .where('email', '==', email)
+                                        .get();
+                                    if (!investorSnapshot.empty) {
+                                        alert('Email already exists in investors. Please use a different email address.');
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                        return;
+                                    }
+                                }
+                                
+                                // Create user in Firestore
+                                await window.learningUsersFirestoreService.createLearningUser({
+                                    username,
+                                    email,
+                                    firstname,
+                                    lastname,
+                                    phone,
+                                    tier,
+                                    active: true
+                                });
+                                
+                                // Note: Firebase Auth user creation should be handled server-side
+                                // For now, we only create the Firestore document
+                                // The password can be set up later through Firebase Console or a Cloud Function
+                                
+                                await loadUsersList();
+                                modal.style.display = 'none';
+                                document.body.style.overflow = '';
+                                userForm.reset();
+                                // Reset password field state
+                                const passwordField = document.getElementById('user-password');
+                                if (passwordField) {
+                                    passwordField.readOnly = false;
+                                    passwordField.style.backgroundColor = '';
+                                    passwordField.style.cursor = '';
+                                }
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error saving user:', error);
+                        alert('Error saving user: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 });
             }
             
