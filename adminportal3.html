@@ -255,13 +255,31 @@
         .transactions-table td:last-child {
             text-align: center;
         } */
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body class="dashboard-active">
     <section class="user-dashboard" id="user-dashboard">
         <div class="dashboard-sidebar">
             <div class="sidebar-profile">
-                <img src="images/diegorequena.JPG" alt="Admin Profile" class="sidebar-profile-image" />
+                <div class="sidebar-profile-image-container" id="admin-profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
+                    <img src="" alt="Profile Picture" class="sidebar-profile-image" id="admin-profile-picture-img" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" />
+                    <div class="profile-picture-placeholder" id="admin-profile-picture-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 2rem; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <span>👤</span>
+                    </div>
+                    <div class="profile-picture-upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 0.75rem; text-align: center; padding: 0.5rem; cursor: pointer;">
+                        Change Photo
+                    </div>
+                </div>
+                <input type="file" id="admin-profile-picture-input" accept="image/*" style="display: none;" />
                 <div class="sidebar-profile-name">Admin</div>
             </div>
             <nav class="sidebar-navigation">
@@ -1074,43 +1092,14 @@
                         </div>
                     </div>
                     <div class="market-news-articles-section">
-                        <div class="news-grid">
-                            <div class="news-card-wrapper" data-news-index="0">
-                                <a href="https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="OPEC+ Production" class="news-image" />
-                                        <h3 class="news-title">OPEC+ Maintains Production Cuts Amid Global Demand Concerns</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="0">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="1">
-                                <a href="https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop" alt="Crude Oil Prices" class="news-image" />
-                                        <h3 class="news-title">Crude Oil Prices Rally on Middle East Tensions</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="1">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="2">
-                                <a href="https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop" alt="US Shale Production" class="news-image" />
-                                        <h3 class="news-title">US Shale Production Hits Record High Despite Lower Prices</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="2">Edit</button>
-                            </div>
-                            <div class="news-card-wrapper" data-news-index="3">
-                                <a href="https://www.ft.com/content/china-oil-demand-slowdown-q4-2024" target="_blank" rel="noopener noreferrer" class="news-card">
-                                    <div class="news-image-container">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop" alt="China Oil Demand" class="news-image" />
-                                        <h3 class="news-title">China's Oil Demand Growth Slows in Q4 2024</h3>
-                                    </div>
-                                </a>
-                                <button class="news-edit-btn" data-news-index="3">Edit</button>
-                            </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0; font-size: 1.25rem; color: #1f2937;">Market News Articles</h3>
+                            <button onclick="openAddNewsModal()" class="admin-btn-add" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500;">
+                                + Add New Article
+                            </button>
+                        </div>
+                        <div class="news-grid" id="news-grid">
+                            <!-- News articles will be loaded from Firestore -->
                         </div>
                     </div>
             </div>
@@ -1121,7 +1110,7 @@
                 <div class="admin-modal-container">
                     <button class="admin-modal-close" aria-label="Close modal">&times;</button>
                     <div class="admin-modal-content">
-                        <h2 class="admin-modal-title">Edit News Article</h2>
+                        <h2 class="admin-modal-title" id="news-modal-title">Edit News Article</h2>
                         <form id="news-edit-form" class="admin-modal-form">
                             <div class="admin-form-group">
                                 <label for="edit-news-title">Title</label>
@@ -1135,21 +1124,320 @@
                                 <label for="edit-news-image">Image URL</label>
                                 <input type="url" id="edit-news-image" class="admin-form-input" required>
                             </div>
+                            <div class="admin-form-group">
+                                <label for="edit-news-order">Display Order</label>
+                                <input type="number" id="edit-news-order" class="admin-form-input" min="0" value="0">
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Lower numbers appear first</span>
+                            </div>
                             <div class="admin-form-actions">
-                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit">Cancel</button>
+                                <button type="button" class="admin-btn-cancel" id="delete-news-btn" onclick="deleteNews()" style="background: #dc2626; color: white; font-size: 0.875rem; padding: 0.5rem 1rem; display: none;">Delete</button>
+                                <button type="button" class="admin-btn-cancel" id="cancel-news-edit" onclick="closeNewsEditModal()">Cancel</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
                             </div>
                         </form>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
     </section>
     
     <script src="script.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const analytics = firebase.analytics();
+        
+        // Make available globally
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseAnalytics = analytics;
+        window.firebase = firebase;
+        
+        // Firestore Service Functions (using CDN API) - Shared collections for consultations and market news
+        window.firestoreService = {
+            // Consultations Functions
+            CONSULTATIONS_COLLECTION: 'consultations',
+            
+            // Get all consultations
+            getAllConsultations: async function() {
+                try {
+                    const snapshot = await db.collection(this.CONSULTATIONS_COLLECTION)
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    const consultations = [];
+                    snapshot.forEach((doc) => {
+                        consultations.push({ id: doc.id, ...doc.data() });
+                    });
+                    return consultations;
+                } catch (error) {
+                    console.error('Error getting consultations:', error);
+                    throw error;
+                }
+            },
+            
+            // Update consultation status
+            updateConsultationStatus: async function(consultationId, status) {
+                try {
+                    await db.collection(this.CONSULTATIONS_COLLECTION)
+                        .doc(consultationId)
+                        .update({
+                            status: status,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                } catch (error) {
+                    console.error('Error updating consultation status:', error);
+                    throw error;
+                }
+            },
+            
+            // Market News Functions
+            NEWS_COLLECTION: 'marketNews',
+            
+            // Create news article
+            createNews: async function(newsData) {
+                try {
+                    const newsDoc = {
+                        title: newsData.title,
+                        link: newsData.link,
+                        image: newsData.image,
+                        order: newsData.order || 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    const docRef = await db.collection(this.NEWS_COLLECTION).add(newsDoc);
+                    return docRef.id;
+                } catch (error) {
+                    console.error('Error creating news:', error);
+                    throw error;
+                }
+            },
+            
+            // Update news article
+            updateNews: async function(newsId, newsData) {
+                try {
+                    const updateData = {
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if (newsData.title !== undefined) updateData.title = newsData.title;
+                    if (newsData.link !== undefined) updateData.link = newsData.link;
+                    if (newsData.image !== undefined) updateData.image = newsData.image;
+                    if (newsData.order !== undefined) updateData.order = newsData.order;
+                    await db.collection(this.NEWS_COLLECTION).doc(newsId).update(updateData);
+                } catch (error) {
+                    console.error('Error updating news:', error);
+                    throw error;
+                }
+            },
+            
+            // Delete news article
+            deleteNews: async function(newsId) {
+                try {
+                    await db.collection(this.NEWS_COLLECTION).doc(newsId).delete();
+                } catch (error) {
+                    console.error('Error deleting news:', error);
+                    throw error;
+                }
+            },
+            
+            // Get all news articles
+            getAllNews: async function() {
+                try {
+                    const snapshot = await db.collection(this.NEWS_COLLECTION)
+                        .orderBy('order', 'asc')
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    const news = [];
+                    snapshot.forEach((doc) => {
+                        news.push({ id: doc.id, ...doc.data() });
+                    });
+                    return news;
+                } catch (error) {
+                    console.error('Error getting news:', error);
+                    // If orderBy fails (no index), try without order
+                    try {
+                        const snapshot = await db.collection(this.NEWS_COLLECTION)
+                            .orderBy('createdAt', 'desc')
+                            .get();
+                        const news = [];
+                        snapshot.forEach((doc) => {
+                            news.push({ id: doc.id, ...doc.data() });
+                        });
+                        // Sort by order manually
+                        news.sort((a, b) => (a.order || 0) - (b.order || 0));
+                        return news;
+                    } catch (fallbackError) {
+                        console.error('Error getting news (fallback):', fallbackError);
+                        throw fallbackError;
+                    }
+                }
+            }
+        };
+        
+        // Dispatch event when services are ready
+        window.dispatchEvent(new CustomEvent('firestoreReady'));
+        
+        console.log('Firebase and Firestore services loaded from CDN');
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Store transaction data globally
+            let transactionData = [];
+            
+            // Admin Fund Performance Firestore Functions
+            const ADMIN_FUND_PERFORMANCE_COLLECTION = 'adminFundPerformance';
+            
+            // Load admin fund performance from Firestore
+            async function loadAdminFundPerformance() {
+                try {
+                    const snapshot = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION)
+                        .orderBy('year', 'asc')
+                        .orderBy('monthIndex', 'asc')
+                        .get();
+                    
+                    const performanceData = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        performanceData.push({
+                            id: doc.id,
+                            month: data.month,
+                            year: data.year,
+                            starting: data.startingBalance,
+                            ending: data.endingBalance,
+                            growth: data.growth,
+                            deposits: data.deposits || 0,
+                            withdrawals: data.withdrawals || 0,
+                            depositDate: data.depositDate ? data.depositDate.toDate().toISOString().split('T')[0] : null,
+                            withdrawalDate: data.withdrawalDate ? data.withdrawalDate.toDate().toISOString().split('T')[0] : null
+                        });
+                    });
+                    
+                    return performanceData;
+                } catch (error) {
+                    console.error('Error loading admin fund performance:', error);
+                    // If ordering fails, load all and sort in JavaScript
+                    try {
+                        const snapshot = await db.collection(ADMIN_FUND_PERFORMANCE_COLLECTION).get();
+                        const performanceData = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            performanceData.push({
+                                id: doc.id,
+                                month: data.month,
+                                year: data.year,
+                                starting: data.startingBalance,
+                                ending: data.endingBalance,
+                                growth: data.growth,
+                                deposits: data.deposits || 0,
+                                withdrawals: data.withdrawals || 0,
+                                depositDate: data.depositDate ? data.depositDate.toDate().toISOString().split('T')[0] : null,
+                                withdrawalDate: data.withdrawalDate ? data.withdrawalDate.toDate().toISOString().split('T')[0] : null
+                            });
+                        });
+                        
+                        // Sort in JavaScript
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        performanceData.sort((a, b) => {
+                            const yearDiff = a.year - b.year;
+                            if (yearDiff !== 0) return yearDiff;
+                            return months.indexOf(a.month) - months.indexOf(b.month);
+                        });
+                        
+                        return performanceData;
+                    } catch (fallbackError) {
+                        console.error('Error in fallback load:', fallbackError);
+                        return [];
+                    }
+                }
+            }
+            
+            // Transactions Table Population
+            async function populateTransactionsTable() {
+                const tableBody = document.getElementById('transactions-table-body');
+                if (!tableBody) return Promise.resolve();
+
+                // Load from Firestore
+                try {
+                    transactionData = await loadAdminFundPerformance();
+                    
+                    // If no data exists, initialize with empty array (no default data)
+                    if (transactionData.length === 0) {
+                        transactionData = [];
+                    }
+                } catch (error) {
+                    console.error('Error loading transactions:', error);
+                    transactionData = [];
+                }
+
+                tableBody.innerHTML = '';
+
+                if (transactionData.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No performance data available.</td>';
+                    tableBody.appendChild(row);
+                } else {
+                    transactionData.forEach((data, index) => {
+                        const startingBalance = data.starting;
+                        const endingBalance = data.ending;
+                        const growth = data.growth;
+                        const growthValue = parseFloat(growth);
+                        const monthYear = `${data.month} ${data.year}`;
+                        
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-index', index);
+                        row.setAttribute('data-id', data.id || '');
+                        
+                        // Format dates
+                        const depositDisplay = data.deposits > 0 && data.depositDate 
+                            ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
+                            : data.deposits > 0 ? `€${data.deposits.toLocaleString('en-US')}` : '-';
+                        
+                        const withdrawalDisplay = data.withdrawals > 0 && data.withdrawalDate 
+                            ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
+                            : data.withdrawals > 0 ? `€${data.withdrawals.toLocaleString('en-US')}` : '-';
+
+                        const finalBalance = endingBalance - (data.withdrawals || 0);
+                        
+                        row.innerHTML = `
+                            <td>${monthYear}</td>
+                            <td>€${startingBalance.toLocaleString('en-US')}</td>
+                            <td>€${finalBalance.toLocaleString('en-US')}</td>
+                            <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
+                            <td class="transaction-cell">${depositDisplay}</td>
+                            <td class="transaction-cell">${withdrawalDisplay}</td>
+                        `;
+                        
+                        tableBody.appendChild(row);
+                    });
+                }
+            }
+            
+            // Load transactions on initial page load to populate dashboard metrics
+            await populateTransactionsTable();
+            updateDashboardMetrics();
+            
             // Navigation handling
             const navItems = document.querySelectorAll('.sidebar-nav-item');
             const dashboardView = document.getElementById('dashboard-view');
@@ -1191,19 +1479,40 @@
                     // Show selected view
                     if (navText === 'Dashboard' && dashboardView) {
                         dashboardView.style.display = 'block';
-                        loadChatMessages();
-                        loadMembersAndRevenue();
+                        // Load transactions first, then update dashboard metrics
+                        populateTransactionsTable().then(() => {
+                            updateDashboardMetrics();
+                            loadChatMessages();
+                            loadMembersAndRevenue();
+                        }).catch(() => {
+                            // If load fails, still try to load other data
+                            updateDashboardMetrics();
+                            loadChatMessages();
+                            loadMembersAndRevenue();
+                        });
                     } else if (navText === 'Portfolio' && portfolioView) {
                         portfolioView.style.display = 'block';
-                        setTimeout(function() {
-                            drawPortfolioChart();
-                            calculateProjectionValue();
-                        }, 100);
+                        // Load transactions first, then update metrics and chart
+                        populateTransactionsTable().then(() => {
+                            updatePortfolioMetrics();
+                            setTimeout(function() {
+                                drawPortfolioChart();
+                                calculateProjectionValue();
+                            }, 100);
+                        }).catch(() => {
+                            // If load fails, still try to draw chart with existing data
+                            updatePortfolioMetrics();
+                            setTimeout(function() {
+                                drawPortfolioChart();
+                                calculateProjectionValue();
+                            }, 100);
+                        });
                     } else if (navText === 'Transactions' && transactionsView) {
                         transactionsView.style.display = 'block';
                         populateTransactionsTable();
                     } else if (navText === 'Market News' && marketNewsView) {
                         marketNewsView.style.display = 'block';
+                        loadMarketNews();
                     } else if (navText === 'Reports' && reportsView) {
                         reportsView.style.display = 'block';
                     } else if (navText === 'Consultations' && consultationsView) {
@@ -1245,21 +1554,89 @@
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
-                // Sample data: Historical (12 months) + Projection (12 months) = 24 months total
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-                              'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                // Get historical data from transactionData
+                let historicalData = [];
+                let initialInvestment = 0;
                 
-                // Historical data (past 12 months) - starting from initial fund investment
-                const initialInvestment = 8500000; // Fund total
-                const historicalData = [
-                    8500000, 8700000, 8800000, 8950000, 9100000, 9250000, 9400000, 9550000, 9750000, 9950000, 10150000, 10350000
-                ];
+                if (transactionData && transactionData.length > 0) {
+                    // Use actual transaction data - show final balance (ending balance - withdrawals)
+                    initialInvestment = transactionData[0].starting;
+                    
+                    // Calculate final balance for each entry: ending balance - withdrawals
+                    historicalData = transactionData.map(entry => {
+                        const finalBalance = entry.ending - (entry.withdrawals || 0);
+                        return finalBalance;
+                    });
+                } else {
+                    // Default fallback data
+                    initialInvestment = 8500000;
+                    historicalData = [
+                        8500000, 8700000, 8800000, 8950000, 9100000, 9250000, 9400000, 9550000, 9750000, 9950000, 10150000, 10350000
+                    ];
+                }
                 
-                // Projection data continues seamlessly from last historical value
+                // Calculate projection data based on average growth
+                let projectionData = [];
                 const lastHistoricalValue = historicalData[historicalData.length - 1];
-                const projectionData = [
-                    10550000, 10750000, 10950000, 11150000, 11350000, 11550000, 11750000, 11950000, 12150000, 12350000, 12550000, 12750000
-                ];
+                
+                if (transactionData && transactionData.length > 1) {
+                    // Calculate average monthly growth rate
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02;
+                    
+                    // Project 12 months forward
+                    let projectionValue = lastHistoricalValue;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                        projectionData.push(projectionValue);
+                    }
+                } else {
+                    // Default projection (2% monthly growth)
+                    let projectionValue = lastHistoricalValue;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * 1.02;
+                        projectionData.push(projectionValue);
+                    }
+                }
+                
+                // Month labels for chart
+                const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const totalMonths = historicalData.length + projectionData.length;
+                const months = [];
+                
+                // Generate month labels based on actual data
+                if (transactionData && transactionData.length > 0) {
+                    // Only add transaction months (one label per transaction entry)
+                    transactionData.forEach((entry) => {
+                        const monthAbbr = entry.month.substring(0, 3);
+                        const monthIndex = monthLabels.indexOf(monthAbbr);
+                        if (monthIndex >= 0) {
+                            months.push(monthLabels[monthIndex]);
+                        } else {
+                            months.push(monthAbbr);
+                        }
+                    });
+                    
+                    // Add projection months (12 months forward from last transaction)
+                    const lastTransactionMonth = transactionData[transactionData.length - 1].month.substring(0, 3);
+                    const lastMonthIndex = monthLabels.indexOf(lastTransactionMonth);
+                    let currentMonthIndex = (lastMonthIndex + 1) % 12; // Start from next month
+                    for (let i = 0; i < 12; i++) {
+                        months.push(monthLabels[currentMonthIndex]);
+                        currentMonthIndex = (currentMonthIndex + 1) % 12;
+                    }
+                } else {
+                    // Default labels
+                    months.push(...monthLabels, ...monthLabels);
+                }
                 
                 // Combine data
                 const allData = [...historicalData, ...projectionData];
@@ -1267,21 +1644,42 @@
                 const minValue = Math.min(...allData) * 0.9;
                 const valueRange = maxValue - minValue;
                 
-                // Store data points for hover interaction
+                // Store data points for hover interaction - only for transaction entries
                 chartDataPoints = [];
                 
-                // Calculate x and y positions for all points
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                // Historical data points (transaction entries only)
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    // Use the growth percentage directly from transactionData - exactly as stored, no calculations
+                    // This matches exactly how the transactions table displays it: growth.toFixed(2)
+                    // The growth value is stored as a number (e.g., 5.5 for 5.5%), same as in transactions table
+                    const growth = transactionData && transactionData[index] ? (transactionData[index].growth || 0) : 0;
+                    const growthValue = parseFloat(growth);
+                    const growthPercent = growthValue.toFixed(2);
+                    chartDataPoints.push({
+                        x: x,
+                        y: y,
+                        value: value,
+                        month: months[index] || `M${index + 1}`,
+                        growthPercent: growthPercent,
+                        growthValue: growthValue, // Store the numeric value for sign calculation
+                        isHistorical: true
+                    });
+                });
+                
+                // Projection data points
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     const growthPercent = ((value - initialInvestment) / initialInvestment * 100).toFixed(2);
                     chartDataPoints.push({
                         x: x,
                         y: y,
                         value: value,
-                        month: months[index],
+                        month: months[historicalData.length + index] || `P${index + 1}`,
                         growthPercent: growthPercent,
-                        isHistorical: index < 12
+                        isHistorical: false
                     });
                 });
                 
@@ -1297,41 +1695,44 @@
                 }
                 
                 // Draw area fill below the line (only historical section with gradient)
-                const gradient = ctx.createLinearGradient(
-                    padding.left, 
-                    padding.top, 
-                    padding.left + (chartWidth / 24) * 12, 
-                    padding.top + chartHeight
-                );
-                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
-                gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-                
-                ctx.beginPath();
-                const firstX = padding.left + (chartWidth / 24) / 2;
-                const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
-                ctx.moveTo(firstX, height - padding.bottom);
-                ctx.lineTo(firstX, firstY);
-                
-                // Historical area only
-                historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
-                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    ctx.lineTo(x, y);
-                });
-                
-                // Close at the last historical point
-                const lastHistoricalX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                ctx.lineTo(lastHistoricalX, height - padding.bottom);
-                ctx.closePath();
-                ctx.fillStyle = gradient;
-                ctx.fill();
+                if (historicalData.length > 0) {
+                    const gradient = ctx.createLinearGradient(
+                        padding.left, 
+                        padding.top, 
+                        padding.left + (chartWidth / totalMonths) * historicalData.length, 
+                        padding.top + chartHeight
+                    );
+                    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)');
+                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+                    
+                    ctx.beginPath();
+                    const firstX = padding.left + (chartWidth / totalMonths) / 2;
+                    const firstY = padding.top + chartHeight - ((historicalData[0] - minValue) / valueRange) * chartHeight;
+                    ctx.moveTo(firstX, height - padding.bottom);
+                    ctx.lineTo(firstX, firstY);
+                    
+                    // Historical area only
+                    historicalData.forEach((value, index) => {
+                        const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
+                        const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                        ctx.lineTo(x, y);
+                    });
+                    
+                    // Close at the last historical point
+                    const lastHistoricalIndex = historicalData.length - 1;
+                    const lastHistoricalX = padding.left + (chartWidth / totalMonths) * lastHistoricalIndex + (chartWidth / totalMonths) / 2;
+                    ctx.lineTo(lastHistoricalX, height - padding.bottom);
+                    ctx.closePath();
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                }
                 
                 // Draw historical line
                 ctx.beginPath();
                 ctx.strokeStyle = '#2563eb';
                 ctx.lineWidth = 2.5;
                 historicalData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
                     if (index === 0) {
@@ -1348,13 +1749,14 @@
                 ctx.lineWidth = 2.5;
                 ctx.setLineDash([6, 4]);
                 projectionData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * (12 + index) + (chartWidth / 24) / 2;
+                    const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
                     
                     if (index === 0) {
                         // Connect to last historical point
-                        const lastHistX = padding.left + (chartWidth / 24) * 11 + (chartWidth / 24) / 2;
-                        const lastHistY = padding.top + chartHeight - ((historicalData[11] - minValue) / valueRange) * chartHeight;
+                        const lastHistIndex = historicalData.length - 1;
+                        const lastHistX = padding.left + (chartWidth / totalMonths) * lastHistIndex + (chartWidth / totalMonths) / 2;
+                        const lastHistY = padding.top + chartHeight - ((historicalData[lastHistIndex] - minValue) / valueRange) * chartHeight;
                         ctx.moveTo(lastHistX, lastHistY);
                     }
                     ctx.lineTo(x, y);
@@ -1362,14 +1764,27 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
                 
-                // Draw smaller, more formal data points (blue for historical, green for projection)
-                allData.forEach((value, index) => {
-                    const x = padding.left + (chartWidth / 24) * index + (chartWidth / 24) / 2;
+                // Draw historical data points
+                historicalData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * index + (chartWidth / totalMonths) / 2;
                     const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
-                    const isHistorical = index < 12;
                     
                     ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = isHistorical ? '#2563eb' : '#10b981';
+                    ctx.strokeStyle = '#2563eb';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+                
+                // Draw projection data points
+                projectionData.forEach((value, index) => {
+                    const x = padding.left + (chartWidth / totalMonths) * (historicalData.length + index) + (chartWidth / totalMonths) / 2;
+                    const y = padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#10b981';
                     ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.arc(x, y, 3, 0, Math.PI * 2);
@@ -1392,9 +1807,12 @@
                 // Draw X-axis labels
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                for (let i = 0; i < 24; i += 2) {
-                    const x = padding.left + (chartWidth / 24) * i + (chartWidth / 24) / 2;
-                    ctx.fillText(months[i], x, height - padding.bottom + 10);
+                const labelInterval = Math.max(1, Math.floor(totalMonths / 12)); // Show approximately 12 labels
+                for (let i = 0; i < totalMonths; i += labelInterval) {
+                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
+                    if (months[i]) {
+                        ctx.fillText(months[i], x, height - padding.bottom + 10);
+                    }
                 }
             }
             
@@ -1423,10 +1841,13 @@
                     
                     if (nearestPoint) {
                         const formattedValue = '€' + nearestPoint.value.toLocaleString('en-US');
-                        const growthSign = parseFloat(nearestPoint.growthPercent) >= 0 ? '+' : '';
+                        // Match the exact format from transactions table: ${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%
+                        const growthValue = nearestPoint.growthValue !== undefined ? nearestPoint.growthValue : parseFloat(nearestPoint.growthPercent);
+                        const growthSign = growthValue >= 0 ? '+' : '';
+                        const growthDisplay = growthValue.toFixed(2);
                         tooltip.innerHTML = `
                             <div class="tooltip-balance">${formattedValue}</div>
-                            <div class="tooltip-growth">${growthSign}${nearestPoint.growthPercent}%</div>
+                            <div class="tooltip-growth">${growthSign}${growthDisplay}%</div>
                         `;
                         tooltip.style.display = 'block';
                         tooltip.style.left = (nearestPoint.x + 10) + 'px';
@@ -1443,67 +1864,6 @@
             
             // Setup hover after chart is drawn
             setTimeout(setupChartHover, 150);
-
-            // Store transaction data globally for editing
-            let transactionData = [];
-            
-            // Transactions Table Population
-            function populateTransactionsTable() {
-                const tableBody = document.getElementById('transactions-table-body');
-                if (!tableBody) return;
-
-                // Initialize transaction data if empty
-                if (transactionData.length === 0) {
-                    const initialInvestment = 8500000;
-                    transactionData = [
-                        { month: 'January', year: 2024, starting: 8500000, ending: 8500000, growth: 0, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'February', year: 2024, starting: 8500000, ending: 8700000, growth: 2.35, deposits: 200000, withdrawals: 0, depositDate: '2024-02-15', withdrawalDate: null },
-                        { month: 'March', year: 2024, starting: 8700000, ending: 8800000, growth: 1.15, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'April', year: 2024, starting: 8800000, ending: 8950000, growth: 1.70, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'May', year: 2024, starting: 8950000, ending: 9100000, growth: 1.68, deposits: 150000, withdrawals: 0, depositDate: '2024-05-10', withdrawalDate: null },
-                        { month: 'June', year: 2024, starting: 9100000, ending: 9250000, growth: 1.65, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'July', year: 2024, starting: 9250000, ending: 9400000, growth: 1.62, deposits: 200000, withdrawals: 0, depositDate: '2024-07-20', withdrawalDate: null },
-                        { month: 'August', year: 2024, starting: 9400000, ending: 9550000, growth: 1.60, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'September', year: 2024, starting: 9550000, ending: 9750000, growth: 2.09, deposits: 200000, withdrawals: 0, depositDate: '2024-09-05', withdrawalDate: null },
-                        { month: 'October', year: 2024, starting: 9750000, ending: 9950000, growth: 2.05, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'November', year: 2024, starting: 9950000, ending: 10150000, growth: 2.01, deposits: 0, withdrawals: 0, depositDate: null, withdrawalDate: null },
-                        { month: 'December', year: 2024, starting: 10150000, ending: 10350000, growth: 1.97, deposits: 0, withdrawals: 200000, depositDate: null, withdrawalDate: '2024-12-18' }
-                    ];
-                }
-
-                tableBody.innerHTML = '';
-
-                transactionData.forEach((data, index) => {
-                    const startingBalance = data.starting;
-                    const endingBalance = data.ending;
-                    const growth = data.growth;
-                    const growthValue = parseFloat(growth);
-                    const monthYear = `${data.month} ${data.year}`;
-                    
-                    const row = document.createElement('tr');
-                    row.setAttribute('data-index', index);
-                    
-                    // Format dates
-                    const depositDisplay = data.deposits > 0 && data.depositDate 
-                        ? `€${data.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.depositDate)}</span>`
-                        : data.deposits > 0 ? `€${data.deposits.toLocaleString('en-US')}` : '-';
-                    
-                    const withdrawalDisplay = data.withdrawals > 0 && data.withdrawalDate 
-                        ? `€${data.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(data.withdrawalDate)}</span>`
-                        : data.withdrawals > 0 ? `€${data.withdrawals.toLocaleString('en-US')}` : '-';
-
-                    row.innerHTML = `
-                        <td>${monthYear}</td>
-                        <td>€${startingBalance.toLocaleString('en-US')}</td>
-                        <td>€${endingBalance.toLocaleString('en-US')}</td>
-                        <td class="${growthValue >= 0 ? 'growth-positive' : 'growth-negative'}">${growthValue >= 0 ? '+' : ''}${growth.toFixed(2)}%</td>
-                        <td class="transaction-cell">${depositDisplay}</td>
-                        <td class="transaction-cell">${withdrawalDisplay}</td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-            }
             
             // Transaction Edit Modal Functions
             function openTransactionEditModal(index) {
@@ -2301,29 +2661,208 @@
                 observer.observe(dashboardViewEl, { attributes: true, attributeFilter: ['style'] });
             }
             
-            // Calculate 12-month projection value
-            function calculateProjectionValue() {
-                const projectionValueEl = document.getElementById('dashboard-projection-value');
+            // Update Portfolio Metrics
+            function updatePortfolioMetrics() {
+                if (!transactionData || transactionData.length === 0) {
+                    // Set default values if no data
+                    const capitalInvestedEl = document.getElementById('capital-invested');
+                    const currentBalanceEl = document.getElementById('current-balance');
+                    const totalGainEl = document.getElementById('total-gain');
+                    const portfolioProjectionEl = document.getElementById('portfolio-projection');
+                    
+                    if (capitalInvestedEl) capitalInvestedEl.textContent = '€0';
+                    if (currentBalanceEl) currentBalanceEl.textContent = '€0';
+                    if (totalGainEl) totalGainEl.textContent = '0.00%';
+                    if (portfolioProjectionEl) portfolioProjectionEl.textContent = '€0';
+                    return;
+                }
+                
+                // Calculate total capital invested (sum of all deposits)
+                let totalCapitalInvested = 0;
+                let firstStartingBalance = transactionData[0].starting;
+                
+                // Sum all deposits
+                transactionData.forEach(entry => {
+                    totalCapitalInvested += (entry.deposits || 0);
+                });
+                
+                // Initial capital is the first starting balance
+                totalCapitalInvested += firstStartingBalance;
+                
+                // Get latest final balance (ending balance - withdrawals)
+                const latestEntry = transactionData[transactionData.length - 1];
+                const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                
+                // Calculate total fund gain percentage by summing all transaction growth percentages
+                let totalGain = 0;
+                transactionData.forEach(entry => {
+                    if (entry.growth) {
+                        totalGain += entry.growth;
+                    }
+                });
+                
+                // Calculate 12-month projection based on average monthly growth
+                let projectionValue = currentBalance;
+                if (transactionData.length > 1) {
+                    // Calculate average monthly growth rate
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02; // Default to 2% if no growth data
+                    
+                    // Project 12 months forward with compound growth
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                    }
+                } else {
+                    // If only one entry, use 2% monthly growth as default
+                    const monthlyGrowthRate = 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + monthlyGrowthRate);
+                    }
+                }
+                
+                // Update UI elements
+                const capitalInvestedEl = document.getElementById('capital-invested');
+                const currentBalanceEl = document.getElementById('current-balance');
+                const totalGainEl = document.getElementById('total-gain');
                 const portfolioProjectionEl = document.getElementById('portfolio-projection');
                 
-                // Use same calculation as portfolio chart (2% compound growth per month)
-                const monthlyGrowthRate = 0.02; // 2% per month
-                let balance = 10350000; // Current fund balance (month 12)
+                if (capitalInvestedEl) capitalInvestedEl.textContent = '€' + Math.round(totalCapitalInvested).toLocaleString('en-US');
+                if (currentBalanceEl) currentBalanceEl.textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
+                if (totalGainEl) totalGainEl.textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
+                if (portfolioProjectionEl) portfolioProjectionEl.textContent = '€' + Math.round(projectionValue).toLocaleString('en-US');
+            }
+            
+            // Update Dashboard Metrics based on transaction data
+            function updateDashboardMetrics() {
+                if (!transactionData || transactionData.length === 0) {
+                    // Set default values if no data
+                    const dashboardBalanceEl = document.getElementById('dashboard-current-balance');
+                    const dashboardGainEl = document.getElementById('dashboard-total-gain');
+                    const dashboardProjectionEl = document.getElementById('dashboard-projection-value');
+                    if (dashboardBalanceEl) dashboardBalanceEl.textContent = '€0';
+                    if (dashboardGainEl) dashboardGainEl.textContent = '0.00%';
+                    if (dashboardProjectionEl) dashboardProjectionEl.textContent = '€0';
+                    return;
+                }
+                
+                // Get latest final balance (ending balance - withdrawals)
+                const latestEntry = transactionData[transactionData.length - 1];
+                const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                
+                // Calculate total capital invested
+                let totalCapitalInvested = 0;
+                const firstStartingBalance = transactionData[0].starting;
+                transactionData.forEach(entry => {
+                    totalCapitalInvested += (entry.deposits || 0);
+                });
+                totalCapitalInvested += firstStartingBalance;
+                
+                // Calculate total fund gain percentage by summing all transaction growth percentages
+                let totalGain = 0;
+                transactionData.forEach(entry => {
+                    if (entry.growth) {
+                        totalGain += entry.growth;
+                    }
+                });
+                
+                // Calculate 12-month projection
+                let projectionValue = currentBalance;
+                if (transactionData.length > 1) {
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    const avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + avgMonthlyGrowth);
+                    }
+                } else {
+                    const monthlyGrowthRate = 0.02;
+                    for (let i = 0; i < 12; i++) {
+                        projectionValue = projectionValue * (1 + monthlyGrowthRate);
+                    }
+                }
+                
+                // Update dashboard widgets
+                const dashboardBalanceEl = document.getElementById('dashboard-current-balance');
+                const dashboardGainEl = document.getElementById('dashboard-total-gain');
+                const dashboardProjectionEl = document.getElementById('dashboard-projection-value');
+                
+                if (dashboardBalanceEl) {
+                    dashboardBalanceEl.textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
+                }
+                if (dashboardGainEl) {
+                    dashboardGainEl.textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
+                    // Update profit text
+                    const profit = currentBalance - totalCapitalInvested;
+                    const profitElement = dashboardGainEl.nextElementSibling;
+                    if (profitElement && profitElement.classList.contains('dashboard-sub-metric')) {
+                        profitElement.textContent = '€' + Math.round(profit).toLocaleString('en-US') + ' profit';
+                    }
+                }
+                
+                // Update capital invested text
+                const dashboardCapitalEl = document.querySelector('#dashboard-view .dashboard-widget[style*="grid-column: 2"] .dashboard-sub-metric');
+                if (dashboardCapitalEl) {
+                    dashboardCapitalEl.textContent = 'Capital Invested: €' + Math.round(totalCapitalInvested).toLocaleString('en-US');
+                }
+                if (dashboardProjectionEl) {
+                    dashboardProjectionEl.textContent = '€' + Math.round(projectionValue).toLocaleString('en-US');
+                }
+            }
+            
+            // Calculate 12-month projection value (for dashboard)
+            function calculateProjectionValue() {
+                const projectionValueEl = document.getElementById('dashboard-projection-value');
+                
+                if (!transactionData || transactionData.length === 0) {
+                    if (projectionValueEl) {
+                        projectionValueEl.textContent = '€0';
+                    }
+                    return;
+                }
+                
+                // Get latest final balance (ending balance - withdrawals)
+                const latestEntry = transactionData[transactionData.length - 1];
+                let currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                
+                // Calculate average monthly growth rate
+                let avgMonthlyGrowth = 0.02; // Default to 2%
+                if (transactionData.length > 1) {
+                    let totalGrowth = 0;
+                    let growthCount = 0;
+                    transactionData.forEach(entry => {
+                        if (entry.growth && entry.growth !== 0) {
+                            totalGrowth += entry.growth;
+                            growthCount++;
+                        }
+                    });
+                    avgMonthlyGrowth = growthCount > 0 ? (totalGrowth / growthCount) / 100 : 0.02;
+                }
                 
                 // Calculate 12 months forward
                 for (let i = 0; i < 12; i++) {
-                    balance = balance * (1 + monthlyGrowthRate);
+                    currentBalance = currentBalance * (1 + avgMonthlyGrowth);
                 }
                 
                 // Round to whole number and format
-                const projectedValue = Math.round(balance);
+                const projectedValue = Math.round(currentBalance);
                 const formattedValue = '€' + projectedValue.toLocaleString('en-US');
                 
                 if (projectionValueEl) {
                     projectionValueEl.textContent = formattedValue;
-                }
-                if (portfolioProjectionEl) {
-                    portfolioProjectionEl.textContent = formattedValue;
                 }
             }
             
@@ -3400,106 +3939,226 @@
                 }
             }, 100);
             
-            // News Edit Functions
-            let newsData = [
-                { title: 'OPEC+ Maintains Production Cuts Amid Global Demand Concerns', link: 'https://www.reuters.com/business/energy/opec-maintains-production-cuts-global-demand-concerns-2025-01-15/', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: 'Crude Oil Prices Rally on Middle East Tensions', link: 'https://www.bloomberg.com/news/articles/2025-01-12/oil-prices-rally-middle-east-tensions', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop' },
-                { title: 'US Shale Production Hits Record High Despite Lower Prices', link: 'https://www.wsj.com/articles/us-shale-production-record-high-2025-01-10', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop' },
-                { title: "China's Oil Demand Growth Slows in Q4 2024", link: 'https://www.ft.com/content/china-oil-demand-slowdown-q4-2024', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=400&fit=crop' }
-            ];
+            // Market News Functions
+            let newsData = [];
             
-            function updateNewsDisplay() {
-                newsData.forEach((news, index) => {
-                    const wrapper = document.querySelector(`[data-news-index="${index}"]`);
-                    if (wrapper) {
-                        const link = wrapper.querySelector('.news-card');
-                        const img = wrapper.querySelector('.news-image');
-                        const title = wrapper.querySelector('.news-title');
-                        link.href = news.link;
-                        img.src = news.image;
-                        img.alt = news.title;
-                        title.textContent = news.title;
+            async function loadMarketNews() {
+                const container = document.getElementById('news-grid');
+                if (!container) return;
+                
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading news...</div>';
+                
+                try {
+                    if (window.firestoreService) {
+                        newsData = await window.firestoreService.getAllNews();
+                        console.log('News loaded from Firestore:', newsData.length);
+                    } else {
+                        console.warn('Firestore service not available');
+                        newsData = [];
                     }
+                } catch (error) {
+                    console.error('Error loading news:', error);
+                    newsData = [];
+                }
+                
+                container.innerHTML = '';
+                
+                if (newsData.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No news articles found.</p><p style="margin: 0; font-size: 0.875rem;">Click "Add New Article" button above to create your first article.</p></div>';
+                    return;
+                }
+                
+                newsData.forEach((news, index) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'news-card-wrapper';
+                    wrapper.setAttribute('data-news-id', news.id);
+                    wrapper.innerHTML = `
+                        <a href="${news.link}" target="_blank" rel="noopener noreferrer" class="news-card">
+                            <div class="news-image-container">
+                                <img src="${news.image}" alt="${news.title}" class="news-image" />
+                                <h3 class="news-title">${news.title}</h3>
+                            </div>
+                        </a>
+                        <button class="news-edit-btn" onclick="openNewsEditModal('${news.id}')">Edit</button>
+                    `;
+                    container.appendChild(wrapper);
                 });
             }
             
-            // News edit button handlers - initialize after DOM is ready
-            function initNewsEditButtons() {
-                document.querySelectorAll('.news-edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const index = parseInt(this.getAttribute('data-news-index'));
-                        openNewsEditModal(index);
-                    });
-                });
-            }
-            
-            // Initialize news edit buttons when market news view is shown
-            const marketNewsView = document.getElementById('market-news-view');
-            if (marketNewsView) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            if (marketNewsView.style.display !== 'none') {
-                                setTimeout(initNewsEditButtons, 100);
-                            }
-                        }
-                    });
-                });
-                observer.observe(marketNewsView, { attributes: true, attributeFilter: ['style'] });
-            }
-            
-            // Also initialize on page load if view is visible
-            if (marketNewsView && marketNewsView.style.display !== 'none') {
-                setTimeout(initNewsEditButtons, 100);
-            }
-            
-            function openNewsEditModal(index) {
-                const news = newsData[index];
+            function openNewsEditModal(newsId) {
+                const news = newsData.find(n => n.id === newsId);
+                if (!news) return;
+                
                 const modal = document.getElementById('news-edit-modal');
+                if (!modal) {
+                    console.error('News edit modal not found');
+                    return;
+                }
+                document.getElementById('news-modal-title').textContent = 'Edit News Article';
                 document.getElementById('edit-news-title').value = news.title;
                 document.getElementById('edit-news-link').value = news.link;
                 document.getElementById('edit-news-image').value = news.image;
-                modal.setAttribute('data-edit-index', index);
+                document.getElementById('edit-news-order').value = news.order || 0;
+                // Show delete button
+                const deleteBtn = document.getElementById('delete-news-btn');
+                if (deleteBtn) deleteBtn.style.display = 'inline-block';
+                modal.setAttribute('data-edit-id', newsId);
+                modal.removeAttribute('data-add-mode');
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
             
-            function closeNewsEditModal() {
-                document.getElementById('news-edit-modal').style.display = 'none';
-                document.body.style.overflow = '';
+            function openAddNewsModal() {
+                const modal = document.getElementById('news-edit-modal');
+                if (!modal) {
+                    console.error('News edit modal not found');
+                    return;
+                }
+                document.getElementById('news-modal-title').textContent = 'Add New Article';
+                document.getElementById('news-edit-form').reset();
+                document.getElementById('edit-news-order').value = newsData.length;
+                // Hide delete button
+                const deleteBtn = document.getElementById('delete-news-btn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                modal.removeAttribute('data-edit-id');
+                modal.setAttribute('data-add-mode', 'true');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
             }
+            
+            window.openAddNewsModal = openAddNewsModal;
+            
+            function closeNewsEditModal() {
+                const modal = document.getElementById('news-edit-modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Delete news function
+            async function deleteNews() {
+                const modal = document.getElementById('news-edit-modal');
+                const newsId = modal.getAttribute('data-edit-id');
+                
+                if (!newsId) {
+                    console.error('News ID not found for deletion');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to delete this news article? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    if (window.firestoreService) {
+                        await window.firestoreService.deleteNews(newsId);
+                        closeNewsEditModal();
+                        await loadMarketNews();
+                    } else {
+                        alert('Firestore service not available. Please refresh the page.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting news:', error);
+                    alert('Error deleting news: ' + error.message);
+                }
+            }
+            
+            window.deleteNews = deleteNews;
             
             // News edit form handler
             const newsEditForm = document.getElementById('news-edit-form');
             if (newsEditForm) {
-                newsEditForm.addEventListener('submit', function(e) {
+                newsEditForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const index = parseInt(document.getElementById('news-edit-modal').getAttribute('data-edit-index'));
-                    newsData[index].title = document.getElementById('edit-news-title').value;
-                    newsData[index].link = document.getElementById('edit-news-link').value;
-                    newsData[index].image = document.getElementById('edit-news-image').value;
-                    updateNewsDisplay();
-                    closeNewsEditModal();
+                    const modal = document.getElementById('news-edit-modal');
+                    const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                    
+                    const submitBtn = newsEditForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = isAddMode ? 'Creating...' : 'Saving...';
+                    
+                    try {
+                        const formData = {
+                            title: document.getElementById('edit-news-title').value.trim(),
+                            link: document.getElementById('edit-news-link').value.trim(),
+                            image: document.getElementById('edit-news-image').value.trim(),
+                            order: parseInt(document.getElementById('edit-news-order').value) || 0
+                        };
+                        
+                        if (isAddMode) {
+                            if (window.firestoreService) {
+                                await window.firestoreService.createNews(formData);
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        } else {
+                            const newsId = modal.getAttribute('data-edit-id');
+                            if (!newsId) {
+                                alert('Error: News ID not found');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                            
+                            if (window.firestoreService) {
+                                await window.firestoreService.updateNews(newsId, formData);
+                            } else {
+                                alert('Firestore service not available. Please refresh the page.');
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = originalText;
+                                return;
+                            }
+                        }
+                        
+                        closeNewsEditModal();
+                        await loadMarketNews();
+                        
+                    } catch (error) {
+                        console.error('Error saving news:', error);
+                        alert('Error saving news: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 });
             }
             
-            // Consultations Section
-            let consultationsData = [
-                { id: 1, name: 'John Doe', email: 'john.doe@example.com', date: '2025-01-15', status: 'pending', topic: 'Investment Strategy Consultation' },
-                { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', date: '2025-01-14', status: 'done', topic: 'Portfolio Review' },
-                { id: 3, name: 'Robert Johnson', email: 'robert.j@example.com', date: '2025-01-16', status: 'pending', topic: 'Risk Assessment' },
-                { id: 4, name: 'Emily Davis', email: 'emily.davis@example.com', date: '2025-01-13', status: 'done', topic: 'Market Analysis' },
-                { id: 5, name: 'Michael Wilson', email: 'michael.w@example.com', date: '2025-01-17', status: 'pending', topic: 'Financial Planning' }
-            ];
+            // News modal close handlers
+            const newsModal = document.getElementById('news-edit-modal');
+            if (newsModal) {
+                newsModal.querySelector('.admin-modal-close')?.addEventListener('click', closeNewsEditModal);
+                newsModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeNewsEditModal);
+                document.getElementById('cancel-news-edit')?.addEventListener('click', closeNewsEditModal);
+            }
             
+            // Consultations Section
+            let consultationsData = [];
             let selectedConsultationId = null;
             let currentFilter = 'all';
             
-            function loadConsultationsList() {
+            async function loadConsultationsList() {
                 const container = document.getElementById('consultations-grid');
                 if (!container) return;
+                
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 2rem;">Loading consultations...</div>';
+                
+                try {
+                    // Load consultations from Firestore
+                    if (window.firestoreService) {
+                        consultationsData = await window.firestoreService.getAllConsultations();
+                    } else {
+                        console.warn('Firestore service not available');
+                        consultationsData = [];
+                    }
+                } catch (error) {
+                    console.error('Error loading consultations:', error);
+                    consultationsData = [];
+                }
                 
                 container.innerHTML = '';
                 
@@ -3527,15 +4186,26 @@
                     const statusClass = consultation.status === 'pending' ? 'consultation-status-pending' : 'consultation-status-done';
                     const statusText = consultation.status === 'pending' ? 'Pending' : 'Done';
                     
+                    // Format date and time
+                    const dateStr = consultation.date || '';
+                    const timeStr = consultation.time || '';
+                    const formattedDate = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) : 'Date not set';
+                    const consultationTopic = consultation.consultationTopicDisplay || consultation.consultationTopic || 'Not specified';
+                    
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <h3 style="margin: 0; font-size: 1.125rem; color: #1f2937;">${consultation.name}</h3>
+                            <h3 style="margin: 0; font-size: 1.125rem; color: #1f2937;">${consultation.fullName || 'Unknown'}</h3>
                             <span class="consultation-status ${statusClass}">${statusText}</span>
                         </div>
                         <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
-                            <p style="margin: 0.25rem 0;"><strong>Email:</strong> ${consultation.email}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${new Date(consultation.date).toLocaleDateString()}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Topic:</strong> ${consultation.topic}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Email:</strong> ${consultation.email || 'N/A'}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${formattedDate}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Time:</strong> ${timeStr || 'Not set'}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Consultation:</strong> ${consultationTopic}</p>
                         </div>
                     `;
                     
@@ -3560,9 +4230,18 @@
                 const consultation = consultationsData.find(c => c.id === id);
                 if (consultation) {
                     const infoDiv = document.getElementById('selected-consultation-info');
+                    const dateStr = consultation.date || '';
+                    const timeStr = consultation.time || '';
+                    const formattedDate = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) : 'Date not set';
+                    const consultationTopic = consultation.consultationTopicDisplay || consultation.consultationTopic || 'Not specified';
+                    
                     infoDiv.innerHTML = `
-                        <strong>${consultation.name}</strong> - ${consultation.email}<br>
-                        <span style="font-size: 0.875rem; color: #6b7280;">${consultation.topic} (${new Date(consultation.date).toLocaleDateString()})</span>
+                        <strong>${consultation.fullName || 'Unknown'}</strong> - ${consultation.email || 'N/A'}<br>
+                        <span style="font-size: 0.875rem; color: #6b7280;">${consultationTopic} - ${formattedDate} at ${timeStr || 'TBD'}</span>
                     `;
                     document.getElementById('send-email-section').style.display = 'block';
                 }
@@ -3834,6 +4513,125 @@
                     // Dashboard widgets resized
                 }, 250);
             });
+            
+            // Admin Profile Picture Functions
+            function loadAdminProfilePicture(profilePictureUrl) {
+                const profileImg = document.getElementById('admin-profile-picture-img');
+                const placeholder = document.getElementById('admin-profile-picture-placeholder');
+                
+                if (profilePictureUrl && profilePictureUrl.trim() !== '') {
+                    profileImg.src = profilePictureUrl;
+                    profileImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    profileImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Load admin profile picture from separate admin sessionStorage key (unique to adminportal3)
+            const adminProfilePicture = sessionStorage.getItem('adminProfilePicture3');
+            if (adminProfilePicture) {
+                try {
+                    loadAdminProfilePicture(adminProfilePicture);
+                } catch (error) {
+                    console.error('Error loading admin profile picture:', error);
+                }
+            }
+            
+            // Setup admin profile picture upload
+            const adminProfileContainer = document.getElementById('admin-profile-picture-container');
+            const adminProfileInput = document.getElementById('admin-profile-picture-input');
+            const adminProfileOverlay = adminProfileContainer?.querySelector('.profile-picture-upload-overlay');
+            
+            if (adminProfileContainer && adminProfileInput) {
+                // Show overlay on hover
+                adminProfileContainer.addEventListener('mouseenter', function() {
+                    if (adminProfileOverlay) adminProfileOverlay.style.display = 'flex';
+                });
+                
+                adminProfileContainer.addEventListener('mouseleave', function() {
+                    if (adminProfileOverlay) adminProfileOverlay.style.display = 'none';
+                });
+                
+                // Click to upload
+                adminProfileContainer.addEventListener('click', function() {
+                    adminProfileInput.click();
+                });
+                
+                // Handle file selection
+                adminProfileInput.addEventListener('change', async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    try {
+                        // Show loading state - use spinner
+                        const profileImg = document.getElementById('admin-profile-picture-img');
+                        const placeholder = document.getElementById('admin-profile-picture-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = '<div style="width: 20px; height: 20px; border: 2px solid #6b7280; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>';
+                            placeholder.style.opacity = '0.7';
+                        }
+                        
+                        // Convert image to base64 data URL (avoids Storage CORS issues)
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const base64DataUrl = e.target.result;
+                                
+                                // Store admin profile picture in separate sessionStorage key (unique to adminportal3)
+                                sessionStorage.setItem('adminProfilePicture3', base64DataUrl);
+                                
+                                // Update display
+                                loadAdminProfilePicture(base64DataUrl);
+                                
+                                // Reset placeholder opacity
+                                if (placeholder) {
+                                    placeholder.style.opacity = '1';
+                                }
+                                
+                                console.log('Admin profile picture updated successfully');
+                            } catch (error) {
+                                console.error('Error saving admin profile picture:', error);
+                                alert('Error saving profile picture: ' + error.message);
+                                if (placeholder) {
+                                    placeholder.innerHTML = '<span>👤</span>';
+                                    placeholder.style.opacity = '1';
+                                }
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('Error reading file:', error);
+                            alert('Error reading image file.');
+                            if (placeholder) {
+                                placeholder.innerHTML = '<span>👤</span>';
+                                placeholder.style.opacity = '1';
+                            }
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error processing profile picture:', error);
+                        alert('Error processing profile picture: ' + error.message);
+                    }
+                    
+                    // Reset input
+                    adminProfileInput.value = '';
+                });
+            }
     });
     </script>
 </body>
