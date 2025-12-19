@@ -6,6 +6,10 @@
     <title>Admin Portal 2 - Opessocius</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         /* Admin Modal Styles */
         .admin-modal {
             position: fixed;
@@ -181,6 +185,14 @@
             background: #fee2e2;
             color: #991b1b;
         }
+        .investor-status-phase1 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .investor-status-phase2 {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
         .investor-card-body p {
             margin: 0.5rem 0;
             color: #6b7280;
@@ -206,8 +218,17 @@
     <section class="user-dashboard" id="user-dashboard">
         <div class="dashboard-sidebar">
             <div class="sidebar-profile">
-                <img src="images/diegorequena.JPG" alt="Admin Profile" class="sidebar-profile-image" />
-                <div class="sidebar-profile-name">Admin</div>
+                <div class="sidebar-profile-image-container" id="admin2-profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
+                    <img src="" alt="Profile Picture" class="sidebar-profile-image" id="admin2-profile-picture-img" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" />
+                    <div class="profile-picture-placeholder" id="admin2-profile-picture-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 2rem; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <span>👤</span>
+                    </div>
+                    <div class="profile-picture-upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 0.75rem; text-align: center; padding: 0.5rem; cursor: pointer;">
+                        Click to upload
+                    </div>
+                </div>
+                <input type="file" id="admin2-profile-picture-input" accept="image/*" style="display: none;" />
+                <div class="sidebar-profile-name" id="sidebar-profile-name">Admin</div>
             </div>
             <nav class="sidebar-navigation">
                 <a href="#" class="sidebar-nav-item active">
@@ -589,9 +610,8 @@
                                     <tr>
                                         <th>Month</th>
                                         <th>Starting Balance</th>
-                                        <th>Ending Balance</th>
+                                        <th>Ending Balance of Month</th>
                                         <th>Growth %</th>
-                                        <th>Deposits</th>
                                         <th>Withdrawals</th>
                                     </tr>
                                 </thead>
@@ -657,6 +677,10 @@
             <div class="account-settings-view" id="account-settings-view" style="display: none;">
                 <div class="account-settings-content">
                     <div class="users-list-container">
+                        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Account Management</h2>
+                            <button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.75rem 1.5rem; font-size: 1rem;">+ Add New Account</button>
+                        </div>
                         <div class="users-grid" id="users-grid">
                             <!-- Admin widget will be added first, then users -->
                         </div>
@@ -696,7 +720,7 @@
                             </div>
                             <div class="admin-form-group">
                                 <label for="edit-user-member-since">Initiation Date</label>
-                                <input type="text" id="edit-user-member-since" class="admin-form-input" required>
+                                <input type="date" id="edit-user-member-since" class="admin-form-input" required>
                             </div>
 
                             <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Investment Details</h3>
@@ -710,6 +734,7 @@
                             </div>
                             <div class="admin-form-actions">
                                 <button type="button" class="admin-btn-cancel" id="cancel-user-edit">Cancel</button>
+                                <button type="button" class="admin-btn-delete" id="delete-user-btn" style="display: none; background-color: #dc2626; color: white; margin-right: auto; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Delete Account</button>
                                 <button type="submit" class="admin-btn-save">Save Changes</button>
                             </div>
                         </form>
@@ -747,16 +772,19 @@
         // Initialize services
         const db = firebase.firestore();
         const auth = firebase.auth();
+        const storage = firebase.storage();
         const analytics = firebase.analytics();
         
         // Make available globally
         window.firebaseDb = db;
         window.firebaseAuth = auth;
+        window.firebaseStorage = storage;
         window.firebaseAnalytics = analytics;
         window.firebase = firebase;
     </script>
     
     <script src="script.js"></script>
+    <script src="firestore-service-admin2.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Navigation handling
@@ -2420,47 +2448,92 @@
             }
             
             // Funded Accounts List Functions
-            let investorsData = [
-                { id: 1, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', initial: 230000, balance: 287450, status: 'Active' },
-                { id: 2, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', initial: 150000, balance: 187500, status: 'Active' },
-                { id: 3, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', initial: 500000, balance: 625000, status: 'Active' },
-                { id: 4, name: 'Emma Wilson', email: 'emma.wilson@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', initial: 100000, balance: 125000, status: 'Active' },
-                { id: 5, name: 'David Johnson', email: 'david.johnson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', initial: 80000, balance: 96000, status: 'Active' }
-            ];
+            let investorsData = [];
             
             // Funded Account Performance Data - stores performance entries for each funded account
+            // Structure: { accountId: [performance entries] }
             let investorPerformanceData = {};
             
-            function loadInvestorsList() {
+            async function loadInvestorsList() {
                 const container = document.getElementById('investors-grid');
                 if (!container) return;
                 
-                container.innerHTML = '';
-                investorsData.forEach(investor => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const returnPercent = ((investor.balance - investor.initial) / investor.initial * 100).toFixed(2);
-                    const performanceCount = investorPerformanceData[investor.id] ? investorPerformanceData[investor.id].length : 0;
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${investor.name}</h3>
-                            <span class="investor-status investor-status-${investor.status.toLowerCase()}">${investor.status}</span>
-                        </div>
-                        <div class="investor-card-body">
-                            <p><strong>Email:</strong> ${investor.email}</p>
-                            <p><strong>Account:</strong> ${investor.account}</p>
-                            <p><strong>Initial Investment:</strong> €${investor.initial.toLocaleString('en-US')}</p>
-                            <p><strong>Current Balance:</strong> €${investor.balance.toLocaleString('en-US')}</p>
-                            <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            <p><strong>Performance Entries:</strong> ${performanceCount}</p>
-                        </div>
-                        <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
-                            <button class="admin-btn-save" onclick="openInvestorPerformanceModal(${investor.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
-                            <button class="admin-btn-view" onclick="viewInvestorPerformance(${investor.id})">View History</button>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading accounts...</div>';
+                
+                try {
+                    // Load accounts from Firestore (same collection as Account Settings)
+                    if (!window.admin2FirestoreService) {
+                        throw new Error('Admin2 Firestore service not loaded');
+                    }
+                    
+                    const firestoreAccounts = await window.admin2FirestoreService.getAllAdmin2Accounts();
+                    investorsData = firestoreAccounts.map(account => {
+                        const formatted = window.admin2FirestoreService.formatAccountForAdminPortal2(account);
+                        return {
+                            id: formatted.id,
+                            name: formatted.name,
+                            email: formatted.email,
+                            phone: formatted.phone,
+                            account: formatted.account,
+                            initial: formatted.initial,
+                            balance: formatted.balance,
+                            status: formatted.status,
+                            type: formatted.type
+                        };
+                    });
+                    
+                    container.innerHTML = '';
+                    
+                    if (investorsData.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No accounts found.</p><p style="margin: 0; font-size: 0.875rem;">Add accounts in Account Settings to track their performance.</p></div>';
+                    } else {
+                        investorsData.forEach(investor => {
+                            const card = document.createElement('div');
+                            card.className = 'investor-card';
+                            const returnPercent = investor.initial > 0 ? ((investor.balance - investor.initial) / investor.initial * 100).toFixed(2) : '0.00';
+                            const performanceCount = investorPerformanceData[investor.id] ? investorPerformanceData[investor.id].length : 0;
+                            
+                            // Map status to CSS class
+                            let statusClass = 'investor-status-active';
+                            const statusLower = (investor.status || 'Active').toLowerCase().replace(/\s+/g, '');
+                            if (statusLower === 'phase1' || statusLower === 'phase 1') {
+                                statusClass = 'investor-status-phase1';
+                            } else if (statusLower === 'phase2' || statusLower === 'phase 2') {
+                                statusClass = 'investor-status-phase2';
+                            } else if (statusLower === 'inactive') {
+                                statusClass = 'investor-status-inactive';
+                            } else {
+                                statusClass = 'investor-status-active';
+                            }
+                            
+                            const returnClass = parseFloat(returnPercent) >= 0 ? 'return-positive' : 'return-negative';
+                            const returnSign = parseFloat(returnPercent) >= 0 ? '+' : '';
+                            
+                            card.innerHTML = `
+                                <div class="investor-card-header" style="position: relative;">
+                                    <h3>${investor.name || 'Unnamed Account'}</h3>
+                                    <span class="investor-status ${statusClass}" style="position: absolute; top: 0; right: 0;">${investor.status}</span>
+                                </div>
+                                <div class="investor-card-body">
+                                    <p><strong>Email:</strong> ${investor.email || 'N/A'}</p>
+                                    <p><strong>Account:</strong> ${investor.account || 'N/A'}</p>
+                                    <p><strong>Initial Investment:</strong> €${(investor.initial || 0).toLocaleString('en-US')}</p>
+                                    <p><strong>Current Balance:</strong> €${(investor.balance || 0).toLocaleString('en-US')}</p>
+                                    <p><strong>Return:</strong> <span class="${returnClass}">${returnSign}${returnPercent}%</span></p>
+                                    <p><strong>Performance Entries:</strong> ${performanceCount}</p>
+                                </div>
+                                <div class="investor-card-actions" style="display: flex; gap: 0.5rem;">
+                                    <button class="admin-btn-save" onclick="openInvestorPerformanceModal('${investor.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Add Performance</button>
+                                    <button class="admin-btn-view" onclick="viewInvestorPerformance('${investor.id}')">View History</button>
+                                </div>
+                            `;
+                            container.appendChild(card);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading investors list:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc2626;">Error loading accounts: ' + error.message + '</div>';
+                }
             }
             
             function openInvestorPerformanceModal(investorId) {
@@ -2491,7 +2564,7 @@
                 const performanceEntries = investorPerformanceData[investorId] || [];
                 
                 if (performanceEntries.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #6b7280;">No performance entries yet</td></tr>';
                 } else {
                     tableBody.innerHTML = '';
                     let currentBalance = investor.initial;
@@ -2504,14 +2577,15 @@
                     });
                     
                     performanceEntries.forEach((entry, index) => {
+                        // Starting balance is the ending balance from the previous month (or initial investment for first entry)
                         const startingBalance = index === 0 ? investor.initial : currentBalance;
-                        const endingBalance = startingBalance * (1 + entry.growth / 100) + (entry.deposits || 0) - (entry.withdrawals || 0);
+                        // Ending balance calculation: starting balance + growth - withdrawals
+                        // Note: deposits are not included in the calculation as per user request
+                        const endingBalance = startingBalance * (1 + entry.growth / 100) - (entry.withdrawals || 0);
+                        // This ending balance becomes the starting balance for the next month
                         currentBalance = endingBalance;
                         
                         const row = document.createElement('tr');
-                        const depositDisplay = entry.deposits > 0 && entry.depositDate
-                            ? `€${entry.deposits.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.depositDate)}</span>`
-                            : entry.deposits > 0 ? `€${entry.deposits.toLocaleString('en-US')}` : '-';
                         const withdrawalDisplay = entry.withdrawals > 0 && entry.withdrawalDate
                             ? `€${entry.withdrawals.toLocaleString('en-US')}<br><span class="transaction-date">${formatDate(entry.withdrawalDate)}</span>`
                             : entry.withdrawals > 0 ? `€${entry.withdrawals.toLocaleString('en-US')}` : '-';
@@ -2521,7 +2595,6 @@
                             <td>€${startingBalance.toLocaleString('en-US')}</td>
                             <td>€${endingBalance.toLocaleString('en-US')}</td>
                             <td class="${entry.growth >= 0 ? 'growth-positive' : 'growth-negative'}">${entry.growth >= 0 ? '+' : ''}${entry.growth.toFixed(2)}%</td>
-                            <td class="transaction-cell">${depositDisplay}</td>
                             <td class="transaction-cell">${withdrawalDisplay}</td>
                         `;
                         tableBody.appendChild(row);
@@ -2545,7 +2618,12 @@
             if (investorPerformanceForm) {
                 investorPerformanceForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    const investorId = parseInt(document.getElementById('investor-performance-modal').getAttribute('data-investor-id'));
+                    const investorId = document.getElementById('investor-performance-modal').getAttribute('data-investor-id');
+                    
+                    if (!investorId) {
+                        alert('Error: Account ID not found.');
+                        return;
+                    }
                     
                     if (!investorPerformanceData[investorId]) {
                         investorPerformanceData[investorId] = [];
@@ -2562,25 +2640,39 @@
                     };
                     
                     investorPerformanceData[investorId].push(entry);
+                    
+                    // Update account balance in Firestore
+                    const investor = investorsData.find(inv => inv.id === investorId);
+                    if (investor && window.admin2FirestoreService) {
+                        // Calculate new balance: current balance + growth - withdrawals
+                        // Note: deposits are not included in balance calculation
+                        const currentBalance = investor.balance || investor.initial || 0;
+                        const newBalance = currentBalance * (1 + entry.growth / 100) - (entry.withdrawals || 0);
+                        
+                        // Update in Firestore
+                        window.admin2FirestoreService.updateAdmin2AccountBalance(investorId, newBalance).catch(err => {
+                            console.error('Error updating account balance:', err);
+                        });
+                    }
+                    
                     loadInvestorsList();
                     closeInvestorPerformanceModal();
-                    alert('Performance entry added successfully!');
                 });
             }
             
             function openInvestorEditModal(id) {
-                const investor = investorsData.find(inv => inv.id === id);
+                const investor = investorsData.find(inv => inv.id === id || inv.id === String(id));
                 if (!investor) return;
                 
                 const modal = document.getElementById('investor-edit-modal');
-                document.getElementById('edit-investor-name').value = investor.name;
-                document.getElementById('edit-investor-email').value = investor.email;
-                document.getElementById('edit-investor-phone').value = investor.phone;
-                document.getElementById('edit-investor-account').value = investor.account;
-                document.getElementById('edit-investor-initial').value = investor.initial;
-                document.getElementById('edit-investor-balance').value = investor.balance;
-                document.getElementById('edit-investor-status').value = investor.status;
-                modal.setAttribute('data-edit-id', id);
+                document.getElementById('edit-investor-name').value = investor.name || '';
+                document.getElementById('edit-investor-email').value = investor.email || '';
+                document.getElementById('edit-investor-phone').value = investor.phone || '';
+                document.getElementById('edit-investor-account').value = investor.account || '';
+                document.getElementById('edit-investor-initial').value = investor.initial || 0;
+                document.getElementById('edit-investor-balance').value = investor.balance || 0;
+                document.getElementById('edit-investor-status').value = investor.status || 'Active';
+                modal.setAttribute('data-edit-id', investor.id);
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -2598,8 +2690,8 @@
             if (investorEditForm) {
                 investorEditForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    const id = parseInt(document.getElementById('investor-edit-modal').getAttribute('data-edit-id'));
-                    const investor = investorsData.find(inv => inv.id === id);
+                    const id = document.getElementById('investor-edit-modal').getAttribute('data-edit-id');
+                    const investor = investorsData.find(inv => inv.id === id || inv.id === String(id));
                     if (investor) {
                         investor.name = document.getElementById('edit-investor-name').value;
                         investor.email = document.getElementById('edit-investor-email').value;
@@ -2629,96 +2721,155 @@
             
             
             // Users List Functions
-            let usersData = [
-                { id: 1, name: 'Admin', email: 'admin@opessocius.com', phone: '+34 123 456 789', account: 'ADMIN-2024-000001', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 0, balance: 0, return: 0, strategy: 'N/A', operator: 'admin@opessocius.com', type: 'admin' },
-                { id: 2, name: 'John Investor', email: 'john.investor@example.com', phone: '+34 123 456 789', account: 'ACC-2024-001234', status: 'Active', country: 'Spain', memberSince: 'January 2024', initial: 230000, balance: 287450, return: 24.98, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 3, name: 'Sarah Smith', email: 'sarah.smith@example.com', phone: '+34 234 567 890', account: 'ACC-2024-001235', status: 'Active', country: 'Spain', memberSince: 'February 2024', initial: 150000, balance: 187500, return: 25.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 4, name: 'Michael Brown', email: 'michael.brown@example.com', phone: '+34 345 678 901', account: 'ACC-2024-001236', status: 'Active', country: 'Spain', memberSince: 'March 2024', initial: 187500, balance: 187500, return: 0, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                // Additional investors for Payment Tracking widget
-                { id: 5, name: 'Elena Martínez', email: 'elena.martinez@example.com', phone: '+34 456 789 012', account: 'ACC-2024-001237', status: 'Active', country: 'Spain', memberSince: 'April 2024', initial: 120000, balance: 144000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 6, name: 'David Wilson', email: 'david.wilson@example.com', phone: '+34 567 890 123', account: 'ACC-2024-001238', status: 'Active', country: 'Spain', memberSince: 'May 2024', initial: 160000, balance: 192000, return: 20.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 7, name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+39 345 678 901', account: 'ACC-2024-001239', status: 'Active', country: 'Italy', memberSince: 'June 2024', initial: 200000, balance: 210000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 },
-                { id: 8, name: 'Lukas Schneider', email: 'lukas.schneider@example.com', phone: '+49 160 123 4567', account: 'ACC-2024-001240', status: 'Active', country: 'Germany', memberSince: 'July 2024', initial: 175000, balance: 189000, return: 8.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 4 },
-                { id: 9, name: 'Sofia Novak', email: 'sofia.novak@example.com', phone: '+420 777 123 456', account: 'ACC-2024-001241', status: 'Active', country: 'Czech Republic', memberSince: 'August 2024', initial: 140000, balance: 147000, return: 5.00, strategy: 'Crude Oil Futures', operator: 'operator@opessocius.com', type: 'investor', growthRate: 2 }
-            ];
+            let usersData = [];
             
-            function loadUsersList() {
+            async function loadUsersList() {
+                // Make function globally accessible
+                window.loadUsersList = loadUsersList;
                 const container = document.getElementById('users-grid');
                 if (!container) return;
                 
-                container.innerHTML = '';
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280;">Loading accounts...</div>';
                 
-                // Add predetermined admin widget first
-                const adminCard = document.createElement('div');
-                adminCard.className = 'investor-card';
-                adminCard.innerHTML = `
-                    <div class="investor-card-header">
-                        <h3>Admin 2</h3>
-                        <span class="investor-status investor-status-active">Admin</span>
-                    </div>
-                    <div class="investor-card-body">
-                        <p><strong>Type:</strong> Admin</p>
-                        <p><strong>Email:</strong> admin2@opessocius.com</p>
-                        <p><strong>Account:</strong> ADMIN2</p>
-                        <p><strong>Initial Investment:</strong> €8,500,000</p>
-                        <p><strong>Current Balance:</strong> <span id="admin2-current-balance">€0</span></p>
-                        <p><strong>Total Return:</strong> <span id="admin2-total-return">0.00%</span></p>
-                    </div>
-                    <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                        <button class="admin-edit-btn" onclick="openAdmin2EditModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
-                    </div>
-                `;
-                container.appendChild(adminCard);
-                
-                // Update admin2 metrics from transaction data
-                if (transactionData && transactionData.length > 0) {
-                    const latestEntry = transactionData[transactionData.length - 1];
-                    const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                try {
+                    // Load accounts from Firestore
+                    if (!window.admin2FirestoreService) {
+                        throw new Error('Admin2 Firestore service not loaded');
+                    }
                     
-                    // Calculate total gain
-                    let totalGain = 0;
-                    transactionData.forEach(entry => {
-                        if (entry.growth) {
-                            totalGain += entry.growth;
+                    const firestoreAccounts = await window.admin2FirestoreService.getAllAdmin2Accounts();
+                    usersData = firestoreAccounts.map(account => 
+                        window.admin2FirestoreService.formatAccountForAdminPortal2(account)
+                    );
+                    
+                    container.innerHTML = '';
+                    
+                    // Load Admin2 profile settings from Firestore
+                    let admin2Data = {
+                        name: 'Admin 2',
+                        email: 'admin2@opessocius.com',
+                        account: 'ADMIN2',
+                        status: 'Active',
+                        initial: 8500000,
+                        strategy: 'Fund Management'
+                    };
+                    
+                    try {
+                        if (window.admin2FirestoreService) {
+                            const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                            if (settings) {
+                                if (settings.profileName) admin2Data.name = settings.profileName;
+                                if (settings.admin2Email) admin2Data.email = settings.admin2Email;
+                                if (settings.admin2Account) admin2Data.account = settings.admin2Account;
+                                if (settings.admin2Status) admin2Data.status = settings.admin2Status;
+                                if (settings.admin2Initial !== undefined) admin2Data.initial = settings.admin2Initial;
+                                if (settings.admin2Strategy) admin2Data.strategy = settings.admin2Strategy;
+                            }
                         }
-                    });
+                    } catch (error) {
+                        console.error('Error loading Admin2 settings:', error);
+                    }
                     
-                    document.getElementById('admin2-current-balance').textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
-                    document.getElementById('admin2-total-return').textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
-                    document.getElementById('admin2-total-return').className = totalGain >= 0 ? 'return-positive' : 'return-negative';
-                }
-                
-                usersData.forEach(user => {
-                    const card = document.createElement('div');
-                    card.className = 'investor-card';
-                    const returnPercent = user.initial > 0 ? ((user.balance - user.initial) / user.initial * 100).toFixed(2) : '0.00';
-                    const isAdmin = user.type === 'admin';
-                    card.innerHTML = `
-                        <div class="investor-card-header">
-                            <h3>${user.name}</h3>
-                            <span class="investor-status investor-status-${user.status.toLowerCase()}">${user.type === 'admin' ? 'Admin' : user.status}</span>
+                    // Map status to CSS class
+                    let statusClass = 'investor-status-active';
+                    const statusLower = (admin2Data.status || 'Active').toLowerCase().replace(/\s+/g, '');
+                    if (statusLower === 'phase1' || statusLower === 'phase 1') {
+                        statusClass = 'investor-status-phase1';
+                    } else if (statusLower === 'phase2' || statusLower === 'phase 2') {
+                        statusClass = 'investor-status-phase2';
+                    } else if (statusLower === 'inactive') {
+                        statusClass = 'investor-status-inactive';
+                    } else {
+                        statusClass = 'investor-status-active';
+                    }
+                    
+                    // Add predetermined admin widget first
+                    const adminCard = document.createElement('div');
+                    adminCard.className = 'investor-card';
+                    adminCard.innerHTML = `
+                        <div class="investor-card-header" style="position: relative;">
+                            <h3>${admin2Data.name}</h3>
+                            <span class="investor-status ${statusClass}" style="position: absolute; top: 0; right: 0;">Admin</span>
                         </div>
                         <div class="investor-card-body">
-                            <p><strong>Type:</strong> ${user.type === 'admin' ? 'Admin' : 'Investor'}</p>
-                            <p><strong>Email:</strong> ${user.email}</p>
-                            <p><strong>Account:</strong> ${user.account}</p>
-                            ${user.type === 'admin' ? `
-                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
-                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
-                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            ` : `
-                                <p><strong>Initial Investment:</strong> €${user.initial.toLocaleString('en-US')}</p>
-                                <p><strong>Current Balance:</strong> €${user.balance.toLocaleString('en-US')}</p>
-                                <p><strong>Return:</strong> <span class="return-positive">+${returnPercent}%</span></p>
-                            `}
+                            <p><strong>Type:</strong> Admin</p>
+                            <p><strong>Email:</strong> ${admin2Data.email}</p>
+                            <p><strong>Account:</strong> ${admin2Data.account}</p>
+                            <p><strong>Initial Investment:</strong> €${(admin2Data.initial || 0).toLocaleString('en-US')}</p>
+                            <p><strong>Current Balance:</strong> <span id="admin2-current-balance">€0</span></p>
+                            <p><strong>Total Return:</strong> <span id="admin2-total-return">0.00%</span></p>
                         </div>
                         <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                            <button class="admin-edit-btn" onclick="openUserEditModal(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
-                            ${isAdmin ? `<button class="admin-btn-add" onclick="openAddUserModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">+ Add New Account</button>` : ''}
+                            <button class="admin-edit-btn" onclick="openAdmin2EditModal()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
                         </div>
                     `;
-                    container.appendChild(card);
-                });
+                    container.appendChild(adminCard);
+                    
+                    // Update admin2 metrics from transaction data
+                    if (transactionData && transactionData.length > 0) {
+                        const latestEntry = transactionData[transactionData.length - 1];
+                        const currentBalance = latestEntry.ending - (latestEntry.withdrawals || 0);
+                        
+                        // Calculate total gain
+                        let totalGain = 0;
+                        transactionData.forEach(entry => {
+                            if (entry.growth) {
+                                totalGain += entry.growth;
+                            }
+                        });
+                        
+                        document.getElementById('admin2-current-balance').textContent = '€' + Math.round(currentBalance).toLocaleString('en-US');
+                        document.getElementById('admin2-total-return').textContent = (totalGain >= 0 ? '+' : '') + totalGain.toFixed(2) + '%';
+                        document.getElementById('admin2-total-return').className = totalGain >= 0 ? 'return-positive' : 'return-negative';
+                    }
+                    
+                    if (usersData.length === 0) {
+                        container.innerHTML += '<div style="text-align: center; padding: 2rem; color: #6b7280; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);"><p style="margin: 0 0 1rem 0;">No accounts found.</p><p style="margin: 0; font-size: 0.875rem;">Click "Add New Account" button above to create your first account.</p></div>';
+                    } else {
+                        usersData.forEach(user => {
+                            const card = document.createElement('div');
+                            card.className = 'investor-card';
+                            const returnPercent = user.initial > 0 ? ((user.balance - user.initial) / user.initial * 100).toFixed(2) : '0.00';
+                            const isAdmin = user.type === 'admin';
+                            const returnClass = parseFloat(returnPercent) >= 0 ? 'return-positive' : 'return-negative';
+                            const returnSign = parseFloat(returnPercent) >= 0 ? '+' : '';
+                            // Map status to CSS class
+                            let statusClass = 'investor-status-active';
+                            const statusLower = (user.status || 'Active').toLowerCase().replace(/\s+/g, '');
+                            if (statusLower === 'phase1' || statusLower === 'phase 1') {
+                                statusClass = 'investor-status-phase1';
+                            } else if (statusLower === 'phase2' || statusLower === 'phase 2') {
+                                statusClass = 'investor-status-phase2';
+                            } else if (statusLower === 'inactive') {
+                                statusClass = 'investor-status-inactive';
+                            } else {
+                                statusClass = 'investor-status-active';
+                            }
+                            
+                            card.innerHTML = `
+                                <div class="investor-card-header" style="position: relative;">
+                                    <h3>${user.name || 'Unnamed Account'}</h3>
+                                    <span class="investor-status ${statusClass}" style="position: absolute; top: 0; right: 0;">${user.type === 'admin' ? 'Admin' : user.status}</span>
+                                </div>
+                                <div class="investor-card-body">
+                                    <p><strong>Type:</strong> ${user.type === 'admin' ? 'Admin' : 'Investor'}</p>
+                                    <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+                                    <p><strong>Account:</strong> ${user.account || 'N/A'}</p>
+                                    <p><strong>Initial Investment:</strong> €${(user.initial || 0).toLocaleString('en-US')}</p>
+                                    <p><strong>Current Balance:</strong> €${(user.balance || 0).toLocaleString('en-US')}</p>
+                                    <p><strong>Return:</strong> <span class="${returnClass}">${returnSign}${returnPercent}%</span></p>
+                                </div>
+                                <div class="investor-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                    <button class="admin-edit-btn" onclick="openUserEditModal('${user.id}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Edit</button>
+                                </div>
+                            `;
+                            container.appendChild(card);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading accounts:', error);
+                    container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #dc2626;">Error loading accounts: ' + error.message + '</div>';
+                }
             }
             
             function openAddUserModal() {
@@ -2727,6 +2878,9 @@
                 document.getElementById('user-edit-form').reset();
                 modal.removeAttribute('data-edit-id');
                 modal.setAttribute('data-add-mode', 'true');
+                // Hide delete button when adding new account
+                const deleteBtn = document.getElementById('delete-user-btn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -2735,35 +2889,79 @@
             
             function openUserEditModal(id) {
                 const user = usersData.find(u => u.id === id);
-                if (!user) return;
+                if (!user) {
+                    console.error('User not found with id:', id);
+                    return;
+                }
                 
                 const modal = document.getElementById('user-edit-modal');
-                document.getElementById('edit-user-name').value = user.name;
-                document.getElementById('edit-user-email').value = user.email;
-                document.getElementById('edit-user-account').value = user.account;
-                document.getElementById('edit-user-status').value = user.status;
-                document.getElementById('edit-user-member-since').value = user.memberSince;
-                document.getElementById('edit-user-initial').value = user.initial;
-                document.getElementById('edit-user-strategy').value = user.strategy;
+                document.getElementById('user-modal-title').textContent = 'Edit Account';
+                document.getElementById('edit-user-name').value = user.name || '';
+                document.getElementById('edit-user-email').value = user.email || '';
+                document.getElementById('edit-user-account').value = user.account || '';
+                document.getElementById('edit-user-status').value = user.status || 'Active';
+                document.getElementById('edit-user-member-since').value = user.memberSince || '';
+                document.getElementById('edit-user-initial').value = user.initial || 0;
+                document.getElementById('edit-user-strategy').value = user.strategy || '';
                 modal.setAttribute('data-edit-id', id);
+                modal.removeAttribute('data-add-mode');
+                modal.removeAttribute('data-admin2-mode');
+                // Show delete button when editing
+                const deleteBtn = document.getElementById('delete-user-btn');
+                if (deleteBtn) deleteBtn.style.display = 'block';
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
             
             window.openUserEditModal = openUserEditModal;
             
-            function openAdmin2EditModal() {
+            async function openAdmin2EditModal() {
                 const modal = document.getElementById('user-edit-modal');
                 document.getElementById('user-modal-title').textContent = 'Edit Admin 2 Account';
-                document.getElementById('edit-user-name').value = 'Admin 2';
-                document.getElementById('edit-user-email').value = 'admin2@opessocius.com';
-                document.getElementById('edit-user-account').value = 'ADMIN2';
-                document.getElementById('edit-user-status').value = 'Active';
-                document.getElementById('edit-user-member-since').value = '2024-01-01';
-                document.getElementById('edit-user-initial').value = '8500000';
-                document.getElementById('edit-user-strategy').value = 'Fund Management';
+                
+                // Load Admin2 account data from profile settings
+                let admin2Data = {
+                    name: 'Admin 2',
+                    email: 'admin2@opessocius.com',
+                    account: 'ADMIN2',
+                    status: 'Active',
+                    memberSince: '2024-01-01',
+                    initial: 8500000,
+                    strategy: 'Fund Management'
+                };
+                
+                try {
+                    if (window.admin2FirestoreService) {
+                        const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                        if (settings) {
+                            // Load all saved values
+                            if (settings.profileName) admin2Data.name = settings.profileName;
+                            if (settings.admin2Email) admin2Data.email = settings.admin2Email;
+                            if (settings.admin2Account) admin2Data.account = settings.admin2Account;
+                            if (settings.admin2Status) admin2Data.status = settings.admin2Status;
+                            if (settings.admin2MemberSince) admin2Data.memberSince = settings.admin2MemberSince;
+                            if (settings.admin2Initial !== undefined) admin2Data.initial = settings.admin2Initial;
+                            if (settings.admin2Strategy) admin2Data.strategy = settings.admin2Strategy;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading Admin2 data:', error);
+                }
+                
+                // Populate form fields with loaded data
+                document.getElementById('edit-user-name').value = admin2Data.name;
+                document.getElementById('edit-user-email').value = admin2Data.email;
+                document.getElementById('edit-user-account').value = admin2Data.account;
+                document.getElementById('edit-user-status').value = admin2Data.status;
+                document.getElementById('edit-user-member-since').value = admin2Data.memberSince;
+                document.getElementById('edit-user-initial').value = admin2Data.initial;
+                document.getElementById('edit-user-strategy').value = admin2Data.strategy;
+                
                 modal.setAttribute('data-edit-id', 'admin2');
                 modal.setAttribute('data-admin2-mode', 'true');
+                // Hide delete button for Admin2
+                const deleteBtn = document.getElementById('delete-user-btn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
                 modal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -2775,66 +2973,221 @@
                 document.body.style.overflow = '';
             }
             
+            async function deleteUserAccount() {
+                const modal = document.getElementById('user-edit-modal');
+                const accountId = modal.getAttribute('data-edit-id');
+                
+                if (!accountId) {
+                    console.error('No account ID found for deletion');
+                    return;
+                }
+                
+                // Confirm deletion
+                if (!confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+                    return;
+                }
+                
+                if (!window.admin2FirestoreService) {
+                    alert('Error: Firestore service not loaded. Please refresh the page.');
+                    return;
+                }
+                
+                try {
+                    await window.admin2FirestoreService.deleteAdmin2Account(accountId);
+                    console.log('Account deleted:', accountId);
+                    
+                    // Reload the list
+                    await loadUsersList();
+                    closeUserEditModal();
+                } catch (error) {
+                    console.error('Error deleting account:', error);
+                    alert('Error deleting account: ' + error.message);
+                }
+            }
+            
+            window.deleteUserAccount = deleteUserAccount;
+            
             // User edit form handler
             const userEditForm = document.getElementById('user-edit-form');
             if (userEditForm) {
-                userEditForm.addEventListener('submit', function(e) {
+                userEditForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const modal = document.getElementById('user-edit-modal');
                     const isAddMode = modal.getAttribute('data-add-mode') === 'true';
+                    const isAdmin2Mode = modal.getAttribute('data-admin2-mode') === 'true';
                     
-                    if (isAddMode) {
-                        // Add new user
-                        const newId = Math.max(...usersData.map(u => u.id), 0) + 1;
-                        const newUser = {
-                            id: newId,
-                            name: document.getElementById('edit-user-name').value,
-                            email: document.getElementById('edit-user-email').value,
-                            phone: '',
-                            account: document.getElementById('edit-user-account').value,
-                            status: document.getElementById('edit-user-status').value,
-                            country: '',
-                            memberSince: document.getElementById('edit-user-member-since').value,
-                            initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
-                            balance: parseFloat(document.getElementById('edit-user-initial').value) || 0, // Start with initial investment
-                            return: 0,
-                            strategy: document.getElementById('edit-user-strategy').value,
-                            operator: '',
-                            type: 'investor'
-                        };
-                        usersData.push(newUser);
-                        // Also add to investorsData if it exists
-                        if (typeof investorsData !== 'undefined') {
-                            investorsData.push({
-                                id: newId,
-                                name: newUser.name,
-                                email: newUser.email,
+                    if (!window.admin2FirestoreService) {
+                        alert('Error: Firestore service not loaded. Please refresh the page.');
+                        return;
+                    }
+                    
+                    // Disable form during submission
+                    const submitButton = userEditForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Saving...';
+                    
+                    try {
+                        if (isAddMode) {
+                            // Add new account
+                            const formData = {
+                                name: document.getElementById('edit-user-name').value,
+                                email: document.getElementById('edit-user-email').value,
                                 phone: '',
-                                account: newUser.account,
-                                initial: newUser.initial,
-                                balance: newUser.balance,
-                                status: newUser.status
-                            });
-                        }
-                        loadUsersList();
-                        closeUserEditModal();
-                        alert('New account added successfully!');
-                    } else {
-                        // Edit existing user
-                        const id = parseInt(modal.getAttribute('data-edit-id'));
-                        const user = usersData.find(u => u.id === id);
-                        if (user) {
-                            user.name = document.getElementById('edit-user-name').value;
-                            user.email = document.getElementById('edit-user-email').value;
-                            user.account = document.getElementById('edit-user-account').value;
-                            user.status = document.getElementById('edit-user-status').value;
-                            user.memberSince = document.getElementById('edit-user-member-since').value;
-                            user.initial = parseFloat(document.getElementById('edit-user-initial').value);
-                            // Balance and return are calculated automatically - don't update them here
-                            user.strategy = document.getElementById('edit-user-strategy').value;
-                            loadUsersList();
+                                account: document.getElementById('edit-user-account').value,
+                                status: document.getElementById('edit-user-status').value,
+                                country: '',
+                                memberSince: document.getElementById('edit-user-member-since').value,
+                                initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
+                                strategy: document.getElementById('edit-user-strategy').value,
+                                operator: '',
+                                type: 'investor'
+                            };
+                            
+                            // Validate required fields
+                            if (!formData.name || !formData.email || !formData.account) {
+                                alert('Please fill in all required fields (Title, Email, Account Number).');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Check for duplicate email
+                            const existingAccount = await window.admin2FirestoreService.getAdmin2AccountByEmail(formData.email);
+                            if (existingAccount) {
+                                alert('An account with this email already exists.');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Create account in Firestore
+                            const accountId = await window.admin2FirestoreService.createAdmin2Account(formData);
+                            console.log('Account created with ID:', accountId);
+                            
+                            // Reload the list
+                            await loadUsersList();
+                            closeUserEditModal();
+                        } else if (isAdmin2Mode) {
+                            // Edit Admin2 account - save to profile settings
+                            const updateData = {
+                                name: document.getElementById('edit-user-name').value,
+                                email: document.getElementById('edit-user-email').value,
+                                account: document.getElementById('edit-user-account').value,
+                                status: document.getElementById('edit-user-status').value,
+                                memberSince: document.getElementById('edit-user-member-since').value,
+                                initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
+                                strategy: document.getElementById('edit-user-strategy').value
+                            };
+                            
+                            // Validate required fields
+                            if (!updateData.name || !updateData.email || !updateData.account) {
+                                alert('Please fill in all required fields (Title, Email, Account Number).');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Update profile settings in Firestore
+                            try {
+                                await window.admin2FirestoreService.updateAdmin2ProfileSettings({
+                                    profileName: updateData.name,
+                                    admin2Email: updateData.email,
+                                    admin2Account: updateData.account,
+                                    admin2Status: updateData.status,
+                                    admin2MemberSince: updateData.memberSince,
+                                    admin2Initial: updateData.initial,
+                                    admin2Strategy: updateData.strategy
+                                });
+                                
+                                console.log('Admin2 account updated successfully in Firestore');
+                            } catch (error) {
+                                console.error('Error updating Admin2 profile settings:', error);
+                                alert('Error saving Admin2 account: ' + error.message);
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Update profile name in UI immediately
+                            const profileNameElement = document.getElementById('sidebar-profile-name');
+                            if (profileNameElement) {
+                                profileNameElement.textContent = updateData.name;
+                            }
+                            
+                            // Reload the list to refresh Admin2 widget if needed
+                            await loadUsersList();
+                            closeUserEditModal();
+                            
+                            // Re-enable button
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalButtonText;
+                            submitButton.disabled = false;
+                            submitButton.textContent = originalButtonText;
+                            return;
+                        } else {
+                            // Edit existing account
+                            const accountId = modal.getAttribute('data-edit-id');
+                            if (!accountId) {
+                                alert('Error: Account ID not found.');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            const updateData = {
+                                name: document.getElementById('edit-user-name').value,
+                                email: document.getElementById('edit-user-email').value,
+                                account: document.getElementById('edit-user-account').value,
+                                status: document.getElementById('edit-user-status').value,
+                                memberSince: document.getElementById('edit-user-member-since').value,
+                                initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
+                                strategy: document.getElementById('edit-user-strategy').value
+                            };
+                            
+                            // Validate required fields
+                            if (!updateData.name || !updateData.email || !updateData.account) {
+                                alert('Please fill in all required fields (Title, Email, Account Number).');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Check for duplicate email (excluding current account)
+                            const existingAccount = await window.admin2FirestoreService.getAdmin2AccountByEmail(updateData.email);
+                            if (existingAccount && existingAccount.id !== accountId) {
+                                alert('An account with this email already exists.');
+                                submitButton.disabled = false;
+                                submitButton.textContent = originalButtonText;
+                                return;
+                            }
+                            
+                            // Update account in Firestore
+                            await window.admin2FirestoreService.updateAdmin2Account(accountId, updateData);
+                            console.log('Account updated:', accountId);
+                            
+                            // If this is the Admin2 account, update profile name
+                            if (accountId === 'admin2' && updateData.name && window.admin2FirestoreService) {
+                                await window.admin2FirestoreService.updateAdmin2ProfileSettings({
+                                    profileName: updateData.name
+                                });
+                                // Update UI immediately
+                                const profileNameElement = document.getElementById('sidebar-profile-name');
+                                if (profileNameElement) {
+                                    profileNameElement.textContent = updateData.name;
+                                }
+                            }
+                            
+                            // Reload the list
+                            await loadUsersList();
                             closeUserEditModal();
                         }
+                    } catch (error) {
+                        console.error('Error saving account:', error);
+                        alert('Error saving account: ' + error.message);
+                    } finally {
+                        submitButton.disabled = false;
+                        submitButton.textContent = originalButtonText;
                     }
                 });
             }
@@ -2867,8 +3220,193 @@
                     userModal.querySelector('.admin-modal-close')?.addEventListener('click', closeUserEditModal);
                     userModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeUserEditModal);
                     document.getElementById('cancel-user-edit')?.addEventListener('click', closeUserEditModal);
+                    document.getElementById('delete-user-btn')?.addEventListener('click', deleteUserAccount);
                 }
             }, 100);
+            
+            // Admin2 Profile Picture Functions (matching adminportal.html style)
+            function loadAdmin2ProfilePicture(profilePictureUrl) {
+                const profileImg = document.getElementById('admin2-profile-picture-img');
+                const placeholder = document.getElementById('admin2-profile-picture-placeholder');
+                
+                if (profilePictureUrl && profilePictureUrl.trim() !== '') {
+                    profileImg.src = profilePictureUrl;
+                    profileImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    profileImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Setup admin2 profile picture upload
+            const admin2ProfileContainer = document.getElementById('admin2-profile-picture-container');
+            const admin2ProfileInput = document.getElementById('admin2-profile-picture-input');
+            const admin2ProfileOverlay = admin2ProfileContainer?.querySelector('.profile-picture-upload-overlay');
+            const profileNameElement = document.getElementById('sidebar-profile-name');
+            
+            if (admin2ProfileContainer && admin2ProfileInput) {
+                // Show overlay on hover
+                admin2ProfileContainer.addEventListener('mouseenter', function() {
+                    if (admin2ProfileOverlay) admin2ProfileOverlay.style.display = 'flex';
+                });
+                
+                admin2ProfileContainer.addEventListener('mouseleave', function() {
+                    if (admin2ProfileOverlay) admin2ProfileOverlay.style.display = 'none';
+                });
+                
+                // Click to upload
+                admin2ProfileContainer.addEventListener('click', function() {
+                    admin2ProfileInput.click();
+                });
+                
+                // Handle file selection
+                admin2ProfileInput.addEventListener('change', async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    try {
+                        // Show loading state - use spinner
+                        const profileImg = document.getElementById('admin2-profile-picture-img');
+                        const placeholder = document.getElementById('admin2-profile-picture-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = '<div style="width: 20px; height: 20px; border: 2px solid #6b7280; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>';
+                            placeholder.style.opacity = '0.7';
+                        }
+                        
+                        // Convert image to base64 data URL (matching adminportal.html approach)
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const base64DataUrl = e.target.result;
+                                
+                                // Store admin2 profile picture in sessionStorage
+                                sessionStorage.setItem('admin2ProfilePicture', base64DataUrl);
+                                
+                                // Also save to Firestore
+                                if (window.admin2FirestoreService) {
+                                    try {
+                                        await window.admin2FirestoreService.updateAdmin2ProfileSettings({
+                                            profilePictureUrl: base64DataUrl
+                                        });
+                                        console.log('Profile picture saved to Firestore');
+                                    } catch (error) {
+                                        console.error('Error saving profile picture to Firestore:', error);
+                                        // Don't show alert here as the image is already in sessionStorage
+                                    }
+                                }
+                                
+                                // Update display
+                                loadAdmin2ProfilePicture(base64DataUrl);
+                                
+                                // Reset placeholder opacity
+                                if (placeholder) {
+                                    placeholder.style.opacity = '1';
+                                }
+                                
+                                console.log('Admin2 profile picture updated successfully');
+                            } catch (error) {
+                                console.error('Error saving admin2 profile picture:', error);
+                                alert('Error saving profile picture: ' + error.message);
+                                if (placeholder) {
+                                    placeholder.innerHTML = '<span>👤</span>';
+                                    placeholder.style.opacity = '1';
+                                }
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('Error reading file:', error);
+                            alert('Error reading image file.');
+                            if (placeholder) {
+                                placeholder.innerHTML = '<span>👤</span>';
+                                placeholder.style.opacity = '1';
+                            }
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error uploading profile picture:', error);
+                        alert('Error uploading profile picture: ' + error.message);
+                    }
+                });
+            }
+            
+            // Load Profile Settings
+            async function loadProfileSettings() {
+                const profileNameElement = document.getElementById('sidebar-profile-name');
+                
+                try {
+                    // First, try to load from sessionStorage for immediate display
+                    const sessionPic = sessionStorage.getItem('admin2ProfilePicture');
+                    if (sessionPic) {
+                        loadAdmin2ProfilePicture(sessionPic);
+                    }
+                    
+                    // Then load from Firestore (which will override sessionStorage if available)
+                    if (!window.admin2FirestoreService) {
+                        // If no service, use sessionStorage defaults
+                        if (!sessionPic && profileNameElement) {
+                            profileNameElement.textContent = 'Admin 2';
+                        }
+                        return;
+                    }
+                    
+                    const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                    
+                    if (settings) {
+                        // Update profile picture if available (prefer Firestore over sessionStorage)
+                        if (settings.profilePictureUrl) {
+                            loadAdmin2ProfilePicture(settings.profilePictureUrl);
+                            // Also update sessionStorage to keep them in sync
+                            sessionStorage.setItem('admin2ProfilePicture', settings.profilePictureUrl);
+                        } else if (sessionPic) {
+                            // If Firestore doesn't have it but sessionStorage does, keep sessionStorage
+                            loadAdmin2ProfilePicture(sessionPic);
+                        }
+                        
+                        // Update profile name if available
+                        if (settings.profileName && profileNameElement) {
+                            profileNameElement.textContent = settings.profileName;
+                        } else if (profileNameElement) {
+                            profileNameElement.textContent = 'Admin 2';
+                        }
+                    } else {
+                        // No settings in Firestore, use sessionStorage or defaults
+                        if (!sessionPic && profileNameElement) {
+                            profileNameElement.textContent = 'Admin 2';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading profile settings:', error);
+                    // Set default name on error
+                    if (profileNameElement) {
+                        profileNameElement.textContent = 'Admin 2';
+                    }
+                    // Try sessionStorage as fallback for picture
+                    const sessionPic = sessionStorage.getItem('admin2ProfilePicture');
+                    if (sessionPic) {
+                        loadAdmin2ProfilePicture(sessionPic);
+                    }
+                }
+            }
+            
+            // Load profile settings on page load (after a short delay to ensure Firebase is initialized)
+            setTimeout(() => {
+                loadProfileSettings();
+            }, 500);
             
             // Initial draw if dashboard is visible (already handled above with populateTransactionsTable)
 
