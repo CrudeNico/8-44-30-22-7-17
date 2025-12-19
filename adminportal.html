@@ -1585,6 +1585,41 @@
                         throw fallbackError;
                     }
                 }
+            },
+            
+            // Consultations Functions
+            CONSULTATIONS_COLLECTION: 'consultations',
+            
+            // Get all consultations
+            getAllConsultations: async function() {
+                try {
+                    const snapshot = await db.collection(this.CONSULTATIONS_COLLECTION)
+                        .orderBy('createdAt', 'desc')
+                        .get();
+                    const consultations = [];
+                    snapshot.forEach((doc) => {
+                        consultations.push({ id: doc.id, ...doc.data() });
+                    });
+                    return consultations;
+                } catch (error) {
+                    console.error('Error getting consultations:', error);
+                    throw error;
+                }
+            },
+            
+            // Update consultation status
+            updateConsultationStatus: async function(consultationId, status) {
+                try {
+                    await db.collection(this.CONSULTATIONS_COLLECTION)
+                        .doc(consultationId)
+                        .update({
+                            status: status,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                } catch (error) {
+                    console.error('Error updating consultation status:', error);
+                    throw error;
+                }
             }
         };
         
@@ -6057,20 +6092,29 @@
             }
             
             // Consultations Section
-            let consultationsData = [
-                { id: 1, name: 'John Doe', email: 'john.doe@example.com', date: '2025-01-15', status: 'pending', topic: 'Investment Strategy Consultation' },
-                { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', date: '2025-01-14', status: 'done', topic: 'Portfolio Review' },
-                { id: 3, name: 'Robert Johnson', email: 'robert.j@example.com', date: '2025-01-16', status: 'pending', topic: 'Risk Assessment' },
-                { id: 4, name: 'Emily Davis', email: 'emily.davis@example.com', date: '2025-01-13', status: 'done', topic: 'Market Analysis' },
-                { id: 5, name: 'Michael Wilson', email: 'michael.w@example.com', date: '2025-01-17', status: 'pending', topic: 'Financial Planning' }
-            ];
+            let consultationsData = [];
             
             let selectedConsultationId = null;
             let currentFilter = 'all';
             
-            function loadConsultationsList() {
+            async function loadConsultationsList() {
                 const container = document.getElementById('consultations-grid');
                 if (!container) return;
+                
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #6b7280; padding: 2rem;">Loading consultations...</div>';
+                
+                try {
+                    // Load consultations from Firestore
+                    if (window.firestoreService) {
+                        consultationsData = await window.firestoreService.getAllConsultations();
+                    } else {
+                        console.warn('Firestore service not available');
+                        consultationsData = [];
+                    }
+                } catch (error) {
+                    console.error('Error loading consultations:', error);
+                    consultationsData = [];
+                }
                 
                 container.innerHTML = '';
                 
@@ -6098,15 +6142,26 @@
                     const statusClass = consultation.status === 'pending' ? 'consultation-status-pending' : 'consultation-status-done';
                     const statusText = consultation.status === 'pending' ? 'Pending' : 'Done';
                     
+                    // Format date and time
+                    const dateStr = consultation.date || '';
+                    const timeStr = consultation.time || '';
+                    const formattedDate = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) : 'Date not set';
+                    const consultationTopic = consultation.consultationTopicDisplay || consultation.consultationTopic || 'Not specified';
+                    
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                            <h3 style="margin: 0; font-size: 1.125rem; color: #1f2937;">${consultation.name}</h3>
+                            <h3 style="margin: 0; font-size: 1.125rem; color: #1f2937;">${consultation.fullName || 'Unknown'}</h3>
                             <span class="consultation-status ${statusClass}">${statusText}</span>
                         </div>
                         <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
-                            <p style="margin: 0.25rem 0;"><strong>Email:</strong> ${consultation.email}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${new Date(consultation.date).toLocaleDateString()}</p>
-                            <p style="margin: 0.25rem 0;"><strong>Topic:</strong> ${consultation.topic}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Email:</strong> ${consultation.email || 'N/A'}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Date:</strong> ${formattedDate}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Time:</strong> ${timeStr || 'Not set'}</p>
+                            <p style="margin: 0.25rem 0;"><strong>Consultation:</strong> ${consultationTopic}</p>
                         </div>
                     `;
                     
@@ -6131,9 +6186,18 @@
                 const consultation = consultationsData.find(c => c.id === id);
                 if (consultation) {
                     const infoDiv = document.getElementById('selected-consultation-info');
+                    const dateStr = consultation.date || '';
+                    const timeStr = consultation.time || '';
+                    const formattedDate = dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    }) : 'Date not set';
+                    const consultationTopic = consultation.consultationTopicDisplay || consultation.consultationTopic || 'Not specified';
+                    
                     infoDiv.innerHTML = `
-                        <strong>${consultation.name}</strong> - ${consultation.email}<br>
-                        <span style="font-size: 0.875rem; color: #6b7280;">${consultation.topic} (${new Date(consultation.date).toLocaleDateString()})</span>
+                        <strong>${consultation.fullName || 'Unknown'}</strong> - ${consultation.email || 'N/A'}<br>
+                        <span style="font-size: 0.875rem; color: #6b7280;">${consultationTopic} - ${formattedDate} at ${timeStr || 'TBD'}</span>
                     `;
                     document.getElementById('send-email-section').style.display = 'block';
                 }

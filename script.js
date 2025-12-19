@@ -303,7 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const backToCalendarBtn = document.getElementById('back-to-calendar-arrow');
         const bookingForm = document.getElementById('booking-form');
         
-        let currentDate = new Date(2025, 10, 1); // November 2025
+        // Initialize calendar to current month and year
+        const now = new Date();
+        let currentDate = new Date(now.getFullYear(), now.getMonth(), 1);
         let selectedDate = null;
         let selectedTime = null;
         
@@ -500,36 +502,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Form submission handler
         if (bookingForm) {
-            bookingForm.addEventListener('submit', (e) => {
+            bookingForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                if (!selectedTime) {
-                    alert('Please select a time slot');
-                    return;
-                }
-                
-                const consultationTopic = formData.get('consultationTopic');
-                if (!consultationTopic) {
-                    alert('Please select a consultation topic');
-                    return;
-                }
-                
+                // Get form data first to avoid any initialization issues
                 const formData = new FormData(bookingForm);
+                
+                // Check if time slot is selected - if not, just return silently
+                if (!selectedTime) {
+                    console.log('No time slot selected');
+                    return;
+                }
+                
+                // Get consultation topic from radio buttons (they're outside the form, so we need to query them directly)
+                const consultationTopicRadio = document.querySelector('input[name="consultationTopic"]:checked');
+                const consultationTopic = consultationTopicRadio ? consultationTopicRadio.value : null;
+                
+                // If no topic selected, just return silently
+                if (!consultationTopic) {
+                    console.log('No consultation topic selected');
+                    return;
+                }
+                
+                // Map consultation topic values to display names
+                const topicMap = {
+                    'general': 'General Consultation',
+                    'strategies': 'Investment Strategies',
+                    'review': 'Portfolio Review',
+                    'planning': 'Investment Planning'
+                };
+                
                 const bookingData = {
                     date: selectedDate,
                     time: selectedTime,
-                    consultationTopic: formData.get('consultationTopic'),
+                    consultationTopic: consultationTopic,
+                    consultationTopicDisplay: topicMap[consultationTopic] || consultationTopic,
                     fullName: formData.get('fullName'),
                     email: formData.get('email'),
                     phone: formData.get('phone'),
                     country: formData.get('country'),
-                    company: formData.get('company'),
-                    notes: formData.get('notes')
+                    company: formData.get('company') || '',
+                    notes: formData.get('notes') || '',
+                    status: 'pending',
+                    createdAt: new Date()
                 };
                 
-                // Here you would typically send the data to a server
-                console.log('Booking data:', bookingData);
-                alert('Booking confirmed! You will receive a confirmation email shortly.');
+                // Save to Firestore
+                try {
+                    if (window.firebaseDb) {
+                        // Format date for storage
+                        const dateString = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                        
+                        await window.firebaseDb.collection('consultations').add({
+                            date: dateString,
+                            time: selectedTime,
+                            consultationTopic: consultationTopic,
+                            consultationTopicDisplay: bookingData.consultationTopicDisplay,
+                            fullName: bookingData.fullName,
+                            email: bookingData.email,
+                            phone: bookingData.phone,
+                            country: bookingData.country,
+                            company: bookingData.company,
+                            notes: bookingData.notes,
+                            status: 'pending',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // Booking saved successfully - no alert needed
+                        console.log('Booking confirmed successfully');
+                    } else {
+                        // Fallback if Firebase not loaded
+                        console.log('Booking data:', bookingData);
+                        console.log('Note: Firebase not loaded, booking not saved to database');
+                    }
+                } catch (error) {
+                    console.error('Error saving booking:', error);
+                    // Only show error alert if there's an actual error
+                    alert('There was an error saving your booking. Please try again or contact support.');
+                    return;
+                }
                 
                 // Reset form
                 bookingForm.reset();
