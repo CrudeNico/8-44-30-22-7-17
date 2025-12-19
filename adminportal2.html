@@ -2744,25 +2744,44 @@
                     
                     container.innerHTML = '';
                     
-                    // Load Admin2 profile settings from Firestore
+                    // Load Admin2 profile settings from Firestore (fresh data)
                     let admin2Data = {
                         name: 'Admin 2',
                         email: 'admin2@opessocius.com',
                         account: 'ADMIN2',
                         status: 'Active',
+                        memberSince: '2024-01-01',
                         initial: 8500000,
                         strategy: 'Fund Management'
                     };
                     
                     try {
                         if (window.admin2FirestoreService) {
+                            console.log('Loading Admin2 settings for widget display...');
                             const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                            console.log('Admin2 settings loaded for widget:', settings);
+                            
                             if (settings) {
                                 if (settings.profileName) admin2Data.name = settings.profileName;
                                 if (settings.admin2Email) admin2Data.email = settings.admin2Email;
                                 if (settings.admin2Account) admin2Data.account = settings.admin2Account;
                                 if (settings.admin2Status) admin2Data.status = settings.admin2Status;
-                                if (settings.admin2Initial !== undefined) admin2Data.initial = settings.admin2Initial;
+                                if (settings.admin2MemberSince) {
+                                    // Handle both string dates and Firestore timestamps
+                                    if (typeof settings.admin2MemberSince === 'string') {
+                                        admin2Data.memberSince = settings.admin2MemberSince;
+                                    } else if (settings.admin2MemberSince && settings.admin2MemberSince.toDate) {
+                                        // Convert Firestore timestamp to YYYY-MM-DD format
+                                        const date = settings.admin2MemberSince.toDate();
+                                        const year = date.getFullYear();
+                                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                                        const day = String(date.getDate()).padStart(2, '0');
+                                        admin2Data.memberSince = `${year}-${month}-${day}`;
+                                    }
+                                }
+                                if (settings.admin2Initial !== undefined && settings.admin2Initial !== null) {
+                                    admin2Data.initial = parseFloat(settings.admin2Initial) || 0;
+                                }
                                 if (settings.admin2Strategy) admin2Data.strategy = settings.admin2Strategy;
                             }
                         }
@@ -2932,30 +2951,52 @@
                 
                 try {
                     if (window.admin2FirestoreService) {
+                        console.log('Loading Admin2 data from Firestore...');
                         const settings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                        console.log('Loaded Admin2 settings from Firestore:', settings);
+                        
                         if (settings) {
-                            // Load all saved values
+                            // Load all saved values with proper fallbacks
                             if (settings.profileName) admin2Data.name = settings.profileName;
                             if (settings.admin2Email) admin2Data.email = settings.admin2Email;
                             if (settings.admin2Account) admin2Data.account = settings.admin2Account;
                             if (settings.admin2Status) admin2Data.status = settings.admin2Status;
-                            if (settings.admin2MemberSince) admin2Data.memberSince = settings.admin2MemberSince;
-                            if (settings.admin2Initial !== undefined) admin2Data.initial = settings.admin2Initial;
+                            if (settings.admin2MemberSince) {
+                                // Handle both string dates and Firestore timestamps
+                                if (typeof settings.admin2MemberSince === 'string') {
+                                    admin2Data.memberSince = settings.admin2MemberSince;
+                                } else if (settings.admin2MemberSince && settings.admin2MemberSince.toDate) {
+                                    // Convert Firestore timestamp to YYYY-MM-DD format
+                                    const date = settings.admin2MemberSince.toDate();
+                                    const year = date.getFullYear();
+                                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                                    const day = String(date.getDate()).padStart(2, '0');
+                                    admin2Data.memberSince = `${year}-${month}-${day}`;
+                                }
+                            }
+                            if (settings.admin2Initial !== undefined && settings.admin2Initial !== null) {
+                                admin2Data.initial = parseFloat(settings.admin2Initial) || 0;
+                            }
                             if (settings.admin2Strategy) admin2Data.strategy = settings.admin2Strategy;
                         }
+                    } else {
+                        console.warn('Admin2 Firestore service not available');
                     }
                 } catch (error) {
                     console.error('Error loading Admin2 data:', error);
+                    alert('Error loading Admin2 data: ' + error.message);
                 }
                 
+                console.log('Populating form with Admin2 data:', admin2Data);
+                
                 // Populate form fields with loaded data
-                document.getElementById('edit-user-name').value = admin2Data.name;
-                document.getElementById('edit-user-email').value = admin2Data.email;
-                document.getElementById('edit-user-account').value = admin2Data.account;
-                document.getElementById('edit-user-status').value = admin2Data.status;
-                document.getElementById('edit-user-member-since').value = admin2Data.memberSince;
-                document.getElementById('edit-user-initial').value = admin2Data.initial;
-                document.getElementById('edit-user-strategy').value = admin2Data.strategy;
+                document.getElementById('edit-user-name').value = admin2Data.name || '';
+                document.getElementById('edit-user-email').value = admin2Data.email || '';
+                document.getElementById('edit-user-account').value = admin2Data.account || '';
+                document.getElementById('edit-user-status').value = admin2Data.status || 'Active';
+                document.getElementById('edit-user-member-since').value = admin2Data.memberSince || '';
+                document.getElementById('edit-user-initial').value = admin2Data.initial || 0;
+                document.getElementById('edit-user-strategy').value = admin2Data.strategy || '';
                 
                 modal.setAttribute('data-edit-id', 'admin2');
                 modal.setAttribute('data-admin2-mode', 'true');
@@ -3071,13 +3112,13 @@
                         } else if (isAdmin2Mode) {
                             // Edit Admin2 account - save to profile settings
                             const updateData = {
-                                name: document.getElementById('edit-user-name').value,
-                                email: document.getElementById('edit-user-email').value,
-                                account: document.getElementById('edit-user-account').value,
+                                name: document.getElementById('edit-user-name').value.trim(),
+                                email: document.getElementById('edit-user-email').value.trim(),
+                                account: document.getElementById('edit-user-account').value.trim(),
                                 status: document.getElementById('edit-user-status').value,
                                 memberSince: document.getElementById('edit-user-member-since').value,
                                 initial: parseFloat(document.getElementById('edit-user-initial').value) || 0,
-                                strategy: document.getElementById('edit-user-strategy').value
+                                strategy: document.getElementById('edit-user-strategy').value.trim()
                             };
                             
                             // Validate required fields
@@ -3090,17 +3131,29 @@
                             
                             // Update profile settings in Firestore
                             try {
-                                await window.admin2FirestoreService.updateAdmin2ProfileSettings({
+                                const settingsToSave = {
                                     profileName: updateData.name,
                                     admin2Email: updateData.email,
                                     admin2Account: updateData.account,
                                     admin2Status: updateData.status,
-                                    admin2MemberSince: updateData.memberSince,
+                                    admin2MemberSince: updateData.memberSince || '',
                                     admin2Initial: updateData.initial,
                                     admin2Strategy: updateData.strategy
-                                });
+                                };
                                 
-                                console.log('Admin2 account updated successfully in Firestore');
+                                console.log('Saving Admin2 settings to Firestore:', settingsToSave);
+                                
+                                await window.admin2FirestoreService.updateAdmin2ProfileSettings(settingsToSave);
+                                
+                                // Verify the save by reading it back
+                                const savedSettings = await window.admin2FirestoreService.getAdmin2ProfileSettings();
+                                console.log('Verified saved Admin2 settings from Firestore:', savedSettings);
+                                
+                                if (!savedSettings || savedSettings.profileName !== updateData.name) {
+                                    throw new Error('Failed to verify saved data. Please try again.');
+                                }
+                                
+                                console.log('Admin2 account updated successfully in Firestore and verified');
                             } catch (error) {
                                 console.error('Error updating Admin2 profile settings:', error);
                                 alert('Error saving Admin2 account: ' + error.message);
@@ -3115,13 +3168,13 @@
                                 profileNameElement.textContent = updateData.name;
                             }
                             
-                            // Reload the list to refresh Admin2 widget if needed
-                            await loadUsersList();
+                            // Close modal first
                             closeUserEditModal();
                             
+                            // Reload the list to refresh Admin2 widget with fresh data from Firestore
+                            await loadUsersList();
+                            
                             // Re-enable button
-                            submitButton.disabled = false;
-                            submitButton.textContent = originalButtonText;
                             submitButton.disabled = false;
                             submitButton.textContent = originalButtonText;
                             return;

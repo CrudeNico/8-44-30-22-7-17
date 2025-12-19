@@ -377,8 +377,12 @@ async function getAdmin2ProfileSettings() {
         const settingsRef = db.collection(ADMIN2_SETTINGS_COLLECTION).doc(ADMIN2_SETTINGS_DOC_ID);
         const settingsSnap = await settingsRef.get();
         
-        if (settingsSnap.exists()) {
-            return settingsSnap.data();
+        // Check if document exists - safest approach: try to get data
+        // If document doesn't exist, data() returns undefined
+        const data = settingsSnap.data();
+        
+        if (data !== undefined && data !== null) {
+            return data;
         } else {
             return null;
         }
