@@ -4022,17 +4022,39 @@
                 
                 // For investors, disable all fields except tier and hide password
                 const isInvestor = userType === 'investor';
-                document.getElementById('user-username').disabled = isInvestor;
-                document.getElementById('user-email').disabled = isInvestor;
-                document.getElementById('user-firstname').disabled = isInvestor;
-                document.getElementById('user-lastname').disabled = isInvestor;
-                document.getElementById('user-phone').disabled = isInvestor;
+                const usernameField = document.getElementById('user-username');
+                const emailField = document.getElementById('user-email');
+                const firstnameField = document.getElementById('user-firstname');
+                const lastnameField = document.getElementById('user-lastname');
+                const phoneField = document.getElementById('user-phone');
+                
+                if (isInvestor) {
+                    // Disable fields and remove required attribute for investors
+                    usernameField.disabled = true;
+                    usernameField.removeAttribute('required');
+                    emailField.disabled = true;
+                    emailField.removeAttribute('required');
+                    firstnameField.disabled = true;
+                    lastnameField.disabled = true;
+                    phoneField.disabled = true;
+                } else {
+                    // Enable fields and add required for learning users
+                    usernameField.disabled = false;
+                    usernameField.setAttribute('required', 'required');
+                    emailField.disabled = false;
+                    emailField.setAttribute('required', 'required');
+                    firstnameField.disabled = false;
+                    lastnameField.disabled = false;
+                    phoneField.disabled = false;
+                }
                 
                 // Password field handling
                 if (isInvestor) {
-                    // Hide password field for investors
+                    // Hide password field for investors and remove required attribute
                     passwordField.style.display = 'none';
                     passwordField.parentElement.style.display = 'none';
+                    passwordField.removeAttribute('required');
+                    passwordField.required = false;
                 } else {
                     // Show password field for learning users, but make it read-only (view only)
                     passwordField.parentElement.style.display = 'block';
@@ -4043,6 +4065,7 @@
                     passwordField.disabled = false; // Keep enabled for styling
                     passwordField.style.backgroundColor = '#f3f4f6';
                     passwordField.style.cursor = 'not-allowed';
+                    passwordField.removeAttribute('required');
                     passwordField.required = false;
                     passwordHint.textContent = 'Password is hidden for security. Contact system administrator to change password.';
                 }
@@ -4101,9 +4124,13 @@
                     passwordField.style.cursor = '';
                     passwordHint.textContent = 'Enter password for new user';
                     
-                    // Enable all fields for new user
-                    document.getElementById('user-username').disabled = false;
-                    document.getElementById('user-email').disabled = false;
+                    // Enable all fields for new user and ensure required attributes are set
+                    const usernameField = document.getElementById('user-username');
+                    const emailField = document.getElementById('user-email');
+                    usernameField.disabled = false;
+                    usernameField.setAttribute('required', 'required');
+                    emailField.disabled = false;
+                    emailField.setAttribute('required', 'required');
                     document.getElementById('user-firstname').disabled = false;
                     document.getElementById('user-lastname').disabled = false;
                     document.getElementById('user-phone').disabled = false;
@@ -4190,9 +4217,18 @@
                     }
                     
                     // Validate required fields
-                    if (!username || !email || !tier) {
-                        alert('Please fill in all required fields');
-                        return;
+                    // For investors, only validate tier (other fields are view-only)
+                    if (editType === 'investor') {
+                        if (!tier) {
+                            alert('Please select a tier');
+                            return;
+                        }
+                    } else {
+                        // For learning users, validate all required fields
+                        if (!username || !email || !tier) {
+                            alert('Please fill in all required fields');
+                            return;
+                        }
                     }
                     
                     const submitBtn = userForm.querySelector('button[type="submit"]');
