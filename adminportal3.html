@@ -651,14 +651,6 @@
                                 <textarea id="message-text" class="admin-form-input" rows="8" placeholder="Write your message here..." required style="resize: vertical;"></textarea>
                             </div>
                             
-                            <div class="admin-form-group">
-                                <label for="message-images">Add Images/Pictures</label>
-                                <input type="file" id="message-images" class="admin-form-input" accept="image/*" multiple>
-                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">You can select multiple images (JPG, PNG, GIF)</span>
-                                <div id="message-images-preview" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
-                                    <!-- Image previews will be shown here -->
-                            </div>
-                            </div>
                             
                             <div class="admin-form-actions">
                                 <button type="button" class="admin-btn-cancel" id="clear-message-form">Clear</button>
@@ -686,26 +678,32 @@
                                 <label for="weekly-report-file">Upload Weekly PDF Report</label>
                                 <input type="file" id="weekly-report-file" class="admin-form-input" accept=".pdf" required>
                                 <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 10MB</span>
+                                <div id="weekly-file-selected-info" style="margin-top: 0.5rem; padding: 0.75rem; background: #eff6ff; border-radius: 6px; display: none;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                        </svg>
+                                        <div>
+                                            <div style="font-weight: 600; color: #1e40af;" id="weekly-selected-file-name"></div>
+                                            <div style="font-size: 0.75rem; color: #374151;" id="weekly-selected-file-size"></div>
+                                        </div>
+                                        <button type="button" id="weekly-remove-file-btn" style="margin-left: auto; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 0.25rem 0.5rem; font-size: 0.75rem; cursor: pointer;">Remove</button>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
-                                <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: #1f2937;">Weekly Analysis Video (Optional)</h3>
-                                
-                                <div class="admin-form-group">
-                                    <label for="weekly-video-title">Video Title</label>
-                                    <input type="text" id="weekly-video-title" class="admin-form-input" placeholder="Enter video title">
+                            <div id="weekly-upload-progress" style="margin-top: 0.5rem; padding: 0.75rem; background: #eff6ff; border-radius: 6px; display: none;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    <span style="font-size: 0.875rem; color: #374151;">Uploading...</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600; color: #2563eb;" id="weekly-upload-progress-percent">0%</span>
                                 </div>
-                                
-                                <div class="admin-form-group">
-                                    <label for="weekly-video-file">Upload MP4 Video</label>
-                                    <input type="file" id="weekly-video-file" class="admin-form-input" accept="video/mp4">
-                                    <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Maximum file size: 100MB</span>
-                                </div>
-                                
-                                <div id="weekly-video-preview" style="margin-top: 1rem; display: none;">
-                                    <video id="weekly-video-preview-player" controls style="width: 100%; max-height: 300px; border-radius: 6px; background: #000;">
-                                        Your browser does not support the video tag.
-                                    </video>
+                                <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                                    <div id="weekly-upload-progress-bar" style="height: 100%; background: #2563eb; width: 0%; transition: width 0.3s ease;"></div>
                                 </div>
                             </div>
                             
@@ -1149,6 +1147,12 @@
     <!-- Learning Users Firestore Service -->
     <script src="firestore-service-learning-users.js"></script>
     
+    <!-- Community Messages Firestore Service -->
+    <script src="firestore-service-community-messages.js"></script>
+    
+    <!-- Weekly Reports Firestore Service -->
+    <script src="firestore-service-weekly-reports.js"></script>
+    
     <!-- Firebase Configuration and Service -->
     <script>
         // Firebase configuration
@@ -1169,11 +1173,13 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
         const analytics = firebase.analytics();
+        const storage = firebase.storage();
         
         // Make available globally
         window.firebaseDb = db;
         window.firebaseAuth = auth;
         window.firebaseAnalytics = analytics;
+        window.firebaseStorage = storage;
         window.firebase = firebase;
         
         // Firestore Service Functions (using CDN API) - Shared collections for consultations and market news
@@ -2935,102 +2941,81 @@
             // New Reports Section - Message Sending and Weekly Report Upload
             
             // Store weekly reports data (only one report, replaces previous)
-            let weeklyReportData = null; // Object: { author, datePublished, file, fileName, videoTitle, videoFile, videoFileName, uploadDate }
+            let weeklyReportData = null; // Object: { author, datePublished, file, fileName, uploadDate }
             
             // Message sending form handler
-            let selectedImages = []; // Store selected images for message form
             const sendMessageForm = document.getElementById('send-message-form');
             if (sendMessageForm) {
-                // Image preview functionality
-                const messageImagesInput = document.getElementById('message-images');
-                const messageImagesPreview = document.getElementById('message-images-preview');
-                
-                if (messageImagesInput) {
-                    messageImagesInput.addEventListener('change', function(e) {
-                        const files = Array.from(e.target.files);
-                        selectedImages = files;
-                        messageImagesPreview.innerHTML = '';
-                        
-                        files.forEach((file, index) => {
-                            if (file.type.startsWith('image/')) {
-                                const reader = new FileReader();
-                                reader.onload = function(e) {
-                                    const previewDiv = document.createElement('div');
-                                    previewDiv.style.position = 'relative';
-                                    previewDiv.style.border = '1px solid #e5e7eb';
-                                    previewDiv.style.borderRadius = '6px';
-                                    previewDiv.style.overflow = 'hidden';
-                                    
-                                    const img = document.createElement('img');
-                                    img.src = e.target.result;
-                                    img.style.width = '100%';
-                                    img.style.height = '150px';
-                                    img.style.objectFit = 'cover';
-                                    img.style.display = 'block';
-                                    
-                                    const removeBtn = document.createElement('button');
-                                    removeBtn.textContent = '×';
-                                    removeBtn.style.position = 'absolute';
-                                    removeBtn.style.top = '0.25rem';
-                                    removeBtn.style.right = '0.25rem';
-                                    removeBtn.style.background = '#ef4444';
-                                    removeBtn.style.color = 'white';
-                                    removeBtn.style.border = 'none';
-                                    removeBtn.style.borderRadius = '50%';
-                                    removeBtn.style.width = '24px';
-                                    removeBtn.style.height = '24px';
-                                    removeBtn.style.cursor = 'pointer';
-                                    removeBtn.style.fontSize = '1.25rem';
-                                    removeBtn.style.lineHeight = '1';
-                                    removeBtn.onclick = function() {
-                                        // Remove the file from selectedImages array
-                                        const fileIndex = selectedImages.findIndex(f => f === file);
-                                        if (fileIndex > -1) {
-                                            selectedImages.splice(fileIndex, 1);
-                                        }
-                                        previewDiv.remove();
-                                        updateFileInput();
-                                    };
-                                    
-                                    previewDiv.appendChild(img);
-                                    previewDiv.appendChild(removeBtn);
-                                    messageImagesPreview.appendChild(previewDiv);
-                                };
-                                reader.readAsDataURL(file);
-                            }
-                        });
-                    });
-                }
-                
-                function updateFileInput() {
-                    const dt = new DataTransfer();
-                    selectedImages.forEach(file => dt.items.add(file));
-                    messageImagesInput.files = dt.files;
-                }
-                
-                sendMessageForm.addEventListener('submit', function(e) {
+                sendMessageForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
-                    const title = document.getElementById('message-title').value;
-                    const subheading = document.getElementById('message-subheading').value;
-                    const link = document.getElementById('message-link').value;
-                    const message = document.getElementById('message-text').value;
-                    const images = selectedImages;
+                    const title = document.getElementById('message-title').value.trim();
+                    const subheading = document.getElementById('message-subheading').value.trim();
+                    const link = document.getElementById('message-link').value.trim();
+                    const message = document.getElementById('message-text').value.trim();
                     
-                    // Here you would typically send this data to a server
-                    // For now, we'll just show a success message
-                    console.log('Message to send:', {
-                        title,
-                        subheading,
-                        link,
-                        message,
-                        images: images.map(img => img.name)
-                    });
+                    // Validate required fields
+                    if (!title || !message) {
+                        alert('Please fill in the title and message fields.');
+                        return;
+                    }
                     
-                    alert('Message sent successfully to community!');
-                    sendMessageForm.reset();
-                    selectedImages = [];
-                    messageImagesPreview.innerHTML = '';
+                    // Disable submit button to prevent double submission
+                    const submitBtn = sendMessageForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                    
+                    try {
+                        // Check if Firestore service is available
+                        if (!window.communityMessagesFirestoreService) {
+                            throw new Error('Community messages service not available. Please refresh the page.');
+                        }
+                        
+                        // Prepare message data
+                        const messageData = {
+                            title: title,
+                            subheading: subheading,
+                            link: link,
+                            message: message,
+                            professor: 'Admin', // You can get this from admin profile if needed
+                            professorTitle: 'Administrator' // You can get this from admin profile if needed
+                        };
+                        
+                        // Save message to Firestore
+                        const messageId = await window.communityMessagesFirestoreService.saveCommunityMessage(messageData);
+                        
+                        // Success - show notification (less intrusive than alert)
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10000; font-size: 0.875rem; max-width: 400px;';
+                        notification.textContent = 'Message sent successfully to community!';
+                        document.body.appendChild(notification);
+                        
+                        // Remove notification after 3 seconds
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.3s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 300);
+                        }, 3000);
+                        
+                        console.log('Message saved successfully with ID:', messageId);
+                        console.log('Message data saved:', {
+                            title: title,
+                            subheading: subheading,
+                            link: link,
+                            message: message.substring(0, 50) + '...'
+                        });
+                        
+                        // Reset form
+                        sendMessageForm.reset();
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                        alert('Error sending message: ' + error.message);
+                    } finally {
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 });
             }
             
@@ -3040,95 +3025,186 @@
                 clearMessageForm.addEventListener('click', function() {
                     const form = document.getElementById('send-message-form');
                     form.reset();
-                    selectedImages = [];
-                    const preview = document.getElementById('message-images-preview');
-                    if (preview) preview.innerHTML = '';
                 });
             }
             
             // Weekly report upload form handler
             const weeklyReportUploadForm = document.getElementById('weekly-report-upload-form');
             if (weeklyReportUploadForm) {
-                // Video preview functionality
-                const weeklyVideoFileInput = document.getElementById('weekly-video-file');
-                const weeklyVideoPreview = document.getElementById('weekly-video-preview');
-                const weeklyVideoPreviewPlayer = document.getElementById('weekly-video-preview-player');
+                // PDF file preview functionality
+                const weeklyReportFileInput = document.getElementById('weekly-report-file');
+                const fileSelectedInfo = document.getElementById('weekly-file-selected-info');
+                const selectedFileName = document.getElementById('weekly-selected-file-name');
+                const selectedFileSize = document.getElementById('weekly-selected-file-size');
+                const removeFileBtn = document.getElementById('weekly-remove-file-btn');
                 
-                if (weeklyVideoFileInput && weeklyVideoPreview && weeklyVideoPreviewPlayer) {
-                    weeklyVideoFileInput.addEventListener('change', function(e) {
+                if (weeklyReportFileInput && fileSelectedInfo) {
+                    weeklyReportFileInput.addEventListener('change', function(e) {
                         const file = e.target.files[0];
-                        if (file && file.type === 'video/mp4') {
-                            const url = URL.createObjectURL(file);
-                            weeklyVideoPreviewPlayer.src = url;
-                            weeklyVideoPreview.style.display = 'block';
-                        } else if (file) {
-                            alert('Please select an MP4 video file.');
-                            e.target.value = '';
-                            weeklyVideoPreview.style.display = 'none';
+                        if (file) {
+                            // Check if it's a PDF
+                            if (file.type.includes('pdf') || file.name.toLowerCase().endsWith('.pdf')) {
+                                // Show preview
+                                selectedFileName.textContent = file.name;
+                                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                                selectedFileSize.textContent = `${fileSizeMB} MB`;
+                                fileSelectedInfo.style.display = 'block';
+                            } else {
+                                alert('Please select a PDF file.');
+                                e.target.value = '';
+                                fileSelectedInfo.style.display = 'none';
+                            }
                         } else {
-                            weeklyVideoPreview.style.display = 'none';
+                            fileSelectedInfo.style.display = 'none';
                         }
                     });
+                    
+                    // Remove button functionality
+                    if (removeFileBtn) {
+                        removeFileBtn.addEventListener('click', function() {
+                            weeklyReportFileInput.value = '';
+                            fileSelectedInfo.style.display = 'none';
+                        });
+                    }
                 }
                 
-                weeklyReportUploadForm.addEventListener('submit', function(e) {
+                weeklyReportUploadForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
-                    const author = document.getElementById('weekly-report-author').value;
+                    const author = document.getElementById('weekly-report-author').value.trim();
                     const datePublished = document.getElementById('weekly-report-date-published').value;
                     const fileInput = document.getElementById('weekly-report-file');
-                    const videoTitle = document.getElementById('weekly-video-title').value;
-                    const videoFileInput = document.getElementById('weekly-video-file');
+                    const file = fileInput.files[0];
                     
-                    if (!fileInput.files || fileInput.files.length === 0) {
+                    // Validate required fields
+                    if (!author || !datePublished) {
+                        alert('Please fill in the author and date published fields.');
+                        return;
+                    }
+                    
+                    if (!file) {
                         alert('Please select a PDF file to upload.');
                         return;
                     }
                     
-                    const file = fileInput.files[0];
-                    
-                    // Check PDF file size (10MB limit)
                     if (file.size > 10 * 1024 * 1024) {
-                        alert('PDF file size exceeds 10MB limit.');
+                        alert('File size exceeds 10MB limit.');
                         return;
                     }
                     
-                    // Process video if uploaded
-                    let videoFile = null;
-                    let videoFileName = null;
-                    if (videoFileInput.files && videoFileInput.files.length > 0) {
-                        videoFile = videoFileInput.files[0];
-                        
-                        // Check video file size (100MB limit)
-                        if (videoFile.size > 100 * 1024 * 1024) {
-                            alert('Video file size exceeds 100MB limit.');
-                            return;
-                        }
-                        
-                        // Check if it's an MP4 file
-                        if (!videoFile.type.includes('mp4')) {
-                            alert('Please upload an MP4 video file.');
-                            return;
-                        }
-                        
-                        videoFileName = videoFile.name;
+                    if (!file.type.includes('pdf')) {
+                        alert('Please upload a PDF file.');
+                        return;
                     }
                     
-                    // Replace previous report (only one report, replaces previous)
-                    weeklyReportData = {
-                        author: author,
-                        datePublished: datePublished,
-                        file: file,
-                        fileName: file.name,
-                        videoTitle: videoTitle || null,
-                        videoFile: videoFile,
-                        videoFileName: videoFileName,
-                        uploadDate: new Date().toISOString()
-                    };
-                    
-                    weeklyReportUploadForm.reset();
-                    if (weeklyVideoPreview) weeklyVideoPreview.style.display = 'none';
-                    alert('Weekly report uploaded successfully! The previous report has been replaced.');
+                    try {
+                        // Show loading state
+                        const submitBtn = weeklyReportUploadForm.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        const progressDiv = document.getElementById('weekly-upload-progress');
+                        const progressBar = document.getElementById('weekly-upload-progress-bar');
+                        const progressPercent = document.getElementById('weekly-upload-progress-percent');
+                        
+                        submitBtn.textContent = 'Uploading...';
+                        submitBtn.disabled = true;
+                        progressDiv.style.display = 'block';
+                        
+                        // Check file size - use base64 for files under 900KB to avoid CORS issues
+                        if (file.size > 900000) { // 900KB limit (Firestore has 1MB limit, leave buffer)
+                            throw new Error('File is too large (' + (file.size / 1024 / 1024).toFixed(2) + 'MB). Maximum size: 900KB. Please configure Firebase Storage rules to allow larger file uploads.');
+                        }
+                        
+                        // Convert file to base64 and store in Firestore
+                        progressPercent.textContent = 'Converting file...';
+                        progressBar.style.width = '30%';
+                        
+                        const reader = new FileReader();
+                        const fileBase64 = await new Promise((resolve, reject) => {
+                            reader.onload = () => {
+                                const base64String = reader.result.split(',')[1]; // Remove data:application/pdf;base64, prefix
+                                resolve(base64String);
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                        });
+                        
+                        progressBar.style.width = '60%';
+                        progressPercent.textContent = 'Saving to database...';
+                        
+                        // Store base64 in Firestore
+                        const downloadURL = 'data:application/pdf;base64,' + fileBase64;
+                        
+                        progressBar.style.width = '100%';
+                        progressPercent.textContent = '100%';
+                        
+                        // Check if Firebase is initialized
+                        if (!window.firebaseDb) {
+                            throw new Error('Firebase database not initialized. Please refresh the page.');
+                        }
+                        
+                        const db = window.firebaseDb;
+                        const reportRef = db.collection('weeklyReports').doc('current');
+                        
+                        // Get existing report to preserve createdAt
+                        let existingReport = null;
+                        try {
+                            const existingDoc = await reportRef.get();
+                            if (existingDoc.exists) {
+                                existingReport = existingDoc.data();
+                            }
+                        } catch (error) {
+                            console.log('No existing report found (this is fine for first upload)');
+                        }
+                        
+                        // Prepare report document
+                        const reportData = {
+                            author: author,
+                            datePublished: datePublished,
+                            pdfFileName: file.name,
+                            fileSize: file.size,
+                            storageMethod: 'base64',
+                            fileBase64: fileBase64,
+                            fileUrl: 'base64', // Marker to indicate base64 storage
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        // Preserve createdAt if it exists, otherwise create new
+                        if (existingReport && existingReport.createdAt) {
+                            reportData.createdAt = existingReport.createdAt;
+                        } else {
+                            reportData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        }
+                        
+                        // Save to Firestore
+                        await reportRef.set(reportData, { merge: true });
+                        
+                        // Hide progress and show success
+                        setTimeout(() => {
+                            progressDiv.style.display = 'none';
+                            
+                            // Reset form
+                            weeklyReportUploadForm.reset();
+                            fileSelectedInfo.style.display = 'none';
+                        }, 500);
+                        
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        
+                        console.log('Weekly report saved successfully');
+                    } catch (error) {
+                        console.error('Error uploading weekly report:', error);
+                        alert('Error uploading weekly report: ' + error.message);
+                        
+                        // Re-enable submit button
+                        const submitBtn = weeklyReportUploadForm.querySelector('button[type="submit"]');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Upload Weekly Report';
+                        
+                        // Hide progress
+                        const progressDiv = document.getElementById('weekly-upload-progress');
+                        if (progressDiv) progressDiv.style.display = 'none';
+                    }
                 });
             }
             
@@ -3138,8 +3214,10 @@
                 clearWeeklyReportForm.addEventListener('click', function() {
                     const form = document.getElementById('weekly-report-upload-form');
                     form.reset();
-                    const videoPreview = document.getElementById('weekly-video-preview');
-                    if (videoPreview) videoPreview.style.display = 'none';
+                    const fileSelectedInfo = document.getElementById('weekly-file-selected-info');
+                    if (fileSelectedInfo) fileSelectedInfo.style.display = 'none';
+                    const progressDiv = document.getElementById('weekly-upload-progress');
+                    if (progressDiv) progressDiv.style.display = 'none';
                 });
             }
             

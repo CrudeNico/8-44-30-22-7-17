@@ -395,17 +395,16 @@
             </div>
             
             <!-- Report Viewer Modal -->
-            <div id="report-viewer-modal" class="admin-modal" style="display: none;">
-                <div class="admin-modal-overlay"></div>
-                <div class="admin-modal-container" style="max-width: 90%; max-height: 90vh;">
-                    <button class="admin-modal-close" aria-label="Close modal">&times;</button>
+            <div id="report-viewer-modal" class="admin-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; overflow-y: auto; pointer-events: none;">
+                <div class="admin-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; min-height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; pointer-events: auto;"></div>
+                <div class="admin-modal-container" id="report-viewer-container" style="max-width: 100%; width: auto; max-height: 85vh; position: fixed; top: auto; bottom: auto; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);">
                     <div class="admin-modal-content" style="padding: 0;">
-                        <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
-                            <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0;">Monthly Report</h2>
-                            <button id="download-report-btn" class="admin-btn-save" style="padding: 0.5rem 1rem;">Download</button>
+                        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 12px 12px 0 0;">
+                            <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">Monthly Report</h2>
+                            <span id="report-viewer-close" style="cursor: pointer; color: #6b7280; font-size: 1.5rem; line-height: 1; padding: 0.25rem; transition: color 0.2s;" onmouseover="this.style.color='#1f2937'" onmouseout="this.style.color='#6b7280'">&times;</span>
                         </div>
-                        <div style="padding: 2rem; overflow: auto; max-height: calc(90vh - 100px);">
-                            <iframe id="report-viewer-iframe" style="width: 100%; height: 800px; border: 1px solid #e5e7eb; border-radius: 6px;"></iframe>
+                        <div style="padding: 1.5rem; overflow: auto; max-height: calc(85vh - 80px); background: #f9fafb;">
+                            <iframe id="report-viewer-iframe" style="width: 100%; height: 750px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"></iframe>
                         </div>
                     </div>
                 </div>
@@ -495,7 +494,7 @@
                             <h3 class="dashboard-widget-title">Weekly Reports</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div id="weekly-reports-display" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div id="weekly-reports-display" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
                                 <!-- Weekly Reports will be populated by JavaScript -->
                             </div>
                         </div>
@@ -559,6 +558,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Community Messages Firestore Service -->
+    <script src="firestore-service-community-messages.js"></script>
+    
+    <!-- Weekly Reports Firestore Service -->
+    <script src="firestore-service-weekly-reports.js"></script>
     
     <!-- Firebase Configuration and Service -->
     <script>
@@ -2583,22 +2588,14 @@
             // Report viewer modal event listeners
             const reportViewerModal = document.getElementById('report-viewer-modal');
             if (reportViewerModal) {
-                reportViewerModal.querySelector('.admin-modal-close')?.addEventListener('click', closeReportViewerModal);
-                reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
-                
-                // Download report button
-                const downloadReportBtn = document.getElementById('download-report-btn');
-                if (downloadReportBtn) {
-                    downloadReportBtn.addEventListener('click', function() {
-                        const fileUrl = this.getAttribute('data-url') || '';
-                        const fileName = this.getAttribute('data-filename') || 'report.pdf';
-                        const fileBase64 = this.getAttribute('data-base64') || '';
-                        const storageMethod = this.getAttribute('data-storage-method') || 'storage';
-                        if (fileUrl || fileBase64) {
-                            downloadReportFile(fileUrl, fileName, fileBase64, storageMethod);
-                        }
-                    });
+                // Close button (simple X on the right)
+                const closeBtn = document.getElementById('report-viewer-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeReportViewerModal);
                 }
+                
+                // Close on overlay click
+                reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
             }
             
             // Dashboard form handlers
@@ -3515,126 +3512,221 @@
             }
             
             // Professors' Messages Section
-            let professorsMessages = [
-                {
-                    id: 1,
-                    professor: 'Dr. Sarah Johnson',
-                    title: 'Market Analysis Expert',
-                    message: 'The crude oil market is showing strong fundamentals this quarter. Key indicators suggest continued upward momentum.',
-                    timestamp: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
-                },
-                {
-                    id: 2,
-                    professor: 'Prof. Michael Chen',
-                    title: 'Trading Strategy Specialist',
-                    message: 'Remember to always use stop-loss orders when trading volatile commodities. Risk management is crucial for long-term success.',
-                    timestamp: new Date(Date.now() - 10800000).toISOString() // 3 hours ago
-                },
-                {
-                    id: 3,
-                    professor: 'Dr. Emily Rodriguez',
-                    title: 'Energy Economics Professor',
-                    message: 'OPEC decisions continue to be a major driver of oil prices. Keep an eye on production quotas and inventory reports.',
-                    timestamp: new Date(Date.now() - 14400000).toISOString() // 4 hours ago
-                },
-                {
-                    id: 4,
-                    professor: 'Prof. James Wilson',
-                    title: 'Technical Analysis Expert',
-                    message: 'The current chart patterns suggest a potential breakout. Monitor key resistance levels closely in the coming days.',
-                    timestamp: new Date(Date.now() - 18000000).toISOString() // 5 hours ago
-                }
-            ];
+            let professorsMessages = []; // Will be loaded from Firestore
             
-            function loadProfessorsMessages() {
+            async function loadProfessorsMessages() {
                 const container = document.getElementById('professors-messages-container');
                 if (!container) return;
                 
-                container.innerHTML = '';
+                // Show loading state
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">Loading messages...</p>';
                 
-                if (professorsMessages.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages from professors yet.</p>';
-                    return;
+                try {
+                    // Check if Firestore service is available
+                    if (!window.communityMessagesFirestoreService) {
+                        console.error('Community messages service not available');
+                        container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">Service not available. Please refresh the page.</p>';
+                        return;
+                    }
+                    
+                    // Load messages from Firestore
+                    professorsMessages = await window.communityMessagesFirestoreService.getAllCommunityMessages();
+                    
+                    container.innerHTML = '';
+                    
+                    if (professorsMessages.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages from professors yet.</p>';
+                        return;
+                    }
+                    
+                    // Sort messages by timestamp (newest first) so most recent messages appear at the top
+                    const sortedMessages = [...professorsMessages].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    sortedMessages.forEach(msg => {
+                        const messageCard = document.createElement('div');
+                        messageCard.style.background = 'white';
+                        messageCard.style.padding = '1rem';
+                        messageCard.style.borderRadius = '8px';
+                        messageCard.style.border = '1px solid #e5e7eb';
+                        messageCard.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                        messageCard.style.flexShrink = '0';
+                        messageCard.style.width = '100%';
+                        messageCard.style.boxSizing = 'border-box';
+                        
+                        const professorName = document.createElement('div');
+                        professorName.style.fontSize = '0.875rem';
+                        professorName.style.fontWeight = '700';
+                        professorName.style.color = '#1f2937';
+                        professorName.style.marginBottom = '0.25rem';
+                        professorName.textContent = msg.professor || 'Admin';
+                        
+                        const professorTitle = document.createElement('div');
+                        professorTitle.style.fontSize = '0.75rem';
+                        professorTitle.style.color = '#2563eb';
+                        professorTitle.style.marginBottom = '0.5rem';
+                        professorTitle.textContent = msg.professorTitle || 'Administrator';
+                        
+                        // Append professor name and title first
+                        messageCard.appendChild(professorName);
+                        messageCard.appendChild(professorTitle);
+                        
+                        // Message title (if exists)
+                        if (msg.messageTitle) {
+                            const messageTitle = document.createElement('div');
+                            messageTitle.style.fontSize = '0.875rem';
+                            messageTitle.style.fontWeight = '600';
+                            messageTitle.style.color = '#1f2937';
+                            messageTitle.style.marginBottom = '0.5rem';
+                            messageTitle.textContent = msg.messageTitle;
+                            messageCard.appendChild(messageTitle);
+                        }
+                        
+                        // Subheading (if exists)
+                        if (msg.subheading) {
+                            const subheading = document.createElement('div');
+                            subheading.style.fontSize = '0.8125rem';
+                            subheading.style.color = '#6b7280';
+                            subheading.style.marginBottom = '0.5rem';
+                            subheading.style.fontStyle = 'italic';
+                            subheading.textContent = msg.subheading;
+                            messageCard.appendChild(subheading);
+                        }
+                        
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.color = '#374151';
+                        messageText.style.lineHeight = '1.6';
+                        messageText.style.marginBottom = '0.75rem';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message || '';
+                        messageCard.appendChild(messageText);
+                        
+                        // Link (if exists)
+                        if (msg.link) {
+                            const linkDiv = document.createElement('div');
+                            linkDiv.style.marginBottom = '0.75rem';
+                            const link = document.createElement('a');
+                            link.href = msg.link;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            link.style.cssText = 'color: #2563eb; text-decoration: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;';
+                            link.innerHTML = msg.link + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>';
+                            linkDiv.appendChild(link);
+                            messageCard.appendChild(linkDiv);
+                        }
+                        
+                        // Images (if exist)
+                        if (msg.imageUrls && msg.imageUrls.length > 0) {
+                            const imagesContainer = document.createElement('div');
+                            imagesContainer.style.display = 'grid';
+                            imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                            imagesContainer.style.gap = '0.5rem';
+                            imagesContainer.style.marginBottom = '0.75rem';
+                            
+                            msg.imageUrls.forEach(imageUrl => {
+                                const imgWrapper = document.createElement('div');
+                                imgWrapper.style.position = 'relative';
+                                imgWrapper.style.borderRadius = '6px';
+                                imgWrapper.style.overflow = 'hidden';
+                                imgWrapper.style.cursor = 'pointer';
+                                
+                                const img = document.createElement('img');
+                                img.src = imageUrl;
+                                img.style.width = '100%';
+                                img.style.height = '150px';
+                                img.style.objectFit = 'cover';
+                                img.style.display = 'block';
+                                img.onclick = function() {
+                                    // Open image in new tab/window
+                                    window.open(imageUrl, '_blank');
+                                };
+                                
+                                imgWrapper.appendChild(img);
+                                imagesContainer.appendChild(imgWrapper);
+                            });
+                            
+                            messageCard.appendChild(imagesContainer);
+                        }
+                        
+                        const timestamp = document.createElement('div');
+                        timestamp.style.fontSize = '0.625rem';
+                        timestamp.style.color = '#9ca3af';
+                        const date = new Date(msg.timestamp);
+                        timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + ' • ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        messageCard.appendChild(timestamp);
+                        container.appendChild(messageCard);
+                    });
+                    
+                    // Scroll to top to show most recent messages initially (newest messages are at the top)
+                    container.scrollTop = 0;
+                } catch (error) {
+                    console.error('Error loading professors messages:', error);
+                    container.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 2rem;">Error loading messages. Please refresh the page.</p>';
                 }
-                
-                // Sort messages by timestamp (oldest first) so users scroll down to see newer messages
-                const sortedMessages = [...professorsMessages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                
-                sortedMessages.forEach(msg => {
-                    const messageCard = document.createElement('div');
-                    messageCard.style.background = 'white';
-                    messageCard.style.padding = '1rem';
-                    messageCard.style.borderRadius = '8px';
-                    messageCard.style.border = '1px solid #e5e7eb';
-                    messageCard.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
-                    messageCard.style.flexShrink = '0';
-                    messageCard.style.width = '100%';
-                    messageCard.style.boxSizing = 'border-box';
-                    
-                    const professorName = document.createElement('div');
-                    professorName.style.fontSize = '0.875rem';
-                    professorName.style.fontWeight = '700';
-                    professorName.style.color = '#1f2937';
-                    professorName.style.marginBottom = '0.25rem';
-                    professorName.textContent = msg.professor;
-                    
-                    const professorTitle = document.createElement('div');
-                    professorTitle.style.fontSize = '0.75rem';
-                    professorTitle.style.color = '#2563eb';
-                    professorTitle.style.marginBottom = '0.75rem';
-                    professorTitle.textContent = msg.title;
-                    
-                    const messageText = document.createElement('div');
-                    messageText.style.fontSize = '0.875rem';
-                    messageText.style.color = '#374151';
-                    messageText.style.lineHeight = '1.6';
-                    messageText.style.marginBottom = '0.75rem';
-                    messageText.style.whiteSpace = 'pre-wrap';
-                    messageText.style.wordBreak = 'break-word';
-                    messageText.textContent = msg.message;
-                    
-                    const timestamp = document.createElement('div');
-                    timestamp.style.fontSize = '0.625rem';
-                    timestamp.style.color = '#9ca3af';
-                    const date = new Date(msg.timestamp);
-                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + ' • ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    
-                    messageCard.appendChild(professorName);
-                    messageCard.appendChild(professorTitle);
-                    messageCard.appendChild(messageText);
-                    messageCard.appendChild(timestamp);
-                    container.appendChild(messageCard);
-                });
-                
-                // Scroll to bottom to show most recent messages initially
-                container.scrollTop = container.scrollHeight;
             }
             
             // Weekly Reports Section
-            // Sample weekly report data (in a real app, this would come from the admin portal)
-            let weeklyReportData = {
-                author: 'Dr. Sarah Johnson',
-                datePublished: '2024-12-15',
-                fileName: 'Weekly_Report_Dec_15_2024.pdf',
-                fileUrl: '#', // In real app, this would be the actual file URL
-                videoTitle: 'Weekly Market Analysis - December 15, 2024',
-                videoFileName: 'weekly_analysis_dec_15_2024.mp4',
-                videoUrl: '#', // In real app, this would be the actual video URL
-                uploadDate: new Date().toISOString()
-            };
+            let weeklyReportData = null; // Will be loaded from Firestore
             
-            function loadWeeklyReports() {
+            async function loadWeeklyReports() {
                 const container = document.getElementById('weekly-reports-display');
                 if (!container) return;
                 
-                container.innerHTML = '';
+                // Show loading state
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">Loading weekly report...</div>';
                 
-                if (!weeklyReportData) {
-                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">No weekly reports available yet.</div>';
-                    return;
-                }
+                try {
+                    // Check if Firestore service is available
+                    if (!window.weeklyReportsFirestoreService) {
+                        console.error('Weekly reports service not available');
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">Service not available. Please refresh the page.</div>';
+                        return;
+                    }
+                    
+                    // Load weekly report from Firestore
+                    weeklyReportData = await window.weeklyReportsFirestoreService.getWeeklyReport();
+                    
+                    container.innerHTML = '';
+                    
+                    if (!weeklyReportData) {
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">No weekly reports available yet.</div>';
+                        return;
+                    }
                 
-                // PDF Report Section (Left)
+                // Weekly Report Header
+                const reportHeader = document.createElement('div');
+                reportHeader.style.gridColumn = '1 / -1';
+                reportHeader.style.background = 'white';
+                reportHeader.style.padding = '1.5rem';
+                reportHeader.style.borderRadius = '8px';
+                reportHeader.style.border = '1px solid #e5e7eb';
+                reportHeader.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                reportHeader.style.marginBottom = '1rem';
+                
+                const headerTitle = document.createElement('h3');
+                headerTitle.style.margin = '0 0 1rem 0';
+                headerTitle.style.fontSize = '1.25rem';
+                headerTitle.style.fontWeight = '600';
+                headerTitle.style.color = '#1f2937';
+                headerTitle.textContent = 'Weekly Report';
+                
+                const headerInfo = document.createElement('div');
+                headerInfo.style.display = 'grid';
+                headerInfo.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+                headerInfo.style.gap = '1rem';
+                headerInfo.style.fontSize = '0.875rem';
+                headerInfo.style.color = '#6b7280';
+                headerInfo.innerHTML = `
+                    <div><strong>Author:</strong> ${weeklyReportData.author || 'N/A'}</div>
+                    <div><strong>Date Published:</strong> ${weeklyReportData.datePublished ? new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</div>
+                `;
+                
+                reportHeader.appendChild(headerTitle);
+                reportHeader.appendChild(headerInfo);
+                container.appendChild(reportHeader);
+                
+                // PDF Report Section
                 const pdfSection = document.createElement('div');
                 pdfSection.style.background = 'white';
                 pdfSection.style.padding = '1.5rem';
@@ -3642,161 +3734,185 @@
                 pdfSection.style.border = '1px solid #e5e7eb';
                 pdfSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
                 pdfSection.style.display = 'flex';
-                pdfSection.style.gap = '1.5rem';
-                pdfSection.style.alignItems = 'center';
+                pdfSection.style.flexDirection = 'column';
+                pdfSection.style.gap = '1rem';
                 
-                const pdfContent = document.createElement('div');
-                pdfContent.style.flex = '1';
+                // Title and file info with view button on the right
+                const pdfHeader = document.createElement('div');
+                pdfHeader.style.display = 'flex';
+                pdfHeader.style.justifyContent = 'space-between';
+                pdfHeader.style.alignItems = 'center';
+                pdfHeader.style.marginBottom = '1rem';
                 
+                const pdfTitleContainer = document.createElement('div');
                 const pdfTitle = document.createElement('h4');
-                pdfTitle.style.margin = '0 0 1rem 0';
+                pdfTitle.style.margin = '0 0 0.25rem 0';
                 pdfTitle.style.fontSize = '1.125rem';
                 pdfTitle.style.fontWeight = '600';
                 pdfTitle.style.color = '#1f2937';
-                pdfTitle.textContent = 'Weekly PDF Report';
+                pdfTitle.textContent = 'PDF Report';
                 
                 const pdfInfo = document.createElement('div');
-                pdfInfo.style.marginBottom = '1rem';
                 pdfInfo.style.fontSize = '0.875rem';
                 pdfInfo.style.color = '#6b7280';
-                pdfInfo.innerHTML = `
-                    <div style="margin-bottom: 0.5rem;"><strong>Author:</strong> ${weeklyReportData.author}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Date Published:</strong> ${new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                    <div><strong>File:</strong> ${weeklyReportData.fileName}</div>
-                `;
+                pdfInfo.innerHTML = `<strong>File:</strong> ${weeklyReportData.pdfFileName || 'N/A'}`;
                 
-                pdfContent.appendChild(pdfTitle);
-                pdfContent.appendChild(pdfInfo);
+                pdfTitleContainer.appendChild(pdfTitle);
+                pdfTitleContainer.appendChild(pdfInfo);
                 
-                // PDF Cover Image (Right)
-                const pdfCoverContainer = document.createElement('div');
-                pdfCoverContainer.style.flexShrink = '0';
-                pdfCoverContainer.style.width = '350px';
-                pdfCoverContainer.style.height = '140px';
-                pdfCoverContainer.style.cursor = 'pointer';
-                pdfCoverContainer.style.borderRadius = '8px';
-                pdfCoverContainer.style.overflow = 'hidden';
-                pdfCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                pdfCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
-                
-                pdfCoverContainer.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.02)';
-                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                // Check if PDF URL exists and is not null/empty
+                const hasPdfUrl = weeklyReportData.pdfUrl && weeklyReportData.pdfUrl !== null && weeklyReportData.pdfUrl !== '';
+                console.log('Weekly report PDF check:', {
+                    pdfUrl: weeklyReportData.pdfUrl,
+                    hasPdfUrl: hasPdfUrl,
+                    pdfFileName: weeklyReportData.pdfFileName
                 });
                 
-                pdfCoverContainer.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                    this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                });
+                // Small "View" button on the right
+                if (hasPdfUrl) {
+                    const viewButton = document.createElement('button');
+                    viewButton.textContent = 'View';
+                    viewButton.style.padding = '0.375rem 0.75rem';
+                    viewButton.style.fontSize = '0.75rem';
+                    viewButton.style.fontWeight = '600';
+                    viewButton.style.color = 'white';
+                    viewButton.style.background = '#2563eb';
+                    viewButton.style.border = 'none';
+                    viewButton.style.borderRadius = '6px';
+                    viewButton.style.cursor = 'pointer';
+                    viewButton.style.transition = 'background 0.2s';
+                    viewButton.style.whiteSpace = 'nowrap';
+                    
+                    viewButton.addEventListener('mouseenter', function() {
+                        this.style.background = '#1d4ed8';
+                    });
+                    
+                    viewButton.addEventListener('mouseleave', function() {
+                        this.style.background = '#2563eb';
+                    });
+                    
+                    viewButton.addEventListener('click', function(e) {
+                        // Use storageMethod and fileBase64 from data if available, otherwise extract from URL
+                        let fileBase64 = weeklyReportData.fileBase64 || null;
+                        let storageMethod = weeklyReportData.storageMethod || 'storage';
+                        
+                        // If we have a data URL but no fileBase64, extract it
+                        if (!fileBase64 && weeklyReportData.pdfUrl && weeklyReportData.pdfUrl.startsWith('data:')) {
+                            storageMethod = 'base64';
+                            fileBase64 = weeklyReportData.pdfUrl.split(',')[1];
+                        }
+                        
+                        viewWeeklyReport(
+                            weeklyReportData.pdfUrl, 
+                            weeklyReportData.pdfFileName || 'Weekly Report',
+                            fileBase64,
+                            storageMethod,
+                            e.target
+                        );
+                    });
+                    
+                    pdfHeader.appendChild(pdfTitleContainer);
+                    pdfHeader.appendChild(viewButton);
+                } else {
+                    pdfHeader.appendChild(pdfTitleContainer);
+                    
+                    // PDF not available - show helpful message
+                    const noPdfMessage = document.createElement('div');
+                    noPdfMessage.style.marginTop = '1rem';
+                    noPdfMessage.style.padding = '2rem';
+                    noPdfMessage.style.textAlign = 'center';
+                    noPdfMessage.style.color = '#9ca3af';
+                    noPdfMessage.style.fontSize = '0.875rem';
+                    noPdfMessage.style.background = '#f3f4f6';
+                    noPdfMessage.style.borderRadius = '8px';
+                    noPdfMessage.innerHTML = '📄<br><br>PDF file not available<br><span style="font-size: 0.75rem; color: #9ca3af;">The file may still be uploading or there was an upload error.</span>';
+                    pdfSection.appendChild(noPdfMessage);
+                }
                 
-                pdfCoverContainer.addEventListener('click', function() {
-                    if (weeklyReportData.fileUrl && weeklyReportData.fileUrl !== '#') {
-                        window.open(weeklyReportData.fileUrl, '_blank');
-                    } else {
-                        alert('PDF download will be available once the report is uploaded by the admin.');
-                    }
-                });
+                pdfSection.appendChild(pdfHeader);
+                container.appendChild(pdfSection);
                 
-                const pdfCover = document.createElement('img');
-                pdfCover.src = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=560&fit=crop';
-                pdfCover.alt = 'PDF Cover';
-                pdfCover.style.width = '100%';
-                pdfCover.style.height = '100%';
-                pdfCover.style.objectFit = 'cover';
-                
-                pdfCoverContainer.appendChild(pdfCover);
-                
-                pdfSection.appendChild(pdfContent);
-                pdfSection.appendChild(pdfCoverContainer);
-                
-                // Video Section (Right)
-                const videoSection = document.createElement('div');
-                videoSection.style.background = 'white';
-                videoSection.style.padding = '1.5rem';
-                videoSection.style.borderRadius = '8px';
-                videoSection.style.border = '1px solid #e5e7eb';
-                videoSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                videoSection.style.display = 'flex';
-                videoSection.style.gap = '1.5rem';
-                videoSection.style.alignItems = 'center';
-                
-                const videoContent = document.createElement('div');
-                videoContent.style.flex = '1';
-                
-                const videoTitle = document.createElement('h4');
-                videoTitle.style.margin = '0 0 1rem 0';
-                videoTitle.style.fontSize = '1.125rem';
-                videoTitle.style.fontWeight = '600';
-                videoTitle.style.color = '#1f2937';
-                videoTitle.textContent = 'Weekly Analysis Video';
-                
-                const videoInfo = document.createElement('div');
-                videoInfo.style.fontSize = '0.875rem';
-                videoInfo.style.color = '#6b7280';
-                videoInfo.innerHTML = `
-                    <div style="margin-bottom: 0.5rem;"><strong>Title:</strong> ${weeklyReportData.videoTitle || 'Weekly Analysis Video'}</div>
-                    <div><strong>File:</strong> ${weeklyReportData.videoFileName || 'N/A'}</div>
-                `;
-                
-                videoContent.appendChild(videoTitle);
-                videoContent.appendChild(videoInfo);
-                
-                // Video Cover Image (Right)
-                const videoCoverContainer = document.createElement('div');
-                videoCoverContainer.style.position = 'relative';
-                videoCoverContainer.style.flexShrink = '0';
-                videoCoverContainer.style.width = '350px';
-                videoCoverContainer.style.height = '140px';
-                videoCoverContainer.style.cursor = 'pointer';
-                videoCoverContainer.style.borderRadius = '8px';
-                videoCoverContainer.style.overflow = 'hidden';
-                videoCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                videoCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
-                
-                videoCoverContainer.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.02)';
-                    this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-                });
-                
-                videoCoverContainer.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                    this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                });
-                
-                const videoCover = document.createElement('img');
-                videoCover.src = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=560&fit=crop';
-                videoCover.alt = 'Video Cover';
-                videoCover.style.width = '100%';
-                videoCover.style.height = '100%';
-                videoCover.style.objectFit = 'cover';
-                
-                // Play button overlay
-                const playButton = document.createElement('div');
-                playButton.style.position = 'absolute';
-                playButton.style.top = '50%';
-                playButton.style.left = '50%';
-                playButton.style.transform = 'translate(-50%, -50%)';
-                playButton.style.width = '60px';
-                playButton.style.height = '60px';
-                playButton.style.background = 'rgba(37, 99, 235, 0.9)';
-                playButton.style.borderRadius = '50%';
-                playButton.style.display = 'flex';
-                playButton.style.alignItems = 'center';
-                playButton.style.justifyContent = 'center';
-                playButton.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                playButton.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                `;
-                
-                videoCoverContainer.appendChild(videoCover);
-                videoCoverContainer.appendChild(playButton);
-                
-                // Video modal
-                let videoModal = null;
-                videoCoverContainer.addEventListener('click', function() {
-                    if (weeklyReportData.videoUrl && weeklyReportData.videoUrl !== '#') {
+                // Video Section (only if video exists)
+                if (weeklyReportData.videoUrl && weeklyReportData.videoTitle) {
+                    const videoSection = document.createElement('div');
+                    videoSection.style.background = 'white';
+                    videoSection.style.padding = '1.5rem';
+                    videoSection.style.borderRadius = '8px';
+                    videoSection.style.border = '1px solid #e5e7eb';
+                    videoSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    videoSection.style.display = 'flex';
+                    videoSection.style.flexDirection = 'column';
+                    videoSection.style.gap = '1rem';
+                    
+                    const videoTitle = document.createElement('h4');
+                    videoTitle.style.margin = '0';
+                    videoTitle.style.fontSize = '1.125rem';
+                    videoTitle.style.fontWeight = '600';
+                    videoTitle.style.color = '#1f2937';
+                    videoTitle.textContent = 'Weekly Analysis Video';
+                    
+                    const videoInfo = document.createElement('div');
+                    videoInfo.style.fontSize = '0.875rem';
+                    videoInfo.style.color = '#6b7280';
+                    videoInfo.innerHTML = `
+                        <div style="margin-bottom: 0.5rem;"><strong>Title:</strong> ${weeklyReportData.videoTitle}</div>
+                        <div><strong>File:</strong> ${weeklyReportData.videoFileName || 'N/A'}</div>
+                    `;
+                    
+                    // Video Thumbnail
+                    const videoCoverContainer = document.createElement('div');
+                    videoCoverContainer.style.position = 'relative';
+                    videoCoverContainer.style.width = '100%';
+                    videoCoverContainer.style.height = '200px';
+                    videoCoverContainer.style.cursor = 'pointer';
+                    videoCoverContainer.style.borderRadius = '8px';
+                    videoCoverContainer.style.overflow = 'hidden';
+                    videoCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    videoCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                    
+                    videoCoverContainer.addEventListener('mouseenter', function() {
+                        this.style.transform = 'scale(1.02)';
+                        this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                    });
+                    
+                    videoCoverContainer.addEventListener('mouseleave', function() {
+                        this.style.transform = 'scale(1)';
+                        this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    });
+                    
+                    const videoCover = document.createElement('img');
+                    videoCover.src = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=560&fit=crop';
+                    videoCover.alt = 'Video Cover';
+                    videoCover.style.width = '100%';
+                    videoCover.style.height = '100%';
+                    videoCover.style.objectFit = 'cover';
+                    
+                    // Play button overlay
+                    const playButton = document.createElement('div');
+                    playButton.style.position = 'absolute';
+                    playButton.style.top = '50%';
+                    playButton.style.left = '50%';
+                    playButton.style.transform = 'translate(-50%, -50%)';
+                    playButton.style.width = '60px';
+                    playButton.style.height = '60px';
+                    playButton.style.background = 'rgba(37, 99, 235, 0.9)';
+                    playButton.style.borderRadius = '50%';
+                    playButton.style.display = 'flex';
+                    playButton.style.alignItems = 'center';
+                    playButton.style.justifyContent = 'center';
+                    playButton.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                    playButton.innerHTML = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    `;
+                    
+                    videoCoverContainer.appendChild(videoCover);
+                    videoCoverContainer.appendChild(playButton);
+                    
+                    // Video modal
+                    let videoModal = null;
+                    videoCoverContainer.addEventListener('click', function() {
                         // Create modal for video
                         videoModal = document.createElement('div');
                         videoModal.style.position = 'fixed';
@@ -3855,16 +3971,101 @@
                                 videoModal = null;
                             }
                         });
-                    } else {
-                        alert('Video will be available once uploaded by the admin.');
-                    }
-                });
+                    });
+                    
+                    videoSection.appendChild(videoTitle);
+                    videoSection.appendChild(videoInfo);
+                    videoSection.appendChild(videoCoverContainer);
+                    container.appendChild(videoSection);
+                }
+                } catch (error) {
+                    console.error('Error loading weekly reports:', error);
+                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">Error loading weekly report. Please refresh the page.</div>';
+                }
+            }
+            
+            // View weekly report in modal (uses existing report-viewer-modal, same as regular reports)
+            function viewWeeklyReport(pdfUrl, fileName, fileBase64 = null, storageMethod = 'storage', viewButton = null) {
+                // Use the existing report-viewer-modal (same as regular reports)
+                const modal = document.getElementById('report-viewer-modal');
+                const iframe = document.getElementById('report-viewer-iframe');
+                const titleEl = document.getElementById('report-viewer-title');
+                const container = document.getElementById('report-viewer-container');
                 
-                videoSection.appendChild(videoContent);
-                videoSection.appendChild(videoCoverContainer);
+                if (!modal || !iframe || !titleEl || !container) {
+                    console.error('Report viewer modal elements not found');
+                    alert('Error: Report viewer not available. Please refresh the page.');
+                    return;
+                }
                 
-                container.appendChild(pdfSection);
-                container.appendChild(videoSection);
+                titleEl.textContent = `Weekly Report - ${fileName || 'Report'}`;
+                
+                // Handle base64 files
+                if (storageMethod === 'base64' && fileBase64) {
+                    iframe.src = 'data:application/pdf;base64,' + fileBase64;
+                } else if (pdfUrl && pdfUrl.startsWith('data:')) {
+                    // Extract base64 from data URL
+                    iframe.src = pdfUrl;
+                } else if (pdfUrl) {
+                    // Regular Storage URL
+                    iframe.src = pdfUrl;
+                } else {
+                    console.error('No file URL or base64 data provided');
+                    alert('Error: Report file data not available.');
+                    return;
+                }
+                
+                // Position modal aligned with the weekly report widget, appearing higher up
+                const weeklyReportsWidget = document.getElementById('weekly-reports-display')?.closest('.dashboard-widget');
+                
+                if (weeklyReportsWidget) {
+                    const widgetRect = weeklyReportsWidget.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    
+                    // Position to start from widget's top, appearing much higher (2x higher)
+                    const topPosition = widgetRect.top + scrollTop - 600;
+                    
+                    // Align to widget's left edge and match its width
+                    const widgetWidth = widgetRect.width;
+                    const widgetLeft = widgetRect.left + scrollLeft;
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = widgetLeft + 'px';
+                    container.style.width = widgetWidth + 'px';
+                    container.style.maxWidth = widgetWidth + 'px';
+                    container.style.transform = 'none';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute'; // Use absolute positioning so it scrolls with page
+                    container.style.pointerEvents = 'auto'; // Allow interaction with modal content
+                    container.style.zIndex = '10001'; // Above overlay
+                } else if (viewButton) {
+                    // Fallback: position above button, appearing higher
+                    const buttonRect = viewButton.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    // Position above the button
+                    const topPosition = buttonRect.top + scrollTop - 300; // Appear 300px above button
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = '50%';
+                    container.style.transform = 'translateX(-50%)';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else {
+                    // Final fallback: center on screen
+                    container.style.top = '50%';
+                    container.style.left = '50%';
+                    container.style.transform = 'translate(-50%, -50%)';
+                    container.style.position = 'fixed';
+                }
+                
+                // Show modal - allow page scrolling
+                modal.style.display = 'block';
+                // Don't disable scrolling - allow user to scroll to see the modal
+                document.body.style.overflow = '';
             }
             
             // Load chat messages when community view is shown
