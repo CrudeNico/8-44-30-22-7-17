@@ -5241,6 +5241,75 @@
             let selectedConsultationId = null;
             let currentFilter = 'all';
             
+            // Send confirmation emails to new pending consultations
+            async function sendConfirmationEmailsToNewConsultations() {
+                try {
+                    // Find pending consultations that haven't received confirmation email
+                    const pendingConsultations = consultationsData.filter(c => 
+                        c.status === 'pending' && 
+                        !c.confirmationEmailSent &&
+                        c.email
+                    );
+                    
+                    for (const consultation of pendingConsultations) {
+                        try {
+                            // Format date
+                            let formattedDate = consultation.date || 'TBD';
+                            if (consultation.date && consultation.date.includes('-')) {
+                                const dateObj = new Date(consultation.date + 'T00:00:00');
+                                if (!isNaN(dateObj.getTime())) {
+                                    formattedDate = dateObj.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                    });
+                                }
+                            }
+                            
+                            const emailSubject = `Consultation Booking Confirmed - ${consultation.consultationTopicDisplay || consultation.topic || 'Your Consultation'}`;
+                            const emailMessage = `Dear ${consultation.fullName || consultation.name || 'Client'},\n\n` +
+                                `You have confirmed a booking at this date and time:\n\n` +
+                                `Date: ${formattedDate}\n` +
+                                `Time: ${consultation.time || 'TBD'}\n` +
+                                `Topic: ${consultation.consultationTopicDisplay || consultation.topic || 'Consultation'}\n\n` +
+                                `5 minutes before the consultation, we will send you the link to join.\n\n` +
+                                `We look forward to speaking with you.\n\n` +
+                                `Best regards,\nOpessocius Wealth Partners`;
+                            
+                            const formData = new FormData();
+                            formData.append('recipients', JSON.stringify([consultation.email.trim()]));
+                            formData.append('subject', emailSubject);
+                            formData.append('message', emailMessage);
+                            
+                            const response = await fetch('http://localhost:3000/api/send-email', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                // Mark confirmation email as sent in Firestore
+                                if (window.firebaseDb && consultation.id) {
+                                    await window.firebaseDb.collection('consultations').doc(consultation.id).update({
+                                        confirmationEmailSent: true,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                    console.log('Confirmation email sent to:', consultation.email);
+                                }
+                            } else {
+                                console.error('Failed to send confirmation email:', result.error);
+                            }
+                        } catch (emailError) {
+                            console.error('Error sending confirmation email to', consultation.email, ':', emailError);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error in sendConfirmationEmailsToNewConsultations:', error);
+                }
+            }
+            
             async function loadConsultationsList() {
                 const container = document.getElementById('consultations-grid');
                 if (!container) return;
@@ -5255,6 +5324,9 @@
                         console.warn('Firestore service not available');
                         consultationsData = [];
                     }
+                    
+                    // Send confirmation emails to new pending consultations
+                    await sendConfirmationEmailsToNewConsultations();
                 } catch (error) {
                     console.error('Error loading consultations:', error);
                     consultationsData = [];
@@ -5414,15 +5486,15 @@
                     
                     try {
                         // Prepare email content
-                        const emailSubject = `Consultation Meeting Link - ${consultation.topic || 'Your Consultation'}`;
-                        const emailMessage = `Dear ${consultation.name || 'Client'},\n\n` +
-                            `Your consultation meeting link is ready:\n\n` +
+                        const emailSubject = `Your Consultation Starts in 5 Minutes`;
+                        const emailMessage = `Dear ${consultation.fullName || consultation.name || 'Client'},\n\n` +
+                            `Your consultation is starting in 5 minutes. Please join using the link below:\n\n` +
                             `Google Meet Link: ${googleMeetLink}\n\n` +
                             `Date: ${consultation.date || 'TBD'}\n` +
                             `Time: ${consultation.time || 'TBD'}\n` +
-                            `Topic: ${consultation.topic || 'Consultation'}\n\n` +
+                            `Topic: ${consultation.consultationTopicDisplay || consultation.topic || 'Consultation'}\n\n` +
                             `We look forward to speaking with you.\n\n` +
-                            `Best regards,\nOpessocius Team`;
+                            `Best regards,\nOpessocius Wealth Partners`;
                         
                         // Prepare form data
                         const formData = new FormData();
@@ -5439,6 +5511,21 @@
                         const result = await response.json();
                         
                         if (result.success) {
+                            // Update consultation status to "done" in Firestore
+                            if (window.firebaseDb && consultation.id) {
+                                try {
+                                    await window.firebaseDb.collection('consultations').doc(consultation.id).update({
+                                        status: 'done',
+                                        googleMeetLink: googleMeetLink,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                    console.log('Consultation status updated to "done"');
+                                } catch (updateError) {
+                                    console.error('Error updating consultation status:', updateError);
+                                    // Continue even if update fails
+                                }
+                            }
+                            
                             sendEmailForm.reset();
                             selectedConsultationId = null;
                             document.getElementById('selected-consultation-info').textContent = 'No consultation selected';

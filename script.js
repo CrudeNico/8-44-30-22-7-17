@@ -569,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         
-                        // Booking saved successfully - no alert needed
+                        // Booking saved successfully
                         console.log('Booking confirmed successfully');
                     } else {
                         // Fallback if Firebase not loaded
