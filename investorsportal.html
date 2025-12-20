@@ -2824,24 +2824,130 @@
             const depositForm = document.getElementById('deposit-form');
             const withdrawalForm = document.getElementById('withdrawal-form');
             
+            async function sendRequestToAdvisor(type, amount) {
+                try {
+                    // Get user data from sessionStorage
+                    const userSession = sessionStorage.getItem('investorUser') || sessionStorage.getItem('user');
+                    if (!userSession) {
+                        console.error('No user session found');
+                        return false;
+                    }
+                    
+                    const user = JSON.parse(userSession);
+                    const userData = user.userData || {};
+                    
+                    // Get assigned operator email
+                    let advisorEmail = userData.assignedOperatorEmail;
+                    
+                    // If not in cached data, try to fetch from Firestore
+                    if (!advisorEmail && userData.id && window.firebaseDb) {
+                        try {
+                            const userDoc = await window.firebaseDb.collection('users').doc(userData.id).get();
+                            if (userDoc.exists) {
+                                const freshData = userDoc.data();
+                                advisorEmail = freshData.assignedOperatorEmail;
+                            }
+                        } catch (error) {
+                            console.error('Error fetching user data from Firestore:', error);
+                        }
+                    }
+                    
+                    if (!advisorEmail) {
+                        console.error('No assigned operator email found for user');
+                        return false;
+                    }
+                    
+                    // Get user info for email
+                    const userName = userData.fullName || userData.username || 'Investor';
+                    const userEmail = userData.email || 'N/A';
+                    
+                    // Prepare email content
+                    const subject = `${type === 'deposit' ? 'Deposit' : 'Withdrawal'} Request - €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    const message = `Dear Advisor,\n\n` +
+                        `You have received a ${type === 'deposit' ? 'deposit' : 'withdrawal'} request from one of your clients:\n\n` +
+                        `Client Name: ${userName}\n` +
+                        `Client Email: ${userEmail}\n` +
+                        `Request Type: ${type === 'deposit' ? 'Deposit' : 'Withdrawal'}\n` +
+                        `Amount: €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}\n\n` +
+                        `Please review and respond to this request within 24 hours.\n\n` +
+                        `Best regards,\nOpessocius System`;
+                    
+                    // Send email via API
+                    const formData = new FormData();
+                    formData.append('recipients', JSON.stringify([advisorEmail]));
+                    formData.append('subject', subject);
+                    formData.append('message', message);
+                    
+                    const response = await fetch('http://localhost:3000/api/send-email', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        console.log('Email sent successfully to advisor:', advisorEmail);
+                        return true;
+                    } else {
+                        console.error('Failed to send email:', result.error);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error sending email to advisor:', error);
+                    return false;
+                }
+            }
+            
             if (depositForm) {
-                depositForm.addEventListener('submit', function(e) {
+                depositForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const amount = document.getElementById('deposit-amount').value;
                     if (amount) {
-                        alert(`Deposit request of €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} has been sent to your advisor. You will receive a response within 24 hours.`);
-                        depositForm.reset();
+                        // Disable button and show loading state
+                        const submitBtn = depositForm.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Sending...';
+                        
+                        const success = await sendRequestToAdvisor('deposit', amount);
+                        
+                        // Re-enable button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        
+                        if (success) {
+                            depositForm.reset();
+                            // No popup - just reset the form silently
+                        } else {
+                            alert('Failed to send request. Please try again or contact support.');
+                        }
                     }
                 });
             }
             
             if (withdrawalForm) {
-                withdrawalForm.addEventListener('submit', function(e) {
+                withdrawalForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const amount = document.getElementById('withdrawal-amount').value;
                     if (amount) {
-                        alert(`Withdrawal request of €${parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} has been sent to your advisor. You will receive a response within 24 hours.`);
-                        withdrawalForm.reset();
+                        // Disable button and show loading state
+                        const submitBtn = withdrawalForm.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Sending...';
+                        
+                        const success = await sendRequestToAdvisor('withdrawal', amount);
+                        
+                        // Re-enable button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        
+                        if (success) {
+                            withdrawalForm.reset();
+                            // No popup - just reset the form silently
+                        } else {
+                            alert('Failed to send request. Please try again or contact support.');
+                        }
                     }
                 });
             }
