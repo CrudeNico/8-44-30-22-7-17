@@ -60,3 +60,4 @@ service firebase.storage {
 
 Once you update the Storage rules, image uploads should work. The message data (title, subheading, link, message text) is already being saved correctly to the database.
 
+

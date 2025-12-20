@@ -10,6 +10,58 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* Image Modal/Lightbox Styles */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s;
+        }
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            animation: zoomIn 0.3s;
+        }
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10001;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .image-modal-close:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="dashboard-active">
@@ -435,6 +487,47 @@
                 </div>
             </div>
             
+            <!-- One-on-ones View (Tier 3 only) -->
+            <div class="one-on-ones-view" id="one-on-ones-view" style="display: none;">
+                <div class="one-on-ones-content" style="max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; height: 100%;">
+                    <div class="dashboard-widget" style="display: flex; flex-direction: column; flex: 1; min-height: 800px; height: calc(100vh - 120px);">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">One-on-one with Professor</h3>
+                        </div>
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                            <!-- Chat Messages Area -->
+                            <div id="one-on-one-chat-messages-container" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1rem; background: #f9fafb; display: flex; flex-direction: column; gap: 0.75rem; min-height: 0;">
+                                <!-- Messages will be populated by JavaScript -->
+                            </div>
+                            
+                            <!-- Chat Input Area -->
+                            <div style="border-top: 1px solid #e5e7eb; padding: 1rem; background: white;">
+                                <div id="one-on-one-chat-images-preview" style="display: none; margin-bottom: 0.75rem; padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="one-on-one-chat-images-preview-container">
+                                        <!-- Image previews will be shown here -->
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                                    <textarea id="one-on-one-chat-message-input" placeholder="Type your message..." style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: none; font-family: inherit; font-size: 0.875rem; min-height: 40px; max-height: 80px;" rows="1"></textarea>
+                                    <label for="one-on-one-chat-image-input" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                        Add Image
+                                    </label>
+                                    <input type="file" id="one-on-one-chat-image-input" accept="image/*" multiple style="display: none;">
+                                    <button type="button" id="one-on-one-chat-send-btn" style="cursor: pointer; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content; transition: background 0.2s;">
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Community View -->
             <div class="community-view" id="community-view" style="display: none;">
                 <div class="community-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
@@ -740,6 +833,34 @@
                     // Load and display profile picture from userData (which comes from Firestore)
                     loadProfilePicture(userData.profilePictureUrl);
                     
+                    // Store user tier globally for access control
+                    window.currentUserTier = userData.tier || 'tier1';
+                    window.currentUserId = userData.id;
+                    window.currentUserType = 'investor';
+                    
+                    // Add One-on-ones navigation item for Tier 3 users
+                    const sidebarNav = document.querySelector('.sidebar-navigation');
+                    if (sidebarNav && window.currentUserTier === 'tier3') {
+                        // Check if One-on-ones nav item already exists
+                        let oneOnOnesNavItem = document.querySelector('.sidebar-nav-item[data-nav="one-on-ones"]');
+                        if (!oneOnOnesNavItem) {
+                            oneOnOnesNavItem = document.createElement('a');
+                            oneOnOnesNavItem.href = '#';
+                            oneOnOnesNavItem.className = 'sidebar-nav-item';
+                            oneOnOnesNavItem.setAttribute('data-nav', 'one-on-ones');
+                            oneOnOnesNavItem.innerHTML = '<span>One-on-ones</span>';
+                            sidebarNav.appendChild(oneOnOnesNavItem);
+                            // Re-setup navigation handlers
+                            setTimeout(setupNavigation, 100);
+                        }
+                    } else if (sidebarNav) {
+                        // Remove One-on-ones nav item if user is not Tier 3
+                        const existingOneOnOnesNavItem = document.querySelector('.sidebar-nav-item[data-nav="one-on-ones"]');
+                        if (existingOneOnOnesNavItem) {
+                            existingOneOnOnesNavItem.remove();
+                        }
+                    }
+                    
                     // Format date helper
                     function formatDate(dateValue) {
                         if (!dateValue) return 'N/A';
@@ -1008,82 +1129,99 @@
             loadUserData();
             
             // Navigation handling
-            const navItems = document.querySelectorAll('.sidebar-nav-item');
+            let navItems = document.querySelectorAll('.sidebar-nav-item');
             const dashboardView = document.getElementById('dashboard-view');
             const portfolioView = document.getElementById('portfolio-view');
             const transactionsView = document.getElementById('transactions-view');
             const performanceView = document.getElementById('performance-view');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
+            
+            function setupNavigation() {
+                navItems = document.querySelectorAll('.sidebar-nav-item');
+                navItems.forEach(item => {
+                    // Remove existing listeners by cloning (simplified approach)
+                    const newItem = item.cloneNode(true);
+                    item.parentNode.replaceChild(newItem, item);
                     
-                    // Get text from span element
-                    const span = this.querySelector('span');
-                    const navText = span ? span.textContent.trim() : this.textContent.trim();
-                    
-                    // Remove active class from all items
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Get all views
-                    const marketNewsView = document.getElementById('market-news-view');
-                    const accountSettingsView = document.getElementById('account-settings-view');
-                    const reportsView = document.getElementById('reports-view');
-                    const learningView = document.getElementById('learning-view');
-                    const communityView = document.getElementById('community-view');
-                    
-                    // Hide all views
-                    if (dashboardView) dashboardView.style.display = 'none';
-                    if (portfolioView) portfolioView.style.display = 'none';
-                    if (transactionsView) transactionsView.style.display = 'none';
-                    if (performanceView) performanceView.style.display = 'none';
-                    if (marketNewsView) marketNewsView.style.display = 'none';
-                    if (accountSettingsView) accountSettingsView.style.display = 'none';
-                    if (reportsView) reportsView.style.display = 'none';
-                    if (learningView) learningView.style.display = 'none';
-                    if (communityView) communityView.style.display = 'none';
-                    
-                    // Show selected view
-                    if (navText === 'Dashboard' && dashboardView) {
-                        dashboardView.style.display = 'block';
-                    } else if (navText === 'Portfolio' && portfolioView) {
-                        portfolioView.style.display = 'block';
-                        setTimeout(async function() {
-                            await drawPortfolioChart(); // This will update the balance cards
-                            calculateProjectionValue();
-                        }, 100);
-                    } else if (navText === 'Transactions' && transactionsView) {
-                        transactionsView.style.display = 'block';
-                        populateTransactionsTable();
-                    } else if (navText === 'Performance' && performanceView) {
-                        performanceView.style.display = 'block';
-                        setTimeout(async function() {
-                            await drawPerformanceChart();
-                            setTimeout(setupPerformanceChartHover, 150);
-                        }, 100);
-                    } else if (navText === 'Market News' && marketNewsView) {
-                        marketNewsView.style.display = 'block';
-                        loadMarketNews();
-                    } else if (navText === 'Account Settings' && accountSettingsView) {
-                        accountSettingsView.style.display = 'block';
-                    } else if (navText === 'Reports' && reportsView) {
-                        reportsView.style.display = 'block';
-                        setTimeout(function() {
-                            generateReportWidgets();
-                        }, 100);
-                    } else if (navText === 'Learning' && learningView) {
-                        learningView.style.display = 'block';
-                        loadModulesList();
-                    } else if (navText === 'Community' && communityView) {
-                        communityView.style.display = 'block';
-                        loadCommunityChatMessages();
-                        loadProfessorsMessages();
-                        loadWeeklyReports();
-                    }
+                    // Add click listener to new item
+                    newItem.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Get text from span element or data attribute
+                        const span = this.querySelector('span');
+                        const navText = span ? span.textContent.trim() : this.textContent.trim();
+                        const navData = this.getAttribute('data-nav');
+                        
+                        // Remove active class from all items
+                        document.querySelectorAll('.sidebar-nav-item').forEach(nav => nav.classList.remove('active'));
+                        // Add active class to clicked item
+                        this.classList.add('active');
+                        
+                        // Get all views
+                        const marketNewsView = document.getElementById('market-news-view');
+                        const accountSettingsView = document.getElementById('account-settings-view');
+                        const reportsView = document.getElementById('reports-view');
+                        const learningView = document.getElementById('learning-view');
+                        const communityView = document.getElementById('community-view');
+                        const oneOnOnesView = document.getElementById('one-on-ones-view');
+                        
+                        // Hide all views
+                        if (dashboardView) dashboardView.style.display = 'none';
+                        if (portfolioView) portfolioView.style.display = 'none';
+                        if (transactionsView) transactionsView.style.display = 'none';
+                        if (performanceView) performanceView.style.display = 'none';
+                        if (marketNewsView) marketNewsView.style.display = 'none';
+                        if (accountSettingsView) accountSettingsView.style.display = 'none';
+                        if (reportsView) reportsView.style.display = 'none';
+                        if (learningView) learningView.style.display = 'none';
+                        if (communityView) communityView.style.display = 'none';
+                        if (oneOnOnesView) oneOnOnesView.style.display = 'none';
+                        
+                        // Show selected view
+                        if ((navText === 'Dashboard' || !navData) && dashboardView) {
+                            dashboardView.style.display = 'block';
+                        } else if (navText === 'Portfolio' && portfolioView) {
+                            portfolioView.style.display = 'block';
+                            setTimeout(async function() {
+                                await drawPortfolioChart(); // This will update the balance cards
+                                calculateProjectionValue();
+                            }, 100);
+                        } else if (navText === 'Transactions' && transactionsView) {
+                            transactionsView.style.display = 'block';
+                            populateTransactionsTable();
+                        } else if (navText === 'Performance' && performanceView) {
+                            performanceView.style.display = 'block';
+                            setTimeout(async function() {
+                                await drawPerformanceChart();
+                                setTimeout(setupPerformanceChartHover, 150);
+                            }, 100);
+                        } else if (navText === 'Market News' && marketNewsView) {
+                            marketNewsView.style.display = 'block';
+                            loadMarketNews();
+                        } else if (navText === 'Account Settings' && accountSettingsView) {
+                            accountSettingsView.style.display = 'block';
+                        } else if (navText === 'Reports' && reportsView) {
+                            reportsView.style.display = 'block';
+                            setTimeout(function() {
+                                generateReportWidgets();
+                            }, 100);
+                        } else if (navText === 'Learning' && learningView) {
+                            learningView.style.display = 'block';
+                            loadModulesList();
+                        } else if (navText === 'Community' && communityView) {
+                            communityView.style.display = 'block';
+                            loadCommunityChatMessages();
+                            loadProfessorsMessages();
+                            loadWeeklyReports();
+                        } else if ((navText === 'One-on-ones' || navData === 'one-on-ones') && oneOnOnesView) {
+                            oneOnOnesView.style.display = 'block';
+                            loadOneOnOneChatMessages();
+                        }
+                    });
                 });
-            });
+            }
+            
+            // Initial setup
+            setupNavigation();
 
             // Portfolio Chart Function - Load from Firestore
             let chartDataPoints = [];
@@ -3357,7 +3495,7 @@
                             img.style.borderRadius = '6px';
                             img.style.cursor = 'pointer';
                             img.onclick = function() {
-                                window.open(imgUrl, '_blank');
+                                openImageModal(imgUrl);
                             };
                             imagesContainer.appendChild(img);
                         });
@@ -3507,6 +3645,366 @@
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         sendCommunityChatMessage();
+                    }
+                });
+            }
+            
+            // One-on-One Chat Section (Tier 3 only)
+            let oneOnOneChatMessages = [];
+            let selectedOneOnOneChatImages = [];
+            
+            async function loadOneOnOneChatMessages() {
+                const container = document.getElementById('one-on-one-chat-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">Loading chat...</p>';
+                
+                try {
+                    const userId = window.currentUserId;
+                    const userType = window.currentUserType || 'investor';
+                    if (!userId) {
+                        container.innerHTML = '<p style="text-align: center; color: #dc2626; padding: 2rem;">Error: User ID not found.</p>';
+                        return;
+                    }
+                    
+                    // Try to load from Firestore first
+                    if (window.firebaseDb) {
+                        try {
+                            const chatCollection = userType === 'learning' 
+                                ? window.firebaseDb.collection('learningUsers').doc(userId).collection('oneOnOneChat')
+                                : window.firebaseDb.collection('users').doc(userId).collection('oneOnOneChat');
+                            
+                            const snapshot = await chatCollection.orderBy('timestamp', 'asc').get();
+                            oneOnOneChatMessages = [];
+                            
+                            snapshot.forEach(doc => {
+                                oneOnOneChatMessages.push({
+                                    id: doc.id,
+                                    ...doc.data()
+                                });
+                            });
+                        } catch (error) {
+                            console.error('Error loading one-on-one chat from Firestore:', error);
+                            // Fallback to localStorage
+                            const stored = localStorage.getItem(`oneOnOneChat_${userId}`);
+                            if (stored) {
+                                oneOnOneChatMessages = JSON.parse(stored);
+                            }
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const stored = localStorage.getItem(`oneOnOneChat_${userId}`);
+                        if (stored) {
+                            oneOnOneChatMessages = JSON.parse(stored);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading one-on-one chat:', error);
+                }
+                
+                renderOneOnOneChatMessages();
+            }
+            
+            function renderOneOnOneChatMessages() {
+                const container = document.getElementById('one-on-one-chat-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (oneOnOneChatMessages.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages yet. Start the conversation!</p>';
+                    return;
+                }
+                
+                oneOnOneChatMessages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.flexDirection = 'column';
+                    messageDiv.style.gap = '0.25rem';
+                    messageDiv.style.maxWidth = '80%';
+                    messageDiv.style.marginLeft = msg.sender === 'Admin' ? 'auto' : '0';
+                    
+                    const senderName = document.createElement('div');
+                    senderName.style.fontSize = '0.75rem';
+                    senderName.style.fontWeight = '600';
+                    senderName.style.color = msg.sender === 'Admin' ? '#2563eb' : '#6b7280';
+                    senderName.textContent = msg.sender;
+                    
+                    const messageBubble = document.createElement('div');
+                    messageBubble.style.padding = '0.75rem 1rem';
+                    messageBubble.style.borderRadius = '12px';
+                    messageBubble.style.background = msg.sender === 'Admin' ? '#2563eb' : 'white';
+                    messageBubble.style.color = msg.sender === 'Admin' ? 'white' : '#1f2937';
+                    messageBubble.style.border = msg.sender === 'Admin' ? 'none' : '1px solid #e5e7eb';
+                    messageBubble.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                    
+                    if (msg.message) {
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.lineHeight = '1.5';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message;
+                        messageBubble.appendChild(messageText);
+                    }
+                    
+                    if (msg.images && msg.images.length > 0) {
+                        const imagesContainer = document.createElement('div');
+                        imagesContainer.style.display = 'grid';
+                        imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                        imagesContainer.style.gap = '0.5rem';
+                        imagesContainer.style.marginTop = msg.message ? '0.5rem' : '0';
+                        
+                        msg.images.forEach(imgUrl => {
+                            const img = document.createElement('img');
+                            img.src = imgUrl;
+                            img.style.width = '100%';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+                            img.style.cursor = 'pointer';
+                            img.onclick = function() {
+                                openImageModal(imgUrl);
+                            };
+                            imagesContainer.appendChild(img);
+                        });
+                        messageBubble.appendChild(imagesContainer);
+                    }
+                    
+                    const timestamp = document.createElement('div');
+                    timestamp.style.fontSize = '0.625rem';
+                    timestamp.style.color = '#9ca3af';
+                    timestamp.style.marginTop = '0.25rem';
+                    timestamp.style.textAlign = msg.sender === 'Admin' ? 'right' : 'left';
+                    const date = new Date(msg.timestamp);
+                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.appendChild(senderName);
+                    messageDiv.appendChild(messageBubble);
+                    messageDiv.appendChild(timestamp);
+                    container.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // One-on-One Chat image preview
+            const oneOnOneChatImageInput = document.getElementById('one-on-one-chat-image-input');
+            const oneOnOneChatImagesPreview = document.getElementById('one-on-one-chat-images-preview');
+            const oneOnOneChatImagesPreviewContainer = document.getElementById('one-on-one-chat-images-preview-container');
+            
+            if (oneOnOneChatImageInput && oneOnOneChatImagesPreview && oneOnOneChatImagesPreviewContainer) {
+                oneOnOneChatImageInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    selectedOneOnOneChatImages = files;
+                    oneOnOneChatImagesPreviewContainer.innerHTML = '';
+                    
+                    if (files.length > 0) {
+                        oneOnOneChatImagesPreview.style.display = 'block';
+                    } else {
+                        oneOnOneChatImagesPreview.style.display = 'none';
+                    }
+                    
+                    files.forEach((file, index) => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                imgDiv.style.width = '80px';
+                                imgDiv.style.height = '80px';
+                                
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '6px';
+                                img.style.border = '1px solid #e5e7eb';
+                                
+                                const removeBtn = document.createElement('button');
+                                removeBtn.textContent = '×';
+                                removeBtn.style.position = 'absolute';
+                                removeBtn.style.top = '-8px';
+                                removeBtn.style.right = '-8px';
+                                removeBtn.style.background = '#ef4444';
+                                removeBtn.style.color = 'white';
+                                removeBtn.style.border = 'none';
+                                removeBtn.style.borderRadius = '50%';
+                                removeBtn.style.width = '20px';
+                                removeBtn.style.height = '20px';
+                                removeBtn.style.cursor = 'pointer';
+                                removeBtn.style.fontSize = '14px';
+                                removeBtn.style.lineHeight = '1';
+                                removeBtn.onclick = function() {
+                                    selectedOneOnOneChatImages.splice(index, 1);
+                                    const dt = new DataTransfer();
+                                    selectedOneOnOneChatImages.forEach(f => dt.items.add(f));
+                                    oneOnOneChatImageInput.files = dt.files;
+                                    if (selectedOneOnOneChatImages.length === 0) {
+                                        oneOnOneChatImagesPreview.style.display = 'none';
+                                    } else {
+                                        oneOnOneChatImageInput.dispatchEvent(new Event('change'));
+                                    }
+                                };
+                                
+                                imgDiv.appendChild(img);
+                                imgDiv.appendChild(removeBtn);
+                                oneOnOneChatImagesPreviewContainer.appendChild(imgDiv);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Send one-on-one chat message
+            const oneOnOneChatSendBtn = document.getElementById('one-on-one-chat-send-btn');
+            const oneOnOneChatMessageInput = document.getElementById('one-on-one-chat-message-input');
+            
+            async function sendOneOnOneChatMessage() {
+                const messageText = oneOnOneChatMessageInput.value.trim();
+                const images = selectedOneOnOneChatImages;
+                
+                if (!messageText && images.length === 0) {
+                    return;
+                }
+                
+                const userId = window.currentUserId;
+                const userType = window.currentUserType || 'investor';
+                if (!userId) {
+                    alert('Error: User ID not found.');
+                    return;
+                }
+                
+                // Process images - convert to base64 data URLs for persistence
+                const imageUrls = [];
+                for (const file of images) {
+                    try {
+                        const base64 = await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                        });
+                        imageUrls.push(base64);
+                    } catch (error) {
+                        console.error('Error converting image to base64:', error);
+                        alert('Error processing image. Please try again.');
+                        return;
+                    }
+                }
+                
+                // Create message object
+                const newMessage = {
+                    sender: getUserDisplayName(),
+                    message: messageText,
+                    images: imageUrls,
+                    timestamp: new Date().toISOString(),
+                    read: false
+                };
+                
+                // Add to local array
+                oneOnOneChatMessages.push(newMessage);
+                renderOneOnOneChatMessages();
+                
+                // Save to Firestore or localStorage
+                try {
+                    if (window.firebaseDb) {
+                        const chatCollection = userType === 'learning'
+                            ? window.firebaseDb.collection('learningUsers').doc(userId).collection('oneOnOneChat')
+                            : window.firebaseDb.collection('users').doc(userId).collection('oneOnOneChat');
+                        
+                        await chatCollection.add(newMessage);
+                        
+                        // Mark as unread for admin
+                        const adminNotificationsRef = window.firebaseDb.collection('adminNotifications').doc('oneOnOneChat');
+                        const adminNotificationsDoc = await adminNotificationsRef.get();
+                        let notifications = {};
+                        if (adminNotificationsDoc.exists) {
+                            notifications = adminNotificationsDoc.data();
+                        }
+                        if (!notifications[userId]) {
+                            notifications[userId] = 0;
+                        }
+                        notifications[userId] = (notifications[userId] || 0) + 1;
+                        await adminNotificationsRef.set(notifications, { merge: true });
+                    } else {
+                        // Fallback to localStorage
+                        localStorage.setItem(`oneOnOneChat_${userId}`, JSON.stringify(oneOnOneChatMessages));
+                    }
+                } catch (error) {
+                    console.error('Error saving one-on-one chat message:', error);
+                    // Still save to localStorage as backup
+                    localStorage.setItem(`oneOnOneChat_${userId}`, JSON.stringify(oneOnOneChatMessages));
+                }
+                
+                // Clear input
+                oneOnOneChatMessageInput.value = '';
+                selectedOneOnOneChatImages = [];
+                if (oneOnOneChatImageInput) oneOnOneChatImageInput.value = '';
+                if (oneOnOneChatImagesPreview) oneOnOneChatImagesPreview.style.display = 'none';
+                if (oneOnOneChatImagesPreviewContainer) oneOnOneChatImagesPreviewContainer.innerHTML = '';
+            }
+            
+            if (oneOnOneChatSendBtn) {
+                oneOnOneChatSendBtn.addEventListener('click', sendOneOnOneChatMessage);
+                oneOnOneChatSendBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#1d4ed8';
+                });
+                oneOnOneChatSendBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#2563eb';
+                });
+            }
+            
+            if (oneOnOneChatMessageInput) {
+                oneOnOneChatMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendOneOnOneChatMessage();
+                    }
+                });
+            }
+            
+            // Image Modal/Lightbox functionality
+            function openImageModal(imgSrc) {
+                const modal = document.getElementById('image-modal');
+                const modalImg = document.getElementById('image-modal-img');
+                if (modal && modalImg) {
+                    modalImg.src = imgSrc;
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            function closeImageModal() {
+                const modal = document.getElementById('image-modal');
+                if (modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Close modal handlers
+            const imageModalClose = document.querySelector('.image-modal-close');
+            const imageModal = document.getElementById('image-modal');
+            
+            if (imageModalClose) {
+                imageModalClose.addEventListener('click', closeImageModal);
+            }
+            
+            if (imageModal) {
+                imageModal.addEventListener('click', function(e) {
+                    if (e.target === imageModal) {
+                        closeImageModal();
+                    }
+                });
+                
+                // Close on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                        closeImageModal();
                     }
                 });
             }
@@ -4451,6 +4949,12 @@
             }
     });
     </script>
+    
+    <!-- Image Modal/Lightbox -->
+    <div id="image-modal" class="image-modal">
+        <span class="image-modal-close">&times;</span>
+        <img class="image-modal-content" id="image-modal-img" src="" alt="Full size image">
+    </div>
 </body>
 </html>
 

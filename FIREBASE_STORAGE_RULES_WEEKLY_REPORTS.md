@@ -105,3 +105,4 @@ If you see CORS errors in the console, it means:
 ### "Storage upload failed" Errors
 This indicates that Firebase Storage security rules are preventing the upload. Follow the steps above to configure the rules.
 
+
