@@ -6242,7 +6242,7 @@
             // Send email form handler
             const sendEmailForm = document.getElementById('send-email-form');
             if (sendEmailForm) {
-                sendEmailForm.addEventListener('submit', function(e) {
+                sendEmailForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     if (!selectedConsultationId) {
@@ -6253,19 +6253,66 @@
                     const consultation = consultationsData.find(c => c.id === selectedConsultationId);
                     if (!consultation) return;
                     
-                    const googleMeetLink = document.getElementById('google-meet-link').value;
+                    const googleMeetLink = document.getElementById('google-meet-link').value.trim();
                     
                     if (!googleMeetLink) {
                         alert('Please enter a Google Meet link.');
                         return;
                     }
                     
-                    // In a real application, this would send an email via a backend service
-                    alert(`Google Meet link would be sent to ${consultation.email}:\n\nLink: ${googleMeetLink}\n\nNote: This is a demo. In production, this would send an actual email with the Google Meet link.`);
+                    // Disable submit button and show loading state
+                    const submitBtn = sendEmailForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn ? submitBtn.textContent : 'Send';
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Sending...';
+                    }
                     
-                    // Mark consultation as done (optional)
-                    // consultation.status = 'done';
-                    // loadConsultationsList();
+                    try {
+                        // Prepare email content
+                        const emailSubject = `Consultation Meeting Link - ${consultation.topic || 'Your Consultation'}`;
+                        const emailMessage = `Dear ${consultation.name || 'Client'},\n\n` +
+                            `Your consultation meeting link is ready:\n\n` +
+                            `Google Meet Link: ${googleMeetLink}\n\n` +
+                            `Date: ${consultation.date || 'TBD'}\n` +
+                            `Time: ${consultation.time || 'TBD'}\n` +
+                            `Topic: ${consultation.topic || 'Consultation'}\n\n` +
+                            `We look forward to speaking with you.\n\n` +
+                            `Best regards,\nOpessocius Team`;
+                        
+                        // Prepare form data
+                        const formData = new FormData();
+                        formData.append('recipients', JSON.stringify([consultation.email]));
+                        formData.append('subject', emailSubject);
+                        formData.append('message', emailMessage);
+                        
+                        // Send email via API
+                        const response = await fetch('http://localhost:3000/api/send-email', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            sendEmailForm.reset();
+                            selectedConsultationId = null;
+                            document.getElementById('selected-consultation-info').textContent = 'No consultation selected';
+                            document.getElementById('send-email-section').style.display = 'none';
+                            loadConsultationsList();
+                        } else {
+                            throw new Error(result.error || 'Failed to send email');
+                        }
+                    } catch (error) {
+                        console.error('Error sending email:', error);
+                        alert(`❌ Error sending email: ${error.message}\n\nPlease make sure the email server is running on port 3000.`);
+                    } finally {
+                        // Re-enable submit button
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalBtnText;
+                        }
+                    }
                 });
             }
             
@@ -6383,7 +6430,7 @@
             // Send email to user form handler
             const sendEmailToUserForm = document.getElementById('send-email-to-user-form');
             if (sendEmailToUserForm) {
-                sendEmailToUserForm.addEventListener('submit', function(e) {
+                sendEmailToUserForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
                     const emailInputs = document.querySelectorAll('.email-recipient-input');
@@ -6396,20 +6443,71 @@
                         return;
                     }
                     
-                    const subject = document.getElementById('email-subject-input').value;
-                    const message = document.getElementById('email-message-input').value;
+                    const subject = document.getElementById('email-subject-input').value.trim();
+                    const message = document.getElementById('email-message-input').value.trim();
                     const attachments = document.getElementById('email-attachment').files;
                     
-                    let attachmentInfo = '';
-                    if (attachments.length > 0) {
-                        const fileNames = Array.from(attachments).map(f => f.name).join(', ');
-                        attachmentInfo = `\n\nAttachments: ${fileNames}`;
+                    if (!subject || !message) {
+                        alert('Please enter both subject and message.');
+                        return;
                     }
                     
-                    const recipientsList = emails.join(', ');
+                    // Disable submit button and show loading state
+                    const submitBtn = sendEmailToUserForm.querySelector('button[type="submit"]');
+                    const originalBtnText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
                     
-                    // In a real application, this would send an email via a backend service
-                    alert(`Email would be sent to: ${recipientsList}\n\nSubject: ${subject}\n\nMessage:\n${message}${attachmentInfo}\n\nNote: This is a demo. In production, this would send an actual email with attachments.`);
+                    try {
+                        // Prepare form data
+                        const formData = new FormData();
+                        formData.append('recipients', JSON.stringify(emails));
+                        formData.append('subject', subject);
+                        formData.append('message', message);
+                        
+                        // Add attachments if any
+                        if (attachments.length > 0) {
+                            for (let i = 0; i < attachments.length; i++) {
+                                formData.append('attachments', attachments[i]);
+                            }
+                        }
+                        
+                        // Send email via API
+                        const response = await fetch('http://localhost:3000/api/send-email', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Reset form
+                            sendEmailToUserForm.reset();
+                            const attachmentListDiv = document.getElementById('attachment-list');
+                            if (attachmentListDiv) attachmentListDiv.innerHTML = '';
+                            
+                            // Reset to single email field
+                            const container = document.getElementById('email-recipients-container');
+                            if (container) {
+                                container.innerHTML = `
+                                    <div class="email-recipient-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <input type="email" class="admin-form-input email-recipient-input" placeholder="Enter email address" required style="flex: 1;">
+                                        <button type="button" class="remove-email-btn" style="display: none; background: #ef4444; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                                    </div>
+                                `;
+                                updateRemoveButtons();
+                            }
+                        } else {
+                            throw new Error(result.error || 'Failed to send email');
+                        }
+                    } catch (error) {
+                        console.error('Error sending email:', error);
+                        alert(`❌ Error sending email: ${error.message}\n\nPlease make sure the email server is running on port 3000.`);
+                    } finally {
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalBtnText;
+                    }
                 });
             }
             
@@ -6417,18 +6515,23 @@
             const clearEmailFormBtn = document.getElementById('clear-email-form');
             if (clearEmailFormBtn) {
                 clearEmailFormBtn.addEventListener('click', function() {
-                    document.getElementById('send-email-to-user-form').reset();
-                    document.getElementById('attachment-list').innerHTML = '';
+                    const form = document.getElementById('send-email-to-user-form');
+                    if (form) form.reset();
+                    
+                    const attachmentListDiv = document.getElementById('attachment-list');
+                    if (attachmentListDiv) attachmentListDiv.innerHTML = '';
                     
                     // Reset to single email field
                     const container = document.getElementById('email-recipients-container');
-                    container.innerHTML = `
-                        <div class="email-recipient-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                            <input type="email" class="admin-form-input email-recipient-input" placeholder="Enter email address" required style="flex: 1;">
-                            <button type="button" class="remove-email-btn" style="display: none; background: #ef4444; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Remove</button>
-                        </div>
-                    `;
-                    updateRemoveButtons();
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="email-recipient-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="email" class="admin-form-input email-recipient-input" placeholder="Enter email address" required style="flex: 1;">
+                                <button type="button" class="remove-email-btn" style="display: none; background: #ef4444; color: white; border: none; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                            </div>
+                        `;
+                        updateRemoveButtons();
+                    }
                 });
             }
             

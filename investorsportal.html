@@ -1130,10 +1130,6 @@
             
             // Navigation handling
             let navItems = document.querySelectorAll('.sidebar-nav-item');
-            const dashboardView = document.getElementById('dashboard-view');
-            const portfolioView = document.getElementById('portfolio-view');
-            const transactionsView = document.getElementById('transactions-view');
-            const performanceView = document.getElementById('performance-view');
             
             function setupNavigation() {
                 navItems = document.querySelectorAll('.sidebar-nav-item');
@@ -1151,12 +1147,18 @@
                         const navText = span ? span.textContent.trim() : this.textContent.trim();
                         const navData = this.getAttribute('data-nav');
                         
+                        console.log('Navigation clicked:', navText, navData); // Debug log
+                        
                         // Remove active class from all items
                         document.querySelectorAll('.sidebar-nav-item').forEach(nav => nav.classList.remove('active'));
                         // Add active class to clicked item
                         this.classList.add('active');
                         
-                        // Get all views
+                        // Get all views - retrieve them fresh each time to ensure they exist
+                        const dashboardView = document.getElementById('dashboard-view');
+                        const portfolioView = document.getElementById('portfolio-view');
+                        const transactionsView = document.getElementById('transactions-view');
+                        const performanceView = document.getElementById('performance-view');
                         const marketNewsView = document.getElementById('market-news-view');
                         const accountSettingsView = document.getElementById('account-settings-view');
                         const reportsView = document.getElementById('reports-view');
@@ -1177,44 +1179,126 @@
                         if (oneOnOnesView) oneOnOnesView.style.display = 'none';
                         
                         // Show selected view
-                        if ((navText === 'Dashboard' || !navData) && dashboardView) {
-                            dashboardView.style.display = 'block';
-                        } else if (navText === 'Portfolio' && portfolioView) {
-                            portfolioView.style.display = 'block';
-                            setTimeout(async function() {
-                                await drawPortfolioChart(); // This will update the balance cards
-                                calculateProjectionValue();
-                            }, 100);
-                        } else if (navText === 'Transactions' && transactionsView) {
-                            transactionsView.style.display = 'block';
-                            populateTransactionsTable();
-                        } else if (navText === 'Performance' && performanceView) {
-                            performanceView.style.display = 'block';
-                            setTimeout(async function() {
-                                await drawPerformanceChart();
-                                setTimeout(setupPerformanceChartHover, 150);
-                            }, 100);
-                        } else if (navText === 'Market News' && marketNewsView) {
-                            marketNewsView.style.display = 'block';
-                            loadMarketNews();
-                        } else if (navText === 'Account Settings' && accountSettingsView) {
-                            accountSettingsView.style.display = 'block';
-                        } else if (navText === 'Reports' && reportsView) {
-                            reportsView.style.display = 'block';
-                            setTimeout(function() {
-                                generateReportWidgets();
-                            }, 100);
-                        } else if (navText === 'Learning' && learningView) {
-                            learningView.style.display = 'block';
-                            loadModulesList();
-                        } else if (navText === 'Community' && communityView) {
-                            communityView.style.display = 'block';
-                            loadCommunityChatMessages();
-                            loadProfessorsMessages();
-                            loadWeeklyReports();
-                        } else if ((navText === 'One-on-ones' || navData === 'one-on-ones') && oneOnOnesView) {
-                            oneOnOnesView.style.display = 'block';
-                            loadOneOnOneChatMessages();
+                        if (navText === 'Dashboard' || (!navData && navText.toLowerCase().includes('dashboard'))) {
+                            if (dashboardView) {
+                                dashboardView.style.display = 'block';
+                                console.log('Showing Dashboard view');
+                            } else {
+                                console.error('Dashboard view not found');
+                            }
+                        } else if (navText === 'Portfolio') {
+                            if (portfolioView) {
+                                portfolioView.style.display = 'block';
+                                console.log('Showing Portfolio view');
+                                setTimeout(async function() {
+                                    if (typeof drawPortfolioChart === 'function') {
+                                        await drawPortfolioChart();
+                                    }
+                                    if (typeof calculateProjectionValue === 'function') {
+                                        calculateProjectionValue();
+                                    }
+                                }, 100);
+                            } else {
+                                console.error('Portfolio view not found');
+                            }
+                        } else if (navText === 'Transactions') {
+                            if (transactionsView) {
+                                transactionsView.style.display = 'block';
+                                console.log('Showing Transactions view');
+                                if (typeof populateTransactionsTable === 'function') {
+                                    populateTransactionsTable();
+                                }
+                            } else {
+                                console.error('Transactions view not found');
+                            }
+                        } else if (navText === 'Performance') {
+                            if (performanceView) {
+                                performanceView.style.display = 'block';
+                                console.log('Showing Performance view');
+                                setTimeout(async function() {
+                                    if (typeof drawPerformanceChart === 'function') {
+                                        await drawPerformanceChart();
+                                        setTimeout(function() {
+                                            if (typeof setupPerformanceChartHover === 'function') {
+                                                setupPerformanceChartHover();
+                                            }
+                                        }, 150);
+                                    }
+                                }, 100);
+                            } else {
+                                console.error('Performance view not found');
+                            }
+                        } else if (navText === 'Market News') {
+                            if (marketNewsView) {
+                                marketNewsView.style.display = 'block';
+                                console.log('Showing Market News view');
+                                if (typeof loadMarketNews === 'function') {
+                                    loadMarketNews();
+                                }
+                            } else {
+                                console.error('Market News view not found');
+                            }
+                        } else if (navText === 'Account Settings') {
+                            if (accountSettingsView) {
+                                accountSettingsView.style.display = 'block';
+                                console.log('Showing Account Settings view');
+                            } else {
+                                console.error('Account Settings view not found');
+                            }
+                        } else if (navText === 'Reports') {
+                            if (reportsView) {
+                                reportsView.style.display = 'block';
+                                console.log('Showing Reports view');
+                                setTimeout(function() {
+                                    if (typeof generateReportWidgets === 'function') {
+                                        generateReportWidgets();
+                                    }
+                                }, 100);
+                            } else {
+                                console.error('Reports view not found');
+                            }
+                        } else if (navText === 'Learning') {
+                            if (learningView) {
+                                learningView.style.display = 'block';
+                                console.log('Showing Learning view');
+                                if (typeof loadModulesList === 'function') {
+                                    loadModulesList();
+                                }
+                            } else {
+                                console.error('Learning view not found');
+                            }
+                        } else if (navText === 'Community') {
+                            if (communityView) {
+                                communityView.style.display = 'block';
+                                console.log('Showing Community view');
+                                if (typeof loadCommunityChatMessages === 'function') {
+                                    loadCommunityChatMessages();
+                                }
+                                if (typeof loadProfessorsMessages === 'function') {
+                                    loadProfessorsMessages();
+                                }
+                                if (typeof loadWeeklyReports === 'function') {
+                                    loadWeeklyReports();
+                                }
+                            } else {
+                                console.error('Community view not found');
+                            }
+                        } else if (navText === 'One-on-ones' || navData === 'one-on-ones') {
+                            if (oneOnOnesView) {
+                                oneOnOnesView.style.display = 'block';
+                                console.log('Showing One-on-ones view');
+                                if (typeof loadOneOnOneChatMessages === 'function') {
+                                    loadOneOnOneChatMessages();
+                                }
+                            } else {
+                                console.error('One-on-ones view not found');
+                            }
+                        } else {
+                            console.warn('Unknown navigation item:', navText);
+                            // Default to dashboard if nothing matches
+                            if (dashboardView) {
+                                dashboardView.style.display = 'block';
+                            }
                         }
                     });
                 });
