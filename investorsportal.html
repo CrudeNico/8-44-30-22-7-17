@@ -3694,7 +3694,7 @@
                         return;
                     }
                 
-                // Weekly Report Header
+                // Weekly Report Header - with left and right sections
                 const reportHeader = document.createElement('div');
                 reportHeader.style.gridColumn = '1 / -1';
                 reportHeader.style.background = 'white';
@@ -3703,50 +3703,48 @@
                 reportHeader.style.border = '1px solid #e5e7eb';
                 reportHeader.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
                 reportHeader.style.marginBottom = '1rem';
+                reportHeader.style.display = 'flex';
+                reportHeader.style.justifyContent = 'space-between';
+                reportHeader.style.alignItems = 'flex-start';
+                reportHeader.style.gap = '2rem';
+                
+                // Left side: Weekly Report title, Author, and Date Published
+                const leftSection = document.createElement('div');
+                leftSection.style.flex = '1';
                 
                 const headerTitle = document.createElement('h3');
-                headerTitle.style.margin = '0 0 1rem 0';
+                headerTitle.style.margin = '0 0 0.75rem 0';
                 headerTitle.style.fontSize = '1.25rem';
                 headerTitle.style.fontWeight = '600';
                 headerTitle.style.color = '#1f2937';
                 headerTitle.textContent = 'Weekly Report';
                 
-                const headerInfo = document.createElement('div');
-                headerInfo.style.display = 'grid';
-                headerInfo.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
-                headerInfo.style.gap = '1rem';
-                headerInfo.style.fontSize = '0.875rem';
-                headerInfo.style.color = '#6b7280';
-                headerInfo.innerHTML = `
-                    <div><strong>Author:</strong> ${weeklyReportData.author || 'N/A'}</div>
-                    <div><strong>Date Published:</strong> ${weeklyReportData.datePublished ? new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</div>
-                `;
+                const authorInfo = document.createElement('div');
+                authorInfo.style.fontSize = '0.875rem';
+                authorInfo.style.color = '#6b7280';
+                authorInfo.style.marginBottom = '0.5rem';
+                authorInfo.innerHTML = `<strong>Author:</strong> ${weeklyReportData.author || 'N/A'}`;
                 
-                reportHeader.appendChild(headerTitle);
-                reportHeader.appendChild(headerInfo);
-                container.appendChild(reportHeader);
+                const dateInfo = document.createElement('div');
+                dateInfo.style.fontSize = '0.875rem';
+                dateInfo.style.color = '#6b7280';
+                dateInfo.innerHTML = `<strong>Date Published:</strong> ${weeklyReportData.datePublished ? new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}`;
                 
-                // PDF Report Section
-                const pdfSection = document.createElement('div');
-                pdfSection.style.background = 'white';
-                pdfSection.style.padding = '1.5rem';
-                pdfSection.style.borderRadius = '8px';
-                pdfSection.style.border = '1px solid #e5e7eb';
-                pdfSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                pdfSection.style.display = 'flex';
-                pdfSection.style.flexDirection = 'column';
-                pdfSection.style.gap = '1rem';
+                leftSection.appendChild(headerTitle);
+                leftSection.appendChild(authorInfo);
+                leftSection.appendChild(dateInfo);
                 
-                // Title and file info with view button on the right
-                const pdfHeader = document.createElement('div');
-                pdfHeader.style.display = 'flex';
-                pdfHeader.style.justifyContent = 'space-between';
-                pdfHeader.style.alignItems = 'center';
-                pdfHeader.style.marginBottom = '1rem';
+                // Middle section: PDF Report section (moved more to the left)
+                const middleSection = document.createElement('div');
+                middleSection.style.flex = '1';
+                middleSection.style.display = 'flex';
+                middleSection.style.flexDirection = 'column';
+                middleSection.style.alignItems = 'flex-start';
+                middleSection.style.gap = '0.5rem';
+                middleSection.style.marginLeft = '2rem';
                 
-                const pdfTitleContainer = document.createElement('div');
                 const pdfTitle = document.createElement('h4');
-                pdfTitle.style.margin = '0 0 0.25rem 0';
+                pdfTitle.style.margin = '0';
                 pdfTitle.style.fontSize = '1.125rem';
                 pdfTitle.style.fontWeight = '600';
                 pdfTitle.style.color = '#1f2937';
@@ -3757,9 +3755,6 @@
                 pdfInfo.style.color = '#6b7280';
                 pdfInfo.innerHTML = `<strong>File:</strong> ${weeklyReportData.pdfFileName || 'N/A'}`;
                 
-                pdfTitleContainer.appendChild(pdfTitle);
-                pdfTitleContainer.appendChild(pdfInfo);
-                
                 // Check if PDF URL exists and is not null/empty
                 const hasPdfUrl = weeklyReportData.pdfUrl && weeklyReportData.pdfUrl !== null && weeklyReportData.pdfUrl !== '';
                 console.log('Weekly report PDF check:', {
@@ -3768,11 +3763,14 @@
                     pdfFileName: weeklyReportData.pdfFileName
                 });
                 
-                // Small "View" button on the right
+                middleSection.appendChild(pdfTitle);
+                middleSection.appendChild(pdfInfo);
+                
+                // Wider "View" button
                 if (hasPdfUrl) {
                     const viewButton = document.createElement('button');
                     viewButton.textContent = 'View';
-                    viewButton.style.padding = '0.375rem 0.75rem';
+                    viewButton.style.padding = '0.375rem 1.5rem';
                     viewButton.style.fontSize = '0.75rem';
                     viewButton.style.fontWeight = '600';
                     viewButton.style.color = 'white';
@@ -3782,6 +3780,9 @@
                     viewButton.style.cursor = 'pointer';
                     viewButton.style.transition = 'background 0.2s';
                     viewButton.style.whiteSpace = 'nowrap';
+                    viewButton.style.marginTop = '0.5rem';
+                    viewButton.style.width = 'auto';
+                    viewButton.style.minWidth = '80px';
                     
                     viewButton.addEventListener('mouseenter', function() {
                         this.style.background = '#1d4ed8';
@@ -3811,26 +3812,78 @@
                         );
                     });
                     
-                    pdfHeader.appendChild(pdfTitleContainer);
-                    pdfHeader.appendChild(viewButton);
-                } else {
-                    pdfHeader.appendChild(pdfTitleContainer);
-                    
-                    // PDF not available - show helpful message
-                    const noPdfMessage = document.createElement('div');
-                    noPdfMessage.style.marginTop = '1rem';
-                    noPdfMessage.style.padding = '2rem';
-                    noPdfMessage.style.textAlign = 'center';
-                    noPdfMessage.style.color = '#9ca3af';
-                    noPdfMessage.style.fontSize = '0.875rem';
-                    noPdfMessage.style.background = '#f3f4f6';
-                    noPdfMessage.style.borderRadius = '8px';
-                    noPdfMessage.innerHTML = '📄<br><br>PDF file not available<br><span style="font-size: 0.75rem; color: #9ca3af;">The file may still be uploading or there was an upload error.</span>';
-                    pdfSection.appendChild(noPdfMessage);
+                    middleSection.appendChild(viewButton);
                 }
                 
-                pdfSection.appendChild(pdfHeader);
-                container.appendChild(pdfSection);
+                // Right section: Weekly Video section
+                const rightSection = document.createElement('div');
+                rightSection.style.flex = '1';
+                rightSection.style.display = 'flex';
+                rightSection.style.flexDirection = 'column';
+                rightSection.style.alignItems = 'flex-start';
+                rightSection.style.gap = '0.5rem';
+                rightSection.style.marginLeft = '2rem';
+                
+                const hasVideo = weeklyReportData.videoUrl && weeklyReportData.videoUrl !== null && weeklyReportData.videoUrl !== '';
+                
+                if (hasVideo) {
+                    const videoTitle = document.createElement('h4');
+                    videoTitle.style.margin = '0';
+                    videoTitle.style.fontSize = '1.125rem';
+                    videoTitle.style.fontWeight = '600';
+                    videoTitle.style.color = '#1f2937';
+                    videoTitle.textContent = 'Weekly Video';
+                    
+                    const videoInfo = document.createElement('div');
+                    videoInfo.style.fontSize = '0.875rem';
+                    videoInfo.style.color = '#6b7280';
+                    videoInfo.innerHTML = `<strong>Title:</strong> ${weeklyReportData.videoTitle || 'N/A'}`;
+                    
+                    rightSection.appendChild(videoTitle);
+                    rightSection.appendChild(videoInfo);
+                    
+                    // "Watch" button
+                    const watchButton = document.createElement('button');
+                    watchButton.textContent = 'Watch';
+                    watchButton.style.padding = '0.375rem 1.5rem';
+                    watchButton.style.fontSize = '0.75rem';
+                    watchButton.style.fontWeight = '600';
+                    watchButton.style.color = 'white';
+                    watchButton.style.background = '#2563eb';
+                    watchButton.style.border = 'none';
+                    watchButton.style.borderRadius = '6px';
+                    watchButton.style.cursor = 'pointer';
+                    watchButton.style.transition = 'background 0.2s';
+                    watchButton.style.whiteSpace = 'nowrap';
+                    watchButton.style.marginTop = '0.5rem';
+                    watchButton.style.width = 'auto';
+                    watchButton.style.minWidth = '80px';
+                    
+                    watchButton.addEventListener('mouseenter', function() {
+                        this.style.background = '#1d4ed8';
+                    });
+                    
+                    watchButton.addEventListener('mouseleave', function() {
+                        this.style.background = '#2563eb';
+                    });
+                    
+                    watchButton.addEventListener('click', function(e) {
+                        viewWeeklyVideo(
+                            weeklyReportData.videoUrl,
+                            weeklyReportData.videoTitle || 'Weekly Video',
+                            e.target
+                        );
+                    });
+                    
+                    rightSection.appendChild(watchButton);
+                }
+                
+                reportHeader.appendChild(leftSection);
+                reportHeader.appendChild(middleSection);
+                if (hasVideo) {
+                    reportHeader.appendChild(rightSection);
+                }
+                container.appendChild(reportHeader);
                 
                 // Video Section (only if video exists)
                 if (weeklyReportData.videoUrl && weeklyReportData.videoTitle) {
@@ -4065,6 +4118,183 @@
                 // Show modal - allow page scrolling
                 modal.style.display = 'block';
                 // Don't disable scrolling - allow user to scroll to see the modal
+                document.body.style.overflow = '';
+            }
+            
+            // View weekly video in modal (similar to PDF viewer)
+            function viewWeeklyVideo(videoUrl, videoTitle, watchButton = null) {
+                // Create or use video viewer modal
+                let videoModal = document.getElementById('weekly-video-viewer-modal');
+                
+                if (!videoModal) {
+                    // Create video modal if it doesn't exist
+                    videoModal = document.createElement('div');
+                    videoModal.id = 'weekly-video-viewer-modal';
+                    videoModal.style.display = 'none';
+                    videoModal.style.position = 'fixed';
+                    videoModal.style.top = '0';
+                    videoModal.style.left = '0';
+                    videoModal.style.width = '100%';
+                    videoModal.style.height = '100%';
+                    videoModal.style.zIndex = '10000';
+                    videoModal.style.overflowY = 'auto';
+                    videoModal.style.pointerEvents = 'none';
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'admin-modal-overlay';
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100%';
+                    overlay.style.minHeight = '100%';
+                    overlay.style.background = 'rgba(0, 0, 0, 0.5)';
+                    overlay.style.zIndex = '999';
+                    overlay.style.pointerEvents = 'auto';
+                    overlay.addEventListener('click', function() {
+                        closeWeeklyVideoViewer();
+                    });
+                    
+                    const container = document.createElement('div');
+                    container.id = 'weekly-video-viewer-container';
+                    container.style.maxWidth = '100%';
+                    container.style.width = 'auto';
+                    container.style.maxHeight = '85vh';
+                    container.style.position = 'absolute';
+                    container.style.background = 'white';
+                    container.style.borderRadius = '12px';
+                    container.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                    
+                    const content = document.createElement('div');
+                    content.style.padding = '0';
+                    
+                    const header = document.createElement('div');
+                    header.style.padding = '1rem 1.5rem';
+                    header.style.borderBottom = '1px solid #e5e7eb';
+                    header.style.display = 'flex';
+                    header.style.justifyContent = 'space-between';
+                    header.style.alignItems = 'center';
+                    header.style.background = 'white';
+                    header.style.borderRadius = '12px 12px 0 0';
+                    
+                    const titleEl = document.createElement('h2');
+                    titleEl.id = 'weekly-video-viewer-title';
+                    titleEl.style.margin = '0';
+                    titleEl.style.fontSize = '1.125rem';
+                    titleEl.style.fontWeight = '600';
+                    titleEl.style.color = '#1f2937';
+                    
+                    const closeBtn = document.createElement('span');
+                    closeBtn.id = 'weekly-video-viewer-close';
+                    closeBtn.style.cursor = 'pointer';
+                    closeBtn.style.color = '#6b7280';
+                    closeBtn.style.fontSize = '1.5rem';
+                    closeBtn.style.lineHeight = '1';
+                    closeBtn.style.padding = '0.25rem';
+                    closeBtn.style.transition = 'color 0.2s';
+                    closeBtn.textContent = '×';
+                    closeBtn.addEventListener('mouseenter', function() {
+                        this.style.color = '#1f2937';
+                    });
+                    closeBtn.addEventListener('mouseleave', function() {
+                        this.style.color = '#6b7280';
+                    });
+                    closeBtn.addEventListener('click', closeWeeklyVideoViewer);
+                    
+                    header.appendChild(titleEl);
+                    header.appendChild(closeBtn);
+                    
+                    const body = document.createElement('div');
+                    body.style.padding = '1.5rem';
+                    body.style.overflow = 'auto';
+                    body.style.maxHeight = 'calc(85vh - 80px)';
+                    body.style.background = '#f9fafb';
+                    
+                    const videoPlayer = document.createElement('video');
+                    videoPlayer.id = 'weekly-video-viewer-player';
+                    videoPlayer.controls = true;
+                    videoPlayer.style.width = '100%';
+                    videoPlayer.style.height = 'auto';
+                    videoPlayer.style.border = '1px solid #e5e7eb';
+                    videoPlayer.style.borderRadius = '8px';
+                    videoPlayer.style.background = 'black';
+                    videoPlayer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    
+                    body.appendChild(videoPlayer);
+                    content.appendChild(header);
+                    content.appendChild(body);
+                    container.appendChild(content);
+                    videoModal.appendChild(overlay);
+                    videoModal.appendChild(container);
+                    document.body.appendChild(videoModal);
+                }
+                
+                const container = document.getElementById('weekly-video-viewer-container');
+                const titleEl = document.getElementById('weekly-video-viewer-title');
+                const videoPlayer = document.getElementById('weekly-video-viewer-player');
+                
+                if (!container || !titleEl || !videoPlayer) {
+                    console.error('Video viewer elements not found');
+                    return;
+                }
+                
+                titleEl.textContent = `Weekly Video - ${videoTitle || 'Video'}`;
+                videoPlayer.src = videoUrl;
+                
+                // Position modal aligned with the weekly report widget
+                const weeklyReportsWidget = document.getElementById('weekly-reports-display')?.closest('.dashboard-widget');
+                
+                if (weeklyReportsWidget) {
+                    const widgetRect = weeklyReportsWidget.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    
+                    const topPosition = widgetRect.top + scrollTop - 200;
+                    const widgetWidth = widgetRect.width;
+                    const widgetLeft = widgetRect.left + scrollLeft;
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = widgetLeft + 'px';
+                    container.style.width = widgetWidth + 'px';
+                    container.style.maxWidth = widgetWidth + 'px';
+                    container.style.transform = 'none';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else if (watchButton) {
+                    const buttonRect = watchButton.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const topPosition = buttonRect.top + scrollTop - 300;
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = '50%';
+                    container.style.transform = 'translateX(-50%)';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else {
+                    container.style.top = '50%';
+                    container.style.left = '50%';
+                    container.style.transform = 'translate(-50%, -50%)';
+                    container.style.position = 'fixed';
+                }
+                
+                videoModal.style.display = 'block';
+                document.body.style.overflow = '';
+            }
+            
+            // Close weekly video viewer
+            function closeWeeklyVideoViewer() {
+                const videoModal = document.getElementById('weekly-video-viewer-modal');
+                const videoPlayer = document.getElementById('weekly-video-viewer-player');
+                if (videoModal) videoModal.style.display = 'none';
+                if (videoPlayer) {
+                    videoPlayer.pause();
+                    videoPlayer.src = '';
+                }
                 document.body.style.overflow = '';
             }
             
