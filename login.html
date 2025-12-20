@@ -220,17 +220,42 @@
         window.firestoreService = {
             USERS_COLLECTION: 'users',
             
-            // Get user by username
+            // Get user by username (checks both 'users' and 'learningUsers' collections)
             getUserByUsername: async function(username) {
                 try {
-                    const snapshot = await db.collection(this.USERS_COLLECTION)
+                    // First check 'users' collection (investors)
+                    let snapshot = await db.collection(this.USERS_COLLECTION)
                         .where('username', '==', username)
                         .limit(1)
                         .get();
                     if (!snapshot.empty) {
                         const doc = snapshot.docs[0];
-                        return { id: doc.id, ...doc.data() };
+                        const userData = { id: doc.id, ...doc.data() };
+                        // Ensure type is set to 'investor' if not already set
+                        if (!userData.type) {
+                            userData.type = 'investor';
+                        }
+                        console.log('Found investor user:', userData);
+                        return userData;
                     }
+                    
+                    // If not found, check 'learningUsers' collection
+                    snapshot = await db.collection('learningUsers')
+                        .where('username', '==', username)
+                        .limit(1)
+                        .get();
+                    if (!snapshot.empty) {
+                        const doc = snapshot.docs[0];
+                        const userData = { id: doc.id, ...doc.data() };
+                        // Ensure type is set to 'learning' if not already set
+                        if (!userData.type) {
+                            userData.type = 'learning';
+                        }
+                        console.log('Found learning user:', userData);
+                        return userData;
+                    }
+                    
+                    console.log('User not found in either collection');
                     return null;
                 } catch (error) {
                     console.error('Error getting user by username:', error);
@@ -332,12 +357,21 @@
                                     // Ensure userData has the Firestore document ID
                                     if (!userData.id) {
                                         // If id is missing, try to get it from the query result
-                                        const userQuery = await db.collection('users')
+                                        let userQuery = await db.collection('users')
                                             .where('username', '==', username)
                                             .limit(1)
                                             .get();
                                         if (!userQuery.empty) {
                                             userData.id = userQuery.docs[0].id;
+                                        } else {
+                                            // Try learningUsers collection
+                                            userQuery = await db.collection('learningUsers')
+                                                .where('username', '==', username)
+                                                .limit(1)
+                                                .get();
+                                            if (!userQuery.empty) {
+                                                userData.id = userQuery.docs[0].id;
+                                            }
                                         }
                                     }
                                     
@@ -367,8 +401,11 @@
                                         } else {
                                             window.location.href = 'adminportal.html';
                                         }
+                                    } else if (userData.type === 'learning') {
+                                        // Learning user - redirect to learning portal
+                                        window.location.href = 'learnportal.html';
                                     } else {
-                                        // Investor user
+                                        // Investor user (or default)
                                         window.location.href = 'investorsportal.html';
                                     }
                                     

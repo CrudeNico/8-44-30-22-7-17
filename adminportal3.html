@@ -4341,6 +4341,40 @@
                                     }
                                 }
                                 
+                                // Create Firebase Auth user first
+                                if (!window.firebaseAuth) {
+                                    throw new Error('Firebase Auth not available. Please refresh the page.');
+                                }
+                                
+                                // Store current admin user (if any) to restore session later
+                                const currentAdminUser = window.firebaseAuth.currentUser;
+                                
+                                let authUser;
+                                try {
+                                    const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(
+                                        email,
+                                        password
+                                    );
+                                    authUser = userCredential.user;
+                                    console.log('Firebase Auth user created:', authUser.uid);
+                                    
+                                    // Sign out the newly created user immediately
+                                    // (createUserWithEmailAndPassword automatically signs them in)
+                                    await window.firebaseAuth.signOut();
+                                    console.log('Signed out newly created user');
+                                    
+                                    // If admin was signed in, restore their session
+                                    // Note: This is a limitation - we can't automatically restore admin session
+                                    // Admin will need to sign in again if they were using Firebase Auth
+                                } catch (authError) {
+                                    console.error('Error creating Firebase Auth user:', authError);
+                                    // If user already exists in Auth, provide helpful error
+                                    if (authError.code === 'auth/email-already-in-use') {
+                                        throw new Error('Email already exists in authentication system. Please use a different email.');
+                                    }
+                                    throw new Error('Failed to create authentication account: ' + authError.message);
+                                }
+                                
                                 // Create user in Firestore
                                 await window.learningUsersFirestoreService.createLearningUser({
                                     username,
@@ -4352,9 +4386,7 @@
                                     active: true
                                 });
                                 
-                                // Note: Firebase Auth user creation should be handled server-side
-                                // For now, we only create the Firestore document
-                                // The password can be set up later through Firebase Console or a Cloud Function
+                                console.log('Learning user created successfully in both Firestore and Firebase Auth');
                                 
                                 await loadUsersList();
                                 modal.style.display = 'none';

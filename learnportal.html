@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Portal - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="dashboard-active">
+    <section class="user-dashboard" id="user-dashboard">
+        <div class="dashboard-sidebar">
+            <div class="sidebar-profile">
+                <div class="sidebar-profile-image-container" id="profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
+                    <img src="" alt="Profile Picture" class="sidebar-profile-image" id="profile-picture-img" style="display: none; width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" />
+                    <div class="profile-picture-placeholder" id="profile-picture-placeholder" style="width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 2rem; border: 3px solid #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <span>👤</span>
+                    </div>
+                    <div class="profile-picture-upload-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 0.75rem; text-align: center; padding: 0.5rem; cursor: pointer;">
+                        Click to upload
+                    </div>
+                </div>
+                <input type="file" id="profile-picture-input" accept="image/*" style="display: none;" />
+                <div class="sidebar-profile-name">Learning User</div>
+            </div>
+            <nav class="sidebar-navigation">
+                <a href="#" class="sidebar-nav-item active">
+                    <span>Learning</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <span>Community</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="sidebar-footer-item">
+                    <span>Return to Home</span>
+                </a>
+                <a href="login.html" class="sidebar-footer-item" id="logout-btn">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <!-- Learning View -->
+            <div class="learning-view" id="learning-view" style="display: block;">
+                <!-- Modules List View -->
+                <div class="learning-content" id="modules-list-view">
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Learning Modules</h2>
+                        <p style="margin-top: 0.5rem; color: #6b7280; font-size: 0.875rem;">Explore our comprehensive learning modules to enhance your trading knowledge.</p>
+                    </div>
+                    
+                    <div class="modules-grid" id="modules-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                        <!-- Modules will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Module Detail View -->
+                <div class="module-detail-view" id="module-detail-view" style="display: none;">
+                    <div style="position: relative; max-width: 900px; margin: 0 auto; padding: 2rem;">
+                        <button id="close-module-btn" style="position: absolute; top: 1rem; right: 1rem; background: #1f2937; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; transition: background 0.2s;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='#1f2937'">&times;</button>
+                        <div id="module-detail-content" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                            <!-- Module content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Community View -->
+            <div class="community-view" id="community-view" style="display: none;">
+                <div class="community-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Left Side - Professors Messages Widget -->
+                    <div class="dashboard-widget" style="display: flex; flex-direction: column; height: 600px; max-height: 600px;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Professors' Messages</h3>
+                        </div>
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                            <!-- Professors Messages Area -->
+                            <div id="professors-messages-container" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1rem; background: #f9fafb; display: flex; flex-direction: column; gap: 1rem; min-height: 0;">
+                                <!-- Professors messages will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Group Chat Widget -->
+                    <div class="dashboard-widget" style="display: flex; flex-direction: column; height: 600px; max-height: 600px;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Group Chat</h3>
+                        </div>
+                        <div class="dashboard-widget-content" style="flex: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                            <!-- Chat Messages Area -->
+                            <div id="community-chat-messages-container" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1rem; background: #f9fafb; display: flex; flex-direction: column; gap: 0.75rem; min-height: 0;">
+                                <!-- Messages will be populated by JavaScript -->
+                            </div>
+                            
+                            <!-- Chat Input Area -->
+                            <div style="border-top: 1px solid #e5e7eb; padding: 1rem; background: white;">
+                                <div id="community-chat-images-preview" style="display: none; margin-bottom: 0.75rem; padding: 0.75rem; background: #f3f4f6; border-radius: 6px;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="community-chat-images-preview-container">
+                                        <!-- Image previews will be shown here -->
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                                    <textarea id="community-chat-message-input" placeholder="Type your message..." style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: none; font-family: inherit; font-size: 0.875rem; min-height: 40px; max-height: 80px;" rows="1"></textarea>
+                                    <label for="community-chat-image-input" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                        Add Image
+                                    </label>
+                                    <input type="file" id="community-chat-image-input" accept="image/*" multiple style="display: none;">
+                                    <button type="button" id="community-chat-send-btn" style="cursor: pointer; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content; transition: background 0.2s;">
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weekly Reports Widget - Full Width Below (Hidden for Tier 1) -->
+                    <div class="dashboard-widget" id="weekly-reports-widget" style="grid-column: 1 / -1; margin-top: 0.25rem; display: none;">
+                        <div class="dashboard-widget-header">
+                            <h3 class="dashboard-widget-title">Weekly Reports</h3>
+                        </div>
+                        <div class="dashboard-widget-content">
+                            <div id="weekly-reports-display" style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                                <!-- Weekly Reports will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Viewer Modal -->
+            <div id="report-viewer-modal" class="admin-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; overflow-y: auto; pointer-events: none;">
+                <div class="admin-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; min-height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999; pointer-events: auto;"></div>
+                <div class="admin-modal-container" id="report-viewer-container" style="max-width: 100%; width: auto; max-height: 85vh; position: fixed; top: auto; bottom: auto; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);">
+                    <div class="admin-modal-content" style="padding: 0;">
+                        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: white; border-radius: 12px 12px 0 0;">
+                            <h2 class="admin-modal-title" id="report-viewer-title" style="margin: 0; font-size: 1.125rem; font-weight: 600; color: #1f2937;">Weekly Report</h2>
+                            <span id="report-viewer-close" style="cursor: pointer; color: #6b7280; font-size: 1.5rem; line-height: 1; padding: 0.25rem; transition: color 0.2s;" onmouseover="this.style.color='#1f2937'" onmouseout="this.style.color='#6b7280'">&times;</span>
+                        </div>
+                        <div style="padding: 1.5rem; overflow: auto; max-height: calc(85vh - 80px); background: #f9fafb;">
+                            <iframe id="report-viewer-iframe" style="width: 100%; height: 750px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+    
+    <!-- Community Messages Firestore Service -->
+    <script src="firestore-service-community-messages.js"></script>
+    
+    <!-- Weekly Reports Firestore Service -->
+    <script src="firestore-service-weekly-reports.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
+            authDomain: "opessocius-17ab9.firebaseapp.com",
+            projectId: "opessocius-17ab9",
+            storageBucket: "opessocius-17ab9.firebasestorage.app",
+            messagingSenderId: "835445796116",
+            appId: "1:835445796116:web:71b8595886ecb53e612601",
+            measurementId: "G-44CX9N3E3J"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize services
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const analytics = firebase.analytics();
+        
+        // Make available globally
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseStorage = storage;
+        window.firebaseAnalytics = analytics;
+        window.firebase = firebase;
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profile Picture Functions
+            function loadProfilePicture(profilePictureUrl) {
+                const profileImg = document.getElementById('profile-picture-img');
+                const placeholder = document.getElementById('profile-picture-placeholder');
+                
+                if (profilePictureUrl && profilePictureUrl.trim() !== '') {
+                    profileImg.src = profilePictureUrl;
+                    profileImg.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                } else {
+                    profileImg.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                }
+            }
+            
+            // Load and display user data (for learning users from learningUsers collection)
+            async function loadUserData() {
+                try {
+                    // Try to get user session
+                    let userSession = sessionStorage.getItem('user') || sessionStorage.getItem('investorUser');
+                    if (!userSession) {
+                        console.warn('No user session found');
+                        // Redirect to login if no session
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    
+                    const user = JSON.parse(userSession);
+                    let userData = user.userData || {};
+                    
+                    // Ensure this is a learning user
+                    if (userData.type && userData.type !== 'learning') {
+                        console.warn('Non-learning user detected in learning portal');
+                        // Redirect based on type
+                        if (userData.type === 'investor') {
+                            window.location.href = 'investorsportal.html';
+                        } else {
+                            window.location.href = 'login.html';
+                        }
+                        return;
+                    }
+                    
+                    // Fetch fresh user data from Firestore (from learningUsers collection)
+                    if (window.firebaseDb) {
+                        try {
+                            let foundUserDoc = null;
+                            
+                            // First try using userData.id (Firestore document ID)
+                            if (userData.id) {
+                                const docSnapshot = await window.firebaseDb.collection('learningUsers').doc(userData.id).get();
+                                if (docSnapshot.exists) {
+                                    foundUserDoc = { id: docSnapshot.id, data: docSnapshot.data() };
+                                }
+                            }
+                            
+                            // If not found or no ID, find by username
+                            if (!foundUserDoc && user.username) {
+                                const userQuery = await window.firebaseDb.collection('learningUsers')
+                                    .where('username', '==', user.username)
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    const doc = userQuery.docs[0];
+                                    foundUserDoc = { id: doc.id, data: doc.data() };
+                                }
+                            }
+                            
+                            // If still not found, try by email
+                            if (!foundUserDoc && userData.email) {
+                                const userQuery = await window.firebaseDb.collection('learningUsers')
+                                    .where('email', '==', userData.email)
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    const doc = userQuery.docs[0];
+                                    foundUserDoc = { id: doc.id, data: doc.data() };
+                                }
+                            }
+                            
+                            if (foundUserDoc && foundUserDoc.id && foundUserDoc.data) {
+                                // Update with fresh data from Firestore
+                                userData = { 
+                                    id: foundUserDoc.id, 
+                                    ...foundUserDoc.data 
+                                };
+                                
+                                // Ensure type is set
+                                userData.type = 'learning';
+                                
+                                // Update sessionStorage
+                                user.userData = userData;
+                                sessionStorage.setItem('user', JSON.stringify(user));
+                                console.log('Loaded fresh learning user data from Firestore for user:', userData.id, 'username:', userData.username);
+                            } else {
+                                console.warn('Learning user document not found in Firestore for username:', user.username);
+                            }
+                        } catch (error) {
+                            console.error('Error fetching learning user data from Firestore:', error);
+                            // Continue with cached data if Firestore fetch fails
+                        }
+                    }
+                    
+                    // Update sidebar profile name
+                    const sidebarProfileName = document.querySelector('.sidebar-profile-name');
+                    if (sidebarProfileName) {
+                        const fullName = userData.fullName || 
+                                        (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}`.trim() : '') ||
+                                        userData.firstName || 
+                                        user.username || 
+                                        'Learning User';
+                        sidebarProfileName.textContent = fullName;
+                    }
+                    
+                    // Load and display profile picture
+                    loadProfilePicture(userData.profilePictureUrl);
+                    
+                    // Store user tier globally for access control
+                    window.currentUserTier = userData.tier || 'tier1';
+                    
+                    console.log('Learning user data loaded successfully, tier:', window.currentUserTier);
+                } catch (error) {
+                    console.error('Error loading learning user data:', error);
+                }
+            }
+            
+            // Load user data on page load
+            loadUserData();
+            
+            // Navigation handling (only Learning and Community)
+            const navItems = document.querySelectorAll('.sidebar-nav-item');
+            const learningView = document.getElementById('learning-view');
+            const communityView = document.getElementById('community-view');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get text from span element
+                    const span = this.querySelector('span');
+                    const navText = span ? span.textContent.trim() : this.textContent.trim();
+                    
+                    // Remove active class from all items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all views
+                    if (learningView) learningView.style.display = 'none';
+                    if (communityView) communityView.style.display = 'none';
+                    
+                    // Show selected view
+                    if (navText === 'Learning' && learningView) {
+                        learningView.style.display = 'block';
+                        loadModulesList();
+                    } else if (navText === 'Community' && communityView) {
+                        communityView.style.display = 'block';
+                        loadCommunityChatMessages();
+                        loadProfessorsMessages();
+                        // Only load weekly reports if user is not Tier 1
+                        const userTier = window.currentUserTier || 'tier1';
+                        if (userTier !== 'tier1') {
+                            loadWeeklyReports();
+                        } else {
+                            // Hide Weekly Reports widget for Tier 1
+                            const weeklyReportsWidget = document.getElementById('weekly-reports-widget');
+                            if (weeklyReportsWidget) {
+                                weeklyReportsWidget.style.display = 'none';
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Load modules on page load (default view) - with delay to ensure DOM is ready
+            setTimeout(function() {
+                // Check if Learning view is visible (either display: block or not set to none)
+                if (learningView) {
+                    const isVisible = learningView.style.display !== 'none' && 
+                                     (learningView.style.display === 'block' || 
+                                      learningView.style.display === '' || 
+                                      !learningView.style.display);
+                    if (isVisible) {
+                        loadModulesList();
+                    }
+                }
+            }, 300);
+            
+            // Setup MutationObserver for Learning view to load modules when shown
+            if (learningView) {
+                const learningObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (learningView.style.display !== 'none') {
+                                setTimeout(loadModulesList, 100);
+                            }
+                        }
+                    });
+                });
+                learningObserver.observe(learningView, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Setup MutationObserver for Community view to load content when shown
+            if (communityView) {
+                const communityObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (communityView.style.display !== 'none') {
+                                setTimeout(function() {
+                                    loadCommunityChatMessages();
+                                    loadProfessorsMessages();
+                                    // Only load weekly reports if user is not Tier 1
+                                    const userTier = window.currentUserTier || 'tier1';
+                                    if (userTier !== 'tier1') {
+                                        loadWeeklyReports();
+                                    } else {
+                                        // Hide Weekly Reports widget for Tier 1
+                                        const weeklyReportsWidget = document.getElementById('weekly-reports-widget');
+                                        if (weeklyReportsWidget) {
+                                            weeklyReportsWidget.style.display = 'none';
+                                        }
+                                    }
+                                }, 100);
+                            }
+                        }
+                    });
+                });
+                communityObserver.observe(communityView, { attributes: true, attributeFilter: ['style'] });
+            }
+            
+            // Hide Weekly Reports widget for Tier 1 users on initial load
+            setTimeout(function() {
+                const userTier = window.currentUserTier || 'tier1';
+                if (userTier === 'tier1') {
+                    const weeklyReportsWidget = document.getElementById('weekly-reports-widget');
+                    if (weeklyReportsWidget) {
+                        weeklyReportsWidget.style.display = 'none';
+                    }
+                }
+            }, 200);
+            
+            // Learning Modules Section
+            let modulesData = [
+                {
+                    id: 1,
+                    title: 'Introduction to Crude Oil Trading',
+                    description: 'Learn the fundamentals of crude oil trading, including market basics, key terminology, and trading strategies.',
+                    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop',
+                    content: `
+                        <h3>Understanding Crude Oil Markets</h3>
+                        <p>Crude oil is one of the most important commodities in the global economy. This module covers:</p>
+                        <ul>
+                            <li>Market fundamentals</li>
+                            <li>Trading terminology</li>
+                            <li>Price factors</li>
+                            <li>Risk management</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">What is Crude Oil?</h3>
+                        <p>Crude oil, also known as petroleum, is a naturally occurring, unrefined petroleum product composed of hydrocarbon deposits and other organic materials. It is a fossil fuel that is extracted from the ground and refined into various products such as gasoline, diesel, jet fuel, and heating oil.</p>
+                        <p>The global crude oil market is one of the largest and most liquid commodity markets in the world, with daily trading volumes exceeding billions of dollars. Understanding this market is crucial for anyone looking to trade energy commodities.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Types of Crude Oil</h3>
+                        <p>There are several types of crude oil, each with different characteristics that affect their price and trading:</p>
+                        <ul>
+                            <li><strong>West Texas Intermediate (WTI):</strong> A high-quality crude oil benchmark produced in the United States. It is light and sweet, making it ideal for refining into gasoline.</li>
+                            <li><strong>Brent Crude:</strong> A major trading classification of sweet light crude oil that serves as a major benchmark price for purchases of oil worldwide. It is extracted from the North Sea.</li>
+                            <li><strong>Dubai Crude:</strong> A medium sour crude oil produced in Dubai and used as a benchmark for pricing Middle Eastern crude oil exports to Asia.</li>
+                            <li><strong>OPEC Basket:</strong> A weighted average of oil prices from various OPEC member countries, used as a reference price for OPEC crude oil.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Market Fundamentals</h3>
+                        <p>The crude oil market is driven by a complex interplay of supply and demand factors. Understanding these fundamentals is essential for successful trading:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Supply Factors</h4>
+                        <p>Supply factors that influence crude oil prices include:</p>
+                        <ul>
+                            <li><strong>Production Levels:</strong> The amount of crude oil being produced by major oil-producing countries, particularly OPEC members, Russia, and the United States.</li>
+                            <li><strong>Geopolitical Events:</strong> Wars, sanctions, and political instability in oil-producing regions can disrupt supply chains and affect prices.</li>
+                            <li><strong>Natural Disasters:</strong> Hurricanes, earthquakes, and other natural disasters can damage oil infrastructure and reduce production.</li>
+                            <li><strong>Technological Advances:</strong> Innovations in extraction technology, such as fracking and deep-water drilling, can increase supply.</li>
+                            <li><strong>Storage Levels:</strong> The amount of crude oil in storage facilities affects available supply and can signal market sentiment.</li>
+                        </ul>
+                        
+                        <h4 style="margin-top: 1.5rem;">Demand Factors</h4>
+                        <p>Demand factors that influence crude oil prices include:</p>
+                        <ul>
+                            <li><strong>Economic Growth:</strong> Strong economic growth typically increases energy consumption, driving up demand for crude oil.</li>
+                            <li><strong>Seasonal Variations:</strong> Demand for heating oil increases in winter, while gasoline demand peaks during summer driving season.</li>
+                            <li><strong>Transportation Needs:</strong> The global transportation sector is heavily dependent on petroleum products, making it a major demand driver.</li>
+                            <li><strong>Industrial Activity:</strong> Manufacturing and industrial processes require significant amounts of energy derived from crude oil.</li>
+                            <li><strong>Alternative Energy:</strong> The growth of renewable energy sources and electric vehicles can reduce long-term demand for crude oil.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Trading Terminology</h3>
+                        <p>To effectively trade crude oil, you need to understand the key terminology used in the market:</p>
+                        <ul>
+                            <li><strong>Barrel:</strong> The standard unit of measurement for crude oil, equal to 42 US gallons or approximately 159 liters.</li>
+                            <li><strong>Spot Price:</strong> The current market price at which crude oil can be bought or sold for immediate delivery.</li>
+                            <li><strong>Futures Contract:</strong> A standardized agreement to buy or sell a specific quantity of crude oil at a predetermined price on a future date.</li>
+                            <li><strong>Contango:</strong> A market condition where futures prices are higher than spot prices, typically indicating expectations of higher future prices.</li>
+                            <li><strong>Backwardation:</strong> A market condition where futures prices are lower than spot prices, often indicating supply shortages or high immediate demand.</li>
+                            <li><strong>Spread:</strong> The price difference between two related crude oil contracts, such as the WTI-Brent spread.</li>
+                            <li><strong>Volatility:</strong> A measure of how much crude oil prices fluctuate over time, indicating market uncertainty.</li>
+                        </ul>
+                        
+                        <h3 style="margin-top: 2rem;">Price Factors</h3>
+                        <p>Several key factors influence crude oil prices on a daily basis:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">OPEC Decisions</h4>
+                        <p>The Organization of the Petroleum Exporting Countries (OPEC) plays a crucial role in global oil markets. OPEC decisions regarding production quotas can significantly impact prices. When OPEC reduces production, prices typically rise, and when they increase production, prices usually fall.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">US Dollar Strength</h4>
+                        <p>Crude oil is priced in US dollars, so the strength of the dollar directly affects oil prices. A stronger dollar makes oil more expensive for buyers using other currencies, potentially reducing demand and lowering prices. Conversely, a weaker dollar makes oil cheaper for international buyers, potentially increasing demand.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Inventory Reports</h4>
+                        <p>Weekly inventory reports from organizations like the US Energy Information Administration (EIA) and the American Petroleum Institute (API) provide crucial data on oil stockpiles. Higher-than-expected inventory levels typically indicate oversupply and can push prices down, while lower-than-expected levels suggest tight supply and can drive prices up.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Economic Indicators</h4>
+                        <p>Economic indicators such as GDP growth, employment data, and manufacturing indices provide insights into economic health and energy demand. Strong economic indicators often correlate with higher oil demand and prices.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Risk Management</h3>
+                        <p>Effective risk management is essential when trading crude oil, as the market can be highly volatile. Here are key risk management strategies:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Position Sizing</h4>
+                        <p>Never risk more than you can afford to lose on a single trade. A common rule is to risk no more than 1-2% of your trading capital on any single position. This helps protect your account from significant losses during adverse market movements.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Stop-Loss Orders</h4>
+                        <p>Always use stop-loss orders to limit potential losses. A stop-loss order automatically closes your position if the price moves against you by a predetermined amount. This prevents emotional decision-making and helps protect your capital.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Diversification</h4>
+                        <p>Don't put all your capital into crude oil trading. Diversify your portfolio across different asset classes and commodities to reduce overall risk. This way, losses in one area can be offset by gains in others.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Stay Informed</h4>
+                        <p>Keep up with market news, economic data releases, and geopolitical events that could affect oil prices. Being informed helps you make better trading decisions and avoid unexpected market moves.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Use Leverage Wisely</h4>
+                        <p>While leverage can amplify profits, it also amplifies losses. Use leverage conservatively and understand the risks involved. High leverage can quickly wipe out your trading account if the market moves against you.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Trading Strategies</h3>
+                        <p>There are several approaches to trading crude oil, each with its own advantages and risks:</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Day Trading</h4>
+                        <p>Day trading involves opening and closing positions within the same trading day. This strategy requires constant monitoring of the market and quick decision-making. Day traders typically focus on short-term price movements and technical analysis.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Swing Trading</h4>
+                        <p>Swing trading involves holding positions for several days to weeks, capturing medium-term price movements. This approach allows traders to take advantage of larger price swings while avoiding the stress of constant monitoring required in day trading.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Trend Following</h4>
+                        <p>Trend following strategies involve identifying and trading in the direction of established market trends. This approach assumes that prices will continue moving in the same direction until the trend reverses.</p>
+                        
+                        <h4 style="margin-top: 1.5rem;">Fundamental Analysis</h4>
+                        <p>Fundamental analysis focuses on supply and demand factors, economic indicators, and geopolitical events to predict price movements. This approach is better suited for longer-term trading and investment decisions.</p>
+                        
+                        <h3 style="margin-top: 2rem;">Conclusion</h3>
+                        <p>Crude oil trading offers significant opportunities for profit, but it also comes with substantial risks. Success in this market requires a solid understanding of market fundamentals, trading terminology, price factors, and risk management principles.</p>
+                        <p>Remember that no trading strategy guarantees profits, and losses are an inevitable part of trading. The key to long-term success is consistent application of sound trading principles, continuous learning, and disciplined risk management.</p>
+                        <p>As you continue your journey in crude oil trading, always stay informed about market developments, practice with a demo account before risking real money, and never invest more than you can afford to lose.</p>
+                    `,
+                    additionalImages: [],
+                    order: 1,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    title: 'Technical Analysis Fundamentals',
+                    description: 'Master the art of technical analysis with charts, indicators, and patterns used by professional traders.',
+                    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+                    content: '<h3>Chart Patterns and Indicators</h3><p>Technical analysis is crucial for successful trading. This module teaches:</p><ul><li>Reading price charts</li><li>Common patterns</li><li>Technical indicators</li><li>Entry and exit signals</li></ul>',
+                    additionalImages: [],
+                    order: 2,
+                    published: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            function loadModulesList() {
+                const container = document.getElementById('modules-grid');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Sort modules by order and filter only published ones
+                const sortedModules = [...modulesData]
+                    .filter(m => m.published)
+                    .sort((a, b) => a.order - b.order);
+                
+                sortedModules.forEach(module => {
+                    const moduleCard = document.createElement('div');
+                    moduleCard.style.background = 'white';
+                    moduleCard.style.borderRadius = '8px';
+                    moduleCard.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    moduleCard.style.overflow = 'hidden';
+                    moduleCard.style.display = 'flex';
+                    moduleCard.style.flexDirection = 'column';
+                    moduleCard.style.cursor = 'pointer';
+                    moduleCard.style.transition = 'transform 0.2s, box-shadow 0.2s';
+                    
+                    moduleCard.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                    });
+                    
+                    moduleCard.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    });
+                    
+                    moduleCard.addEventListener('click', function() {
+                        viewModule(module.id);
+                    });
+                    
+                    const imageContainer = document.createElement('div');
+                    imageContainer.style.width = '100%';
+                    imageContainer.style.height = '200px';
+                    imageContainer.style.overflow = 'hidden';
+                    imageContainer.style.background = '#f3f4f6';
+                    
+                    const img = document.createElement('img');
+                    img.src = module.image || 'https://via.placeholder.com/400x200?text=No+Image';
+                    img.alt = module.title;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    
+                    imageContainer.appendChild(img);
+                    
+                    const cardBody = document.createElement('div');
+                    cardBody.style.padding = '1.5rem';
+                    cardBody.style.flex = '1';
+                    cardBody.style.display = 'flex';
+                    cardBody.style.flexDirection = 'column';
+                    
+                    const title = document.createElement('h3');
+                    title.textContent = module.title;
+                    title.style.margin = '0 0 0.5rem 0';
+                    title.style.fontSize = '1.25rem';
+                    title.style.color = '#1f2937';
+                    title.style.fontWeight = '600';
+                    
+                    const description = document.createElement('p');
+                    description.textContent = module.description || 'No description available.';
+                    description.style.margin = '0 0 1rem 0';
+                    description.style.color = '#6b7280';
+                    description.style.fontSize = '0.875rem';
+                    description.style.lineHeight = '1.5';
+                    
+                    const viewBtn = document.createElement('button');
+                    viewBtn.textContent = 'View Module';
+                    viewBtn.style.width = '100%';
+                    viewBtn.style.marginTop = 'auto';
+                    viewBtn.style.padding = '0.75rem 1.5rem';
+                    viewBtn.style.fontSize = '0.875rem';
+                    viewBtn.style.fontWeight = '600';
+                    viewBtn.style.background = '#1f2937';
+                    viewBtn.style.color = 'white';
+                    viewBtn.style.border = 'none';
+                    viewBtn.style.borderRadius = '8px';
+                    viewBtn.style.cursor = 'pointer';
+                    viewBtn.style.transition = 'background 0.2s';
+                    viewBtn.addEventListener('mouseenter', function() {
+                        this.style.background = '#374151';
+                    });
+                    viewBtn.addEventListener('mouseleave', function() {
+                        this.style.background = '#1f2937';
+                    });
+                    viewBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        viewModule(module.id);
+                    });
+                    
+                    cardBody.appendChild(title);
+                    cardBody.appendChild(description);
+                    cardBody.appendChild(viewBtn);
+                    
+                    moduleCard.appendChild(imageContainer);
+                    moduleCard.appendChild(cardBody);
+                    container.appendChild(moduleCard);
+                });
+            }
+            
+            function viewModule(moduleId) {
+                const module = modulesData.find(m => m.id === moduleId);
+                if (!module) return;
+                
+                const modulesListView = document.getElementById('modules-list-view');
+                const moduleDetailView = document.getElementById('module-detail-view');
+                const moduleDetailContent = document.getElementById('module-detail-content');
+                
+                if (!modulesListView || !moduleDetailView || !moduleDetailContent) return;
+                
+                // Hide modules list and show module detail
+                modulesListView.style.display = 'none';
+                moduleDetailView.style.display = 'block';
+                
+                // Populate module content
+                moduleDetailContent.innerHTML = `
+                    <h2 style="margin: 0 0 1rem 0; font-size: 2rem; color: #1f2937; font-weight: 700;">${module.title}</h2>
+                    ${module.image ? `<img src="${module.image}" alt="${module.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 2rem;">` : ''}
+                    ${module.description ? `<p style="color: #6b7280; margin-bottom: 2rem; font-size: 1.125rem; line-height: 1.6;">${module.description}</p>` : ''}
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 2rem; color: #374151; line-height: 1.8;">
+                        ${module.content || '<p>No content available.</p>'}
+                    </div>
+                    ${module.additionalImages && module.additionalImages.length > 0 ? `
+                        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+                            ${module.additionalImages.map(img => `<img src="${img}" alt="Additional image" style="width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">`).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+                
+                // Attach close button handler
+                const closeBtn = document.getElementById('close-module-btn');
+                if (closeBtn) {
+                    // Remove existing listeners by cloning and replacing
+                    const newCloseBtn = closeBtn.cloneNode(true);
+                    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+                    newCloseBtn.addEventListener('click', closeModuleView);
+                }
+            }
+            
+            function closeModuleView() {
+                const modulesListView = document.getElementById('modules-list-view');
+                const moduleDetailView = document.getElementById('module-detail-view');
+                
+                if (modulesListView) modulesListView.style.display = 'block';
+                if (moduleDetailView) moduleDetailView.style.display = 'none';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+            
+            // Close module button handler
+            const closeModuleBtn = document.getElementById('close-module-btn');
+            if (closeModuleBtn) {
+                closeModuleBtn.addEventListener('click', closeModuleView);
+            }
+            
+            // Community Group Chat Section
+            function getUserDisplayName() {
+                try {
+                    const userSession = sessionStorage.getItem('user');
+                    if (userSession) {
+                        const user = JSON.parse(userSession);
+                        const userData = user.userData || {};
+                        const fullName = userData.fullName || 
+                                        (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}`.trim() : '') ||
+                                        userData.firstName || 
+                                        user.username || 
+                                        'Learning User';
+                        return fullName;
+                    }
+                } catch (error) {
+                    console.error('Error getting user display name:', error);
+                }
+                return 'Learning User';
+            }
+            
+            let communityChatMessages = [
+                {
+                    id: 1,
+                    sender: 'Admin',
+                    message: 'Welcome to the community chat! Feel free to ask questions and share insights.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 2,
+                    sender: getUserDisplayName(),
+                    message: 'Thanks! Looking forward to learning more about the market trends.',
+                    images: [],
+                    timestamp: new Date(Date.now() - 3300000).toISOString()
+                }
+            ];
+            
+            function loadCommunityChatMessages() {
+                const container = document.getElementById('community-chat-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                if (communityChatMessages.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages yet. Start the conversation!</p>';
+                    return;
+                }
+                
+                communityChatMessages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.display = 'flex';
+                    messageDiv.style.flexDirection = 'column';
+                    messageDiv.style.gap = '0.25rem';
+                    messageDiv.style.maxWidth = '80%';
+                    messageDiv.style.marginLeft = msg.sender === 'Admin' ? 'auto' : '0';
+                    
+                    const senderName = document.createElement('div');
+                    senderName.style.fontSize = '0.75rem';
+                    senderName.style.fontWeight = '600';
+                    senderName.style.color = msg.sender === 'Admin' ? '#2563eb' : '#6b7280';
+                    senderName.textContent = msg.sender;
+                    
+                    const messageBubble = document.createElement('div');
+                    messageBubble.style.padding = '0.75rem 1rem';
+                    messageBubble.style.borderRadius = '12px';
+                    messageBubble.style.background = msg.sender === 'Admin' ? '#2563eb' : 'white';
+                    messageBubble.style.color = msg.sender === 'Admin' ? 'white' : '#1f2937';
+                    messageBubble.style.border = msg.sender === 'Admin' ? 'none' : '1px solid #e5e7eb';
+                    messageBubble.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                    
+                    if (msg.message) {
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.lineHeight = '1.5';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message;
+                        messageBubble.appendChild(messageText);
+                    }
+                    
+                    if (msg.images && msg.images.length > 0) {
+                        const imagesContainer = document.createElement('div');
+                        imagesContainer.style.display = 'grid';
+                        imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                        imagesContainer.style.gap = '0.5rem';
+                        imagesContainer.style.marginTop = msg.message ? '0.5rem' : '0';
+                        
+                        msg.images.forEach(imgUrl => {
+                            const img = document.createElement('img');
+                            img.src = imgUrl;
+                            img.style.width = '100%';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+                            img.style.cursor = 'pointer';
+                            img.onclick = function() {
+                                window.open(imgUrl, '_blank');
+                            };
+                            imagesContainer.appendChild(img);
+                        });
+                        messageBubble.appendChild(imagesContainer);
+                    }
+                    
+                    const timestamp = document.createElement('div');
+                    timestamp.style.fontSize = '0.625rem';
+                    timestamp.style.color = '#9ca3af';
+                    timestamp.style.marginTop = '0.25rem';
+                    timestamp.style.textAlign = msg.sender === 'Admin' ? 'right' : 'left';
+                    const date = new Date(msg.timestamp);
+                    timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    
+                    messageDiv.appendChild(senderName);
+                    messageDiv.appendChild(messageBubble);
+                    messageDiv.appendChild(timestamp);
+                    container.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                container.scrollTop = container.scrollHeight;
+            }
+            
+            // Community Chat image preview
+            let selectedCommunityChatImages = [];
+            const communityChatImageInput = document.getElementById('community-chat-image-input');
+            const communityChatImagesPreview = document.getElementById('community-chat-images-preview');
+            const communityChatImagesPreviewContainer = document.getElementById('community-chat-images-preview-container');
+            
+            if (communityChatImageInput && communityChatImagesPreview && communityChatImagesPreviewContainer) {
+                communityChatImageInput.addEventListener('change', function(e) {
+                    const files = Array.from(e.target.files);
+                    selectedCommunityChatImages = files;
+                    communityChatImagesPreviewContainer.innerHTML = '';
+                    
+                    if (files.length > 0) {
+                        communityChatImagesPreview.style.display = 'block';
+                    } else {
+                        communityChatImagesPreview.style.display = 'none';
+                    }
+                    
+                    files.forEach((file, index) => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imgDiv = document.createElement('div');
+                                imgDiv.style.position = 'relative';
+                                imgDiv.style.width = '80px';
+                                imgDiv.style.height = '80px';
+                                
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.width = '100%';
+                                img.style.height = '100%';
+                                img.style.objectFit = 'cover';
+                                img.style.borderRadius = '6px';
+                                img.style.border = '1px solid #e5e7eb';
+                                
+                                const removeBtn = document.createElement('button');
+                                removeBtn.textContent = '×';
+                                removeBtn.style.position = 'absolute';
+                                removeBtn.style.top = '-8px';
+                                removeBtn.style.right = '-8px';
+                                removeBtn.style.background = '#ef4444';
+                                removeBtn.style.color = 'white';
+                                removeBtn.style.border = 'none';
+                                removeBtn.style.borderRadius = '50%';
+                                removeBtn.style.width = '20px';
+                                removeBtn.style.height = '20px';
+                                removeBtn.style.cursor = 'pointer';
+                                removeBtn.style.fontSize = '14px';
+                                removeBtn.style.lineHeight = '1';
+                                removeBtn.onclick = function() {
+                                    selectedCommunityChatImages = selectedCommunityChatImages.filter((f, i) => i !== index);
+                                    const dt = new DataTransfer();
+                                    selectedCommunityChatImages.forEach(f => dt.items.add(f));
+                                    communityChatImageInput.files = dt.files;
+                                    if (selectedCommunityChatImages.length === 0) {
+                                        communityChatImagesPreview.style.display = 'none';
+                                    } else {
+                                        communityChatImageInput.dispatchEvent(new Event('change'));
+                                    }
+                                };
+                                
+                                imgDiv.appendChild(img);
+                                imgDiv.appendChild(removeBtn);
+                                communityChatImagesPreviewContainer.appendChild(imgDiv);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+            }
+            
+            // Send community chat message
+            const communityChatSendBtn = document.getElementById('community-chat-send-btn');
+            const communityChatMessageInput = document.getElementById('community-chat-message-input');
+            
+            function sendCommunityChatMessage() {
+                const messageText = communityChatMessageInput.value.trim();
+                const images = selectedCommunityChatImages;
+                
+                if (!messageText && images.length === 0) {
+                    return;
+                }
+                
+                // Process images
+                const imageUrls = [];
+                images.forEach(file => {
+                    imageUrls.push(URL.createObjectURL(file));
+                });
+                
+                // Add message
+                const newMessage = {
+                    id: communityChatMessages.length + 1,
+                    sender: getUserDisplayName(),
+                    message: messageText,
+                    images: imageUrls,
+                    timestamp: new Date().toISOString()
+                };
+                
+                communityChatMessages.push(newMessage);
+                loadCommunityChatMessages();
+                
+                // Clear input
+                communityChatMessageInput.value = '';
+                selectedCommunityChatImages = [];
+                communityChatImageInput.value = '';
+                communityChatImagesPreview.style.display = 'none';
+                communityChatImagesPreviewContainer.innerHTML = '';
+            }
+            
+            if (communityChatSendBtn) {
+                communityChatSendBtn.addEventListener('click', sendCommunityChatMessage);
+                communityChatSendBtn.addEventListener('mouseenter', function() {
+                    this.style.background = '#1d4ed8';
+                });
+                communityChatSendBtn.addEventListener('mouseleave', function() {
+                    this.style.background = '#2563eb';
+                });
+            }
+            
+            if (communityChatMessageInput) {
+                communityChatMessageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendCommunityChatMessage();
+                    }
+                });
+            }
+            
+            // Professors' Messages Section
+            let professorsMessages = [];
+            
+            async function loadProfessorsMessages() {
+                const container = document.getElementById('professors-messages-container');
+                if (!container) return;
+                
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">Loading messages...</p>';
+                
+                try {
+                    if (!window.communityMessagesFirestoreService) {
+                        console.error('Community messages service not available');
+                        container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">Service not available. Please refresh the page.</p>';
+                        return;
+                    }
+                    
+                    professorsMessages = await window.communityMessagesFirestoreService.getAllCommunityMessages();
+                    
+                    container.innerHTML = '';
+                    
+                    if (professorsMessages.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No messages from professors yet.</p>';
+                        return;
+                    }
+                    
+                    const sortedMessages = [...professorsMessages].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    
+                    sortedMessages.forEach(msg => {
+                        const messageCard = document.createElement('div');
+                        messageCard.style.background = 'white';
+                        messageCard.style.padding = '1rem';
+                        messageCard.style.borderRadius = '8px';
+                        messageCard.style.border = '1px solid #e5e7eb';
+                        messageCard.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+                        messageCard.style.flexShrink = '0';
+                        messageCard.style.width = '100%';
+                        messageCard.style.boxSizing = 'border-box';
+                        
+                        const professorName = document.createElement('div');
+                        professorName.style.fontSize = '0.875rem';
+                        professorName.style.fontWeight = '700';
+                        professorName.style.color = '#1f2937';
+                        professorName.style.marginBottom = '0.25rem';
+                        professorName.textContent = msg.professor || 'Admin';
+                        
+                        const professorTitle = document.createElement('div');
+                        professorTitle.style.fontSize = '0.75rem';
+                        professorTitle.style.color = '#2563eb';
+                        professorTitle.style.marginBottom = '0.5rem';
+                        professorTitle.textContent = msg.professorTitle || 'Administrator';
+                        
+                        messageCard.appendChild(professorName);
+                        messageCard.appendChild(professorTitle);
+                        
+                        if (msg.messageTitle) {
+                            const messageTitle = document.createElement('div');
+                            messageTitle.style.fontSize = '0.875rem';
+                            messageTitle.style.fontWeight = '600';
+                            messageTitle.style.color = '#1f2937';
+                            messageTitle.style.marginBottom = '0.5rem';
+                            messageTitle.textContent = msg.messageTitle;
+                            messageCard.appendChild(messageTitle);
+                        }
+                        
+                        if (msg.subheading) {
+                            const subheading = document.createElement('div');
+                            subheading.style.fontSize = '0.8125rem';
+                            subheading.style.color = '#6b7280';
+                            subheading.style.marginBottom = '0.5rem';
+                            subheading.style.fontStyle = 'italic';
+                            subheading.textContent = msg.subheading;
+                            messageCard.appendChild(subheading);
+                        }
+                        
+                        const messageText = document.createElement('div');
+                        messageText.style.fontSize = '0.875rem';
+                        messageText.style.color = '#374151';
+                        messageText.style.lineHeight = '1.6';
+                        messageText.style.marginBottom = '0.75rem';
+                        messageText.style.whiteSpace = 'pre-wrap';
+                        messageText.style.wordBreak = 'break-word';
+                        messageText.textContent = msg.message || '';
+                        messageCard.appendChild(messageText);
+                        
+                        if (msg.link) {
+                            const linkDiv = document.createElement('div');
+                            linkDiv.style.marginBottom = '0.75rem';
+                            const link = document.createElement('a');
+                            link.href = msg.link;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                            link.style.cssText = 'color: #2563eb; text-decoration: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;';
+                            link.innerHTML = msg.link + ' <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>';
+                            linkDiv.appendChild(link);
+                            messageCard.appendChild(linkDiv);
+                        }
+                        
+                        if (msg.imageUrls && msg.imageUrls.length > 0) {
+                            const imagesContainer = document.createElement('div');
+                            imagesContainer.style.display = 'grid';
+                            imagesContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+                            imagesContainer.style.gap = '0.5rem';
+                            imagesContainer.style.marginBottom = '0.75rem';
+                            
+                            msg.imageUrls.forEach(imageUrl => {
+                                const imgWrapper = document.createElement('div');
+                                imgWrapper.style.position = 'relative';
+                                imgWrapper.style.borderRadius = '6px';
+                                imgWrapper.style.overflow = 'hidden';
+                                imgWrapper.style.cursor = 'pointer';
+                                
+                                const img = document.createElement('img');
+                                img.src = imageUrl;
+                                img.style.width = '100%';
+                                img.style.height = '150px';
+                                img.style.objectFit = 'cover';
+                                img.style.display = 'block';
+                                img.onclick = function() {
+                                    window.open(imageUrl, '_blank');
+                                };
+                                
+                                imgWrapper.appendChild(img);
+                                imagesContainer.appendChild(imgWrapper);
+                            });
+                            
+                            messageCard.appendChild(imagesContainer);
+                        }
+                        
+                        const timestamp = document.createElement('div');
+                        timestamp.style.fontSize = '0.625rem';
+                        timestamp.style.color = '#9ca3af';
+                        const date = new Date(msg.timestamp);
+                        timestamp.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) + ' • ' + date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        messageCard.appendChild(timestamp);
+                        container.appendChild(messageCard);
+                    });
+                    
+                    container.scrollTop = 0;
+                } catch (error) {
+                    console.error('Error loading professors messages:', error);
+                    container.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 2rem;">Error loading messages. Please refresh the page.</p>';
+                }
+            }
+            
+            // Weekly Reports Section
+            let weeklyReportData = null;
+            
+            async function loadWeeklyReports() {
+                // Check if user is Tier 1 - if so, hide the Weekly Reports widget
+                const weeklyReportsWidget = document.getElementById('weekly-reports-widget');
+                const userTier = window.currentUserTier || 'tier1';
+                
+                if (userTier === 'tier1') {
+                    // Hide Weekly Reports widget for Tier 1 users
+                    if (weeklyReportsWidget) {
+                        weeklyReportsWidget.style.display = 'none';
+                    }
+                    return;
+                } else {
+                    // Show Weekly Reports widget for Tier 2 and Tier 3
+                    if (weeklyReportsWidget) {
+                        weeklyReportsWidget.style.display = 'block';
+                    }
+                }
+                
+                const container = document.getElementById('weekly-reports-display');
+                if (!container) return;
+                
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">Loading weekly report...</div>';
+                
+                try {
+                    if (!window.weeklyReportsFirestoreService) {
+                        console.error('Weekly reports service not available');
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">Service not available. Please refresh the page.</div>';
+                        return;
+                    }
+                    
+                    weeklyReportData = await window.weeklyReportsFirestoreService.getWeeklyReport();
+                    
+                    container.innerHTML = '';
+                    
+                    if (!weeklyReportData) {
+                        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6b7280;">No weekly reports available yet.</div>';
+                        return;
+                    }
+                
+                    const reportHeader = document.createElement('div');
+                    reportHeader.style.gridColumn = '1 / -1';
+                    reportHeader.style.background = 'white';
+                    reportHeader.style.padding = '1.5rem';
+                    reportHeader.style.borderRadius = '8px';
+                    reportHeader.style.border = '1px solid #e5e7eb';
+                    reportHeader.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+                    reportHeader.style.marginBottom = '1rem';
+                    reportHeader.style.display = 'flex';
+                    reportHeader.style.justifyContent = 'space-between';
+                    reportHeader.style.alignItems = 'flex-start';
+                    reportHeader.style.gap = '2rem';
+                    
+                    const leftSection = document.createElement('div');
+                    leftSection.style.flex = '1';
+                    
+                    const headerTitle = document.createElement('h3');
+                    headerTitle.style.margin = '0 0 0.75rem 0';
+                    headerTitle.style.fontSize = '1.25rem';
+                    headerTitle.style.fontWeight = '600';
+                    headerTitle.style.color = '#1f2937';
+                    headerTitle.textContent = 'Weekly Report';
+                    
+                    const authorInfo = document.createElement('div');
+                    authorInfo.style.fontSize = '0.875rem';
+                    authorInfo.style.color = '#6b7280';
+                    authorInfo.style.marginBottom = '0.5rem';
+                    authorInfo.innerHTML = `<strong>Author:</strong> ${weeklyReportData.author || 'N/A'}`;
+                    
+                    const dateInfo = document.createElement('div');
+                    dateInfo.style.fontSize = '0.875rem';
+                    dateInfo.style.color = '#6b7280';
+                    dateInfo.innerHTML = `<strong>Date Published:</strong> ${weeklyReportData.datePublished ? new Date(weeklyReportData.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}`;
+                    
+                    leftSection.appendChild(headerTitle);
+                    leftSection.appendChild(authorInfo);
+                    leftSection.appendChild(dateInfo);
+                    
+                    const middleSection = document.createElement('div');
+                    middleSection.style.flex = '1';
+                    middleSection.style.display = 'flex';
+                    middleSection.style.flexDirection = 'column';
+                    middleSection.style.alignItems = 'flex-start';
+                    middleSection.style.gap = '0.5rem';
+                    middleSection.style.marginLeft = '2rem';
+                    
+                    const pdfTitle = document.createElement('h4');
+                    pdfTitle.style.margin = '0';
+                    pdfTitle.style.fontSize = '1.125rem';
+                    pdfTitle.style.fontWeight = '600';
+                    pdfTitle.style.color = '#1f2937';
+                    pdfTitle.textContent = 'PDF Report';
+                    
+                    const pdfInfo = document.createElement('div');
+                    pdfInfo.style.fontSize = '0.875rem';
+                    pdfInfo.style.color = '#6b7280';
+                    pdfInfo.innerHTML = `<strong>File:</strong> ${weeklyReportData.pdfFileName || 'N/A'}`;
+                    
+                    const hasPdfUrl = weeklyReportData.pdfUrl && weeklyReportData.pdfUrl !== null && weeklyReportData.pdfUrl !== '';
+                    
+                    middleSection.appendChild(pdfTitle);
+                    middleSection.appendChild(pdfInfo);
+                    
+                    if (hasPdfUrl) {
+                        const viewButton = document.createElement('button');
+                        viewButton.textContent = 'View';
+                        viewButton.style.padding = '0.375rem 1.5rem';
+                        viewButton.style.fontSize = '0.75rem';
+                        viewButton.style.fontWeight = '600';
+                        viewButton.style.color = 'white';
+                        viewButton.style.background = '#2563eb';
+                        viewButton.style.border = 'none';
+                        viewButton.style.borderRadius = '6px';
+                        viewButton.style.cursor = 'pointer';
+                        viewButton.style.transition = 'background 0.2s';
+                        viewButton.style.whiteSpace = 'nowrap';
+                        viewButton.style.marginTop = '0.5rem';
+                        viewButton.style.width = 'auto';
+                        viewButton.style.minWidth = '80px';
+                        
+                        viewButton.addEventListener('mouseenter', function() {
+                            this.style.background = '#1d4ed8';
+                        });
+                        
+                        viewButton.addEventListener('mouseleave', function() {
+                            this.style.background = '#2563eb';
+                        });
+                        
+                        viewButton.addEventListener('click', function(e) {
+                            let fileBase64 = weeklyReportData.fileBase64 || null;
+                            let storageMethod = weeklyReportData.storageMethod || 'storage';
+                            
+                            if (!fileBase64 && weeklyReportData.pdfUrl && weeklyReportData.pdfUrl.startsWith('data:')) {
+                                storageMethod = 'base64';
+                                fileBase64 = weeklyReportData.pdfUrl.split(',')[1];
+                            }
+                            
+                            viewWeeklyReport(
+                                weeklyReportData.pdfUrl, 
+                                weeklyReportData.pdfFileName || 'Weekly Report',
+                                fileBase64,
+                                storageMethod,
+                                e.target
+                            );
+                        });
+                        
+                        middleSection.appendChild(viewButton);
+                    }
+                    
+                    const rightSection = document.createElement('div');
+                    rightSection.style.flex = '1';
+                    rightSection.style.display = 'flex';
+                    rightSection.style.flexDirection = 'column';
+                    rightSection.style.alignItems = 'flex-start';
+                    rightSection.style.gap = '0.5rem';
+                    rightSection.style.marginLeft = '2rem';
+                    
+                    const hasVideo = weeklyReportData.videoUrl && weeklyReportData.videoUrl !== null && weeklyReportData.videoUrl !== '';
+                    
+                    const videoTitle = document.createElement('h4');
+                    videoTitle.style.margin = '0';
+                    videoTitle.style.fontSize = '1.125rem';
+                    videoTitle.style.fontWeight = '600';
+                    videoTitle.style.color = '#1f2937';
+                    videoTitle.textContent = 'Weekly Video';
+                    
+                    const videoInfo = document.createElement('div');
+                    videoInfo.style.fontSize = '0.875rem';
+                    videoInfo.style.color = '#6b7280';
+                    if (hasVideo && weeklyReportData.videoTitle) {
+                        videoInfo.innerHTML = `<strong>Title:</strong> ${weeklyReportData.videoTitle}`;
+                    } else {
+                        videoInfo.innerHTML = `<strong>Title:</strong> N/A`;
+                    }
+                    
+                    rightSection.appendChild(videoTitle);
+                    rightSection.appendChild(videoInfo);
+                    
+                    const watchButton = document.createElement('button');
+                    watchButton.textContent = 'Watch';
+                    watchButton.style.padding = '0.375rem 1.5rem';
+                    watchButton.style.fontSize = '0.75rem';
+                    watchButton.style.fontWeight = '600';
+                    watchButton.style.color = 'white';
+                    watchButton.style.background = hasVideo ? '#2563eb' : '#9ca3af';
+                    watchButton.style.border = 'none';
+                    watchButton.style.borderRadius = '6px';
+                    watchButton.style.cursor = hasVideo ? 'pointer' : 'not-allowed';
+                    watchButton.style.transition = 'background 0.2s';
+                    watchButton.style.whiteSpace = 'nowrap';
+                    watchButton.style.marginTop = '0.5rem';
+                    watchButton.style.width = 'auto';
+                    watchButton.style.minWidth = '80px';
+                    watchButton.disabled = !hasVideo;
+                    
+                    if (hasVideo) {
+                        watchButton.addEventListener('mouseenter', function() {
+                            this.style.background = '#1d4ed8';
+                        });
+                        
+                        watchButton.addEventListener('mouseleave', function() {
+                            this.style.background = '#2563eb';
+                        });
+                        
+                        watchButton.addEventListener('click', function() {
+                            if (weeklyReportData.videoType === 'link' && weeklyReportData.videoUrl) {
+                                window.open(weeklyReportData.videoUrl, '_blank');
+                            }
+                        });
+                    }
+                    
+                    rightSection.appendChild(watchButton);
+                    
+                    reportHeader.appendChild(leftSection);
+                    reportHeader.appendChild(middleSection);
+                    reportHeader.appendChild(rightSection);
+                    container.appendChild(reportHeader);
+                } catch (error) {
+                    console.error('Error loading weekly reports:', error);
+                    container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">Error loading weekly report. Please refresh the page.</div>';
+                }
+            }
+            
+            // View weekly report in modal
+            function viewWeeklyReport(pdfUrl, fileName, fileBase64 = null, storageMethod = 'storage', viewButton = null) {
+                const modal = document.getElementById('report-viewer-modal');
+                const iframe = document.getElementById('report-viewer-iframe');
+                const titleEl = document.getElementById('report-viewer-title');
+                const container = document.getElementById('report-viewer-container');
+                
+                if (!modal || !iframe || !titleEl || !container) {
+                    console.error('Report viewer modal elements not found');
+                    alert('Error: Report viewer not available. Please refresh the page.');
+                    return;
+                }
+                
+                titleEl.textContent = `Weekly Report - ${fileName || 'Report'}`;
+                
+                // Handle base64 files
+                if (storageMethod === 'base64' && fileBase64) {
+                    iframe.src = 'data:application/pdf;base64,' + fileBase64;
+                } else if (pdfUrl && pdfUrl.startsWith('data:')) {
+                    iframe.src = pdfUrl;
+                } else if (pdfUrl) {
+                    iframe.src = pdfUrl;
+                } else {
+                    console.error('No file URL or base64 data provided');
+                    alert('Error: Report file data not available.');
+                    return;
+                }
+                
+                // Position modal aligned with the weekly report widget
+                const weeklyReportsWidget = document.getElementById('weekly-reports-display')?.closest('.dashboard-widget');
+                
+                if (weeklyReportsWidget) {
+                    const widgetRect = weeklyReportsWidget.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    
+                    const topPosition = widgetRect.top + scrollTop - 600;
+                    const widgetWidth = widgetRect.width;
+                    const widgetLeft = widgetRect.left + scrollLeft;
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = widgetLeft + 'px';
+                    container.style.width = widgetWidth + 'px';
+                    container.style.maxWidth = widgetWidth + 'px';
+                    container.style.transform = 'none';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else if (viewButton) {
+                    const buttonRect = viewButton.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const topPosition = buttonRect.top + scrollTop - 300;
+                    
+                    container.style.top = topPosition + 'px';
+                    container.style.left = '50%';
+                    container.style.transform = 'translateX(-50%)';
+                    container.style.margin = '0';
+                    container.style.position = 'absolute';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else {
+                    container.style.top = '50%';
+                    container.style.left = '50%';
+                    container.style.transform = 'translate(-50%, -50%)';
+                    container.style.position = 'fixed';
+                }
+                
+                modal.style.display = 'block';
+                document.body.style.overflow = '';
+            }
+            
+            function closeReportViewerModal() {
+                const modal = document.getElementById('report-viewer-modal');
+                const iframe = document.getElementById('report-viewer-iframe');
+                if (iframe) iframe.src = '';
+                if (modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Report viewer modal event listeners
+            const reportViewerModal = document.getElementById('report-viewer-modal');
+            if (reportViewerModal) {
+                const closeBtn = document.getElementById('report-viewer-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeReportViewerModal);
+                }
+                
+                reportViewerModal.querySelector('.admin-modal-overlay')?.addEventListener('click', closeReportViewerModal);
+            }
+            
+            
+            // Logout button
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sessionStorage.clear();
+                    window.location.href = 'login.html';
+                });
+            }
+            
+            // Setup profile picture upload (for learning users)
+            const profileContainer = document.getElementById('profile-picture-container');
+            const profileInput = document.getElementById('profile-picture-input');
+            const profileOverlay = profileContainer?.querySelector('.profile-picture-upload-overlay');
+            
+            if (profileContainer && profileInput) {
+                // Show overlay on hover
+                profileContainer.addEventListener('mouseenter', function() {
+                    if (profileOverlay) profileOverlay.style.display = 'flex';
+                });
+                
+                profileContainer.addEventListener('mouseleave', function() {
+                    if (profileOverlay) profileOverlay.style.display = 'none';
+                });
+                
+                // Click to upload
+                profileContainer.addEventListener('click', function() {
+                    profileInput.click();
+                });
+                
+                // Handle file selection
+                profileInput.addEventListener('change', async function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select an image file.');
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('Image size must be less than 5MB.');
+                        return;
+                    }
+                    
+                    try {
+                        // Get user data
+                        let userSession = sessionStorage.getItem('user') || sessionStorage.getItem('investorUser');
+                        if (!userSession) {
+                            alert('User session not found. Please log in again.');
+                            return;
+                        }
+                        
+                        const user = JSON.parse(userSession);
+                        const userData = user.userData || {};
+                        
+                        // Ensure this is a learning user
+                        if (userData.type && userData.type !== 'learning') {
+                            alert('This is not a learning user session.');
+                            return;
+                        }
+                        
+                        // Get user document ID from Firestore (from learningUsers collection)
+                        let userDocId = userData.id;
+                        
+                        // If not found, try to find by username
+                        if (!userDocId && user.username) {
+                            if (window.firebaseDb) {
+                                const userQuery = await window.firebaseDb.collection('learningUsers')
+                                    .where('username', '==', user.username)
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    userDocId = userQuery.docs[0].id;
+                                    userData.id = userDocId;
+                                    user.userData = userData;
+                                    sessionStorage.setItem('user', JSON.stringify(user));
+                                }
+                            }
+                        }
+                        
+                        // If still not found, try by email
+                        if (!userDocId && userData.email) {
+                            if (window.firebaseDb) {
+                                const userQuery = await window.firebaseDb.collection('learningUsers')
+                                    .where('email', '==', userData.email)
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!userQuery.empty) {
+                                    userDocId = userQuery.docs[0].id;
+                                    userData.id = userDocId;
+                                    user.userData = userData;
+                                    sessionStorage.setItem('user', JSON.stringify(user));
+                                }
+                            }
+                        }
+                        
+                        if (!userDocId) {
+                            alert('User ID not found. Please log out and log in again.');
+                            console.error('User data:', user);
+                            console.error('UserData:', userData);
+                            return;
+                        }
+                        
+                        console.log('Using Firestore document ID for profile picture:', userDocId);
+                        
+                        // Show loading state
+                        const profileImg = document.getElementById('profile-picture-img');
+                        const placeholder = document.getElementById('profile-picture-placeholder');
+                        if (placeholder) {
+                            placeholder.innerHTML = '<div style="width: 20px; height: 20px; border: 2px solid #6b7280; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>';
+                            placeholder.style.opacity = '0.7';
+                        }
+                        
+                        // Convert image to base64 data URL
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const base64DataUrl = e.target.result;
+                                
+                                // Update user document in Firestore with base64 data URL (in learningUsers collection)
+                                if (window.firebaseDb && userDocId) {
+                                    await window.firebaseDb.collection('learningUsers').doc(userDocId).update({
+                                        profilePictureUrl: base64DataUrl,
+                                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    });
+                                    
+                                    // Update sessionStorage
+                                    user.userData = user.userData || {};
+                                    user.userData.profilePictureUrl = base64DataUrl;
+                                    sessionStorage.setItem('user', JSON.stringify(user));
+                                    
+                                    // Update display
+                                    loadProfilePicture(base64DataUrl);
+                                    
+                                    // Reset placeholder opacity
+                                    if (placeholder) {
+                                        placeholder.style.opacity = '1';
+                                    }
+                                    
+                                    console.log('Profile picture updated successfully');
+                                }
+                            } catch (error) {
+                                console.error('Error saving profile picture:', error);
+                                alert('Error saving profile picture: ' + error.message);
+                                if (placeholder) {
+                                    placeholder.innerHTML = '<span>👤</span>';
+                                    placeholder.style.opacity = '1';
+                                }
+                            }
+                        };
+                        
+                        reader.onerror = function(error) {
+                            console.error('Error reading file:', error);
+                            alert('Error reading image file.');
+                            if (placeholder) {
+                                placeholder.innerHTML = '<span>👤</span>';
+                                placeholder.style.opacity = '1';
+                            }
+                        };
+                        
+                        // Read file as data URL
+                        reader.readAsDataURL(file);
+                    } catch (error) {
+                        console.error('Error uploading profile picture:', error);
+                        alert('Error uploading profile picture: ' + error.message);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
