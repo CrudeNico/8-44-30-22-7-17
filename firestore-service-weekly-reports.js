@@ -617,6 +617,7 @@ async function getWeeklyReport() {
                 videoUrl: data.videoUrl !== undefined ? data.videoUrl : null,
                 videoFileName: data.videoFileName || null,
                 videoTitle: data.videoTitle || null,
+                videoType: data.videoType || null,
                 createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate().toISOString() : data.createdAt) : null,
                 updatedAt: data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt) : null
             };

@@ -3815,7 +3815,7 @@
                     middleSection.appendChild(viewButton);
                 }
                 
-                // Right section: Weekly Video section
+                // Right section: Weekly Video section (always show)
                 const rightSection = document.createElement('div');
                 rightSection.style.flex = '1';
                 rightSection.style.display = 'flex';
@@ -3826,39 +3826,44 @@
                 
                 const hasVideo = weeklyReportData.videoUrl && weeklyReportData.videoUrl !== null && weeklyReportData.videoUrl !== '';
                 
+                const videoTitle = document.createElement('h4');
+                videoTitle.style.margin = '0';
+                videoTitle.style.fontSize = '1.125rem';
+                videoTitle.style.fontWeight = '600';
+                videoTitle.style.color = '#1f2937';
+                videoTitle.textContent = 'Weekly Video';
+                
+                const videoInfo = document.createElement('div');
+                videoInfo.style.fontSize = '0.875rem';
+                videoInfo.style.color = '#6b7280';
+                if (hasVideo && weeklyReportData.videoTitle) {
+                    videoInfo.innerHTML = `<strong>Title:</strong> ${weeklyReportData.videoTitle}`;
+                } else {
+                    videoInfo.innerHTML = `<strong>Title:</strong> N/A`;
+                }
+                
+                rightSection.appendChild(videoTitle);
+                rightSection.appendChild(videoInfo);
+                
+                // "Watch" button (only enabled if video exists)
+                const watchButton = document.createElement('button');
+                watchButton.textContent = 'Watch';
+                watchButton.style.padding = '0.375rem 1.5rem';
+                watchButton.style.fontSize = '0.75rem';
+                watchButton.style.fontWeight = '600';
+                watchButton.style.color = 'white';
+                watchButton.style.background = hasVideo ? '#2563eb' : '#9ca3af';
+                watchButton.style.border = 'none';
+                watchButton.style.borderRadius = '6px';
+                watchButton.style.cursor = hasVideo ? 'pointer' : 'not-allowed';
+                watchButton.style.transition = 'background 0.2s';
+                watchButton.style.whiteSpace = 'nowrap';
+                watchButton.style.marginTop = '0.5rem';
+                watchButton.style.width = 'auto';
+                watchButton.style.minWidth = '80px';
+                watchButton.disabled = !hasVideo;
+                
                 if (hasVideo) {
-                    const videoTitle = document.createElement('h4');
-                    videoTitle.style.margin = '0';
-                    videoTitle.style.fontSize = '1.125rem';
-                    videoTitle.style.fontWeight = '600';
-                    videoTitle.style.color = '#1f2937';
-                    videoTitle.textContent = 'Weekly Video';
-                    
-                    const videoInfo = document.createElement('div');
-                    videoInfo.style.fontSize = '0.875rem';
-                    videoInfo.style.color = '#6b7280';
-                    videoInfo.innerHTML = `<strong>Title:</strong> ${weeklyReportData.videoTitle || 'N/A'}`;
-                    
-                    rightSection.appendChild(videoTitle);
-                    rightSection.appendChild(videoInfo);
-                    
-                    // "Watch" button
-                    const watchButton = document.createElement('button');
-                    watchButton.textContent = 'Watch';
-                    watchButton.style.padding = '0.375rem 1.5rem';
-                    watchButton.style.fontSize = '0.75rem';
-                    watchButton.style.fontWeight = '600';
-                    watchButton.style.color = 'white';
-                    watchButton.style.background = '#2563eb';
-                    watchButton.style.border = 'none';
-                    watchButton.style.borderRadius = '6px';
-                    watchButton.style.cursor = 'pointer';
-                    watchButton.style.transition = 'background 0.2s';
-                    watchButton.style.whiteSpace = 'nowrap';
-                    watchButton.style.marginTop = '0.5rem';
-                    watchButton.style.width = 'auto';
-                    watchButton.style.minWidth = '80px';
-                    
                     watchButton.addEventListener('mouseenter', function() {
                         this.style.background = '#1d4ed8';
                     });
@@ -3868,169 +3873,25 @@
                     });
                     
                     watchButton.addEventListener('click', function(e) {
-                        viewWeeklyVideo(
-                            weeklyReportData.videoUrl,
-                            weeklyReportData.videoTitle || 'Weekly Video',
-                            e.target
-                        );
+                        // If video is a link, redirect to it; otherwise show in modal
+                        if (weeklyReportData.videoType === 'link' && weeklyReportData.videoUrl) {
+                            window.open(weeklyReportData.videoUrl, '_blank');
+                        } else {
+                            viewWeeklyVideo(
+                                weeklyReportData.videoUrl,
+                                weeklyReportData.videoTitle || 'Weekly Video',
+                                e.target
+                            );
+                        }
                     });
-                    
-                    rightSection.appendChild(watchButton);
                 }
+                
+                rightSection.appendChild(watchButton);
                 
                 reportHeader.appendChild(leftSection);
                 reportHeader.appendChild(middleSection);
-                if (hasVideo) {
-                    reportHeader.appendChild(rightSection);
-                }
+                reportHeader.appendChild(rightSection);
                 container.appendChild(reportHeader);
-                
-                // Video Section (only if video exists)
-                if (weeklyReportData.videoUrl && weeklyReportData.videoTitle) {
-                    const videoSection = document.createElement('div');
-                    videoSection.style.background = 'white';
-                    videoSection.style.padding = '1.5rem';
-                    videoSection.style.borderRadius = '8px';
-                    videoSection.style.border = '1px solid #e5e7eb';
-                    videoSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-                    videoSection.style.display = 'flex';
-                    videoSection.style.flexDirection = 'column';
-                    videoSection.style.gap = '1rem';
-                    
-                    const videoTitle = document.createElement('h4');
-                    videoTitle.style.margin = '0';
-                    videoTitle.style.fontSize = '1.125rem';
-                    videoTitle.style.fontWeight = '600';
-                    videoTitle.style.color = '#1f2937';
-                    videoTitle.textContent = 'Weekly Analysis Video';
-                    
-                    const videoInfo = document.createElement('div');
-                    videoInfo.style.fontSize = '0.875rem';
-                    videoInfo.style.color = '#6b7280';
-                    videoInfo.innerHTML = `
-                        <div style="margin-bottom: 0.5rem;"><strong>Title:</strong> ${weeklyReportData.videoTitle}</div>
-                        <div><strong>File:</strong> ${weeklyReportData.videoFileName || 'N/A'}</div>
-                    `;
-                    
-                    // Video Thumbnail
-                    const videoCoverContainer = document.createElement('div');
-                    videoCoverContainer.style.position = 'relative';
-                    videoCoverContainer.style.width = '100%';
-                    videoCoverContainer.style.height = '200px';
-                    videoCoverContainer.style.cursor = 'pointer';
-                    videoCoverContainer.style.borderRadius = '8px';
-                    videoCoverContainer.style.overflow = 'hidden';
-                    videoCoverContainer.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                    videoCoverContainer.style.transition = 'transform 0.2s, box-shadow 0.2s';
-                    
-                    videoCoverContainer.addEventListener('mouseenter', function() {
-                        this.style.transform = 'scale(1.02)';
-                        this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-                    });
-                    
-                    videoCoverContainer.addEventListener('mouseleave', function() {
-                        this.style.transform = 'scale(1)';
-                        this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                    });
-                    
-                    const videoCover = document.createElement('img');
-                    videoCover.src = 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=560&fit=crop';
-                    videoCover.alt = 'Video Cover';
-                    videoCover.style.width = '100%';
-                    videoCover.style.height = '100%';
-                    videoCover.style.objectFit = 'cover';
-                    
-                    // Play button overlay
-                    const playButton = document.createElement('div');
-                    playButton.style.position = 'absolute';
-                    playButton.style.top = '50%';
-                    playButton.style.left = '50%';
-                    playButton.style.transform = 'translate(-50%, -50%)';
-                    playButton.style.width = '60px';
-                    playButton.style.height = '60px';
-                    playButton.style.background = 'rgba(37, 99, 235, 0.9)';
-                    playButton.style.borderRadius = '50%';
-                    playButton.style.display = 'flex';
-                    playButton.style.alignItems = 'center';
-                    playButton.style.justifyContent = 'center';
-                    playButton.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                    playButton.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                    `;
-                    
-                    videoCoverContainer.appendChild(videoCover);
-                    videoCoverContainer.appendChild(playButton);
-                    
-                    // Video modal
-                    let videoModal = null;
-                    videoCoverContainer.addEventListener('click', function() {
-                        // Create modal for video
-                        videoModal = document.createElement('div');
-                        videoModal.style.position = 'fixed';
-                        videoModal.style.top = '0';
-                        videoModal.style.left = '0';
-                        videoModal.style.width = '100%';
-                        videoModal.style.height = '100%';
-                        videoModal.style.background = 'rgba(0, 0, 0, 0.9)';
-                        videoModal.style.zIndex = '10000';
-                        videoModal.style.display = 'flex';
-                        videoModal.style.alignItems = 'center';
-                        videoModal.style.justifyContent = 'center';
-                        videoModal.style.padding = '2rem';
-                        
-                        const videoContainer = document.createElement('div');
-                        videoContainer.style.position = 'relative';
-                        videoContainer.style.maxWidth = '90%';
-                        videoContainer.style.maxHeight = '90%';
-                        videoContainer.style.width = '800px';
-                        
-                        const closeBtn = document.createElement('button');
-                        closeBtn.textContent = '×';
-                        closeBtn.style.position = 'absolute';
-                        closeBtn.style.top = '-40px';
-                        closeBtn.style.right = '0';
-                        closeBtn.style.background = 'white';
-                        closeBtn.style.color = '#1f2937';
-                        closeBtn.style.border = 'none';
-                        closeBtn.style.width = '36px';
-                        closeBtn.style.height = '36px';
-                        closeBtn.style.borderRadius = '50%';
-                        closeBtn.style.fontSize = '24px';
-                        closeBtn.style.cursor = 'pointer';
-                        closeBtn.style.zIndex = '10001';
-                        closeBtn.addEventListener('click', function() {
-                            document.body.removeChild(videoModal);
-                            videoModal = null;
-                        });
-                        
-                        const video = document.createElement('video');
-                        video.src = weeklyReportData.videoUrl;
-                        video.controls = true;
-                        video.style.width = '100%';
-                        video.style.height = 'auto';
-                        video.style.borderRadius = '8px';
-                        
-                        videoContainer.appendChild(closeBtn);
-                        videoContainer.appendChild(video);
-                        videoModal.appendChild(videoContainer);
-                        document.body.appendChild(videoModal);
-                        
-                        // Close on background click
-                        videoModal.addEventListener('click', function(e) {
-                            if (e.target === videoModal) {
-                                document.body.removeChild(videoModal);
-                                videoModal = null;
-                            }
-                        });
-                    });
-                    
-                    videoSection.appendChild(videoTitle);
-                    videoSection.appendChild(videoInfo);
-                    videoSection.appendChild(videoCoverContainer);
-                    container.appendChild(videoSection);
-                }
                 } catch (error) {
                     console.error('Error loading weekly reports:', error);
                     container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #ef4444;">Error loading weekly report. Please refresh the page.</div>';

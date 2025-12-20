@@ -713,6 +713,29 @@
                             </div>
                         </form>
                     </div>
+                    
+                    <!-- Upload Video Widget -->
+                    <div class="reports-widget" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-top: 2rem;">
+                        <h2 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.5rem; color: #1f2937;">Upload Video</h2>
+                        <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem;">Add a video link or upload a video file for the weekly report.</p>
+                        <form id="weekly-video-upload-form" class="admin-modal-form">
+                            <div class="admin-form-group">
+                                <label for="weekly-video-title">Video Title</label>
+                                <input type="text" id="weekly-video-title" class="admin-form-input" placeholder="Enter video title" required>
+                            </div>
+                            
+                            <div class="admin-form-group">
+                                <label for="weekly-video-link">Video Link (URL)</label>
+                                <input type="url" id="weekly-video-link" class="admin-form-input" placeholder="https://example.com/video" required>
+                                <span style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; display: block;">Enter a video URL (YouTube, Vimeo, etc.)</span>
+                            </div>
+                            
+                            <div class="admin-form-actions">
+                                <button type="button" class="admin-btn-cancel" id="clear-weekly-video-form">Clear</button>
+                                <button type="submit" class="admin-btn-save">Save Video</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
             
@@ -3218,6 +3241,103 @@
                     if (fileSelectedInfo) fileSelectedInfo.style.display = 'none';
                     const progressDiv = document.getElementById('weekly-upload-progress');
                     if (progressDiv) progressDiv.style.display = 'none';
+                });
+            }
+            
+            // Weekly video upload form handler
+            const weeklyVideoUploadForm = document.getElementById('weekly-video-upload-form');
+            if (weeklyVideoUploadForm) {
+                weeklyVideoUploadForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const videoTitle = document.getElementById('weekly-video-title').value.trim();
+                    const videoLink = document.getElementById('weekly-video-link').value.trim();
+                    
+                    // Validate required fields
+                    if (!videoTitle) {
+                        alert('Please enter a video title.');
+                        return;
+                    }
+                    
+                    if (!videoLink) {
+                        alert('Please provide a video link.');
+                        return;
+                    }
+                    
+                    // Disable submit button
+                    const submitBtn = weeklyVideoUploadForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+                    
+                    try {
+                        // Check if Firebase is initialized
+                        if (!window.firebaseDb) {
+                            throw new Error('Firebase database not initialized. Please refresh the page.');
+                        }
+                        
+                        const db = window.firebaseDb;
+                        const reportRef = db.collection('weeklyReports').doc('current');
+                        
+                        // Get existing report
+                        let existingReport = null;
+                        try {
+                            const existingDoc = await reportRef.get();
+                            if (existingDoc.exists) {
+                                existingReport = existingDoc.data();
+                            }
+                        } catch (error) {
+                            console.log('No existing report found');
+                        }
+                        
+                        // Prepare video data
+                        const updateData = {
+                            videoTitle: videoTitle,
+                            videoUrl: videoLink,
+                            videoType: 'link',
+                            videoFileName: null,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        // Preserve createdAt if it exists
+                        if (existingReport && existingReport.createdAt) {
+                            updateData.createdAt = existingReport.createdAt;
+                        } else {
+                            updateData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        }
+                        
+                        // Preserve PDF data if it exists
+                        if (existingReport) {
+                            if (existingReport.author) updateData.author = existingReport.author;
+                            if (existingReport.datePublished) updateData.datePublished = existingReport.datePublished;
+                            if (existingReport.pdfUrl) updateData.pdfUrl = existingReport.pdfUrl;
+                            if (existingReport.pdfFileName) updateData.pdfFileName = existingReport.pdfFileName;
+                            if (existingReport.fileBase64) updateData.fileBase64 = existingReport.fileBase64;
+                            if (existingReport.storageMethod) updateData.storageMethod = existingReport.storageMethod;
+                        }
+                        
+                        // Update the report with video data
+                        await reportRef.set(updateData, { merge: true });
+                        
+                        // Reset form
+                        weeklyVideoUploadForm.reset();
+                    } catch (error) {
+                        console.error('Error saving video:', error);
+                        alert('Error saving video: ' + error.message);
+                    } finally {
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                });
+            }
+            
+            // Clear weekly video form button
+            const clearWeeklyVideoForm = document.getElementById('clear-weekly-video-form');
+            if (clearWeeklyVideoForm) {
+                clearWeeklyVideoForm.addEventListener('click', function() {
+                    const form = document.getElementById('weekly-video-upload-form');
+                    form.reset();
                 });
             }
             
