@@ -1,21 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- # Basic HTML document metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opessocius</title>
+    <!-- # External stylesheet for all page styling -->
     <link rel="stylesheet" href="styles.css">
+    <!-- # Fix for browser extension conflicts (crypto wallet extensions) -->
+    <!-- # This prevents "Cannot redefine property: ethereum" errors from wallet extensions -->
+    <!-- # The error occurs when multiple extensions try to inject window.ethereum -->
+    <script>
+        // # Prevent ethereum property redefinition errors from browser extensions
+        // # This is a common issue with crypto wallet extensions (MetaMask, etc.)
+        // # that try to inject window.ethereum multiple times
+        (function() {
+            'use strict';
+            // # If ethereum already exists, make it configurable to allow redefinition
+            if (typeof window !== 'undefined' && window.ethereum) {
+                try {
+                    const ethereumValue = window.ethereum;
+                    // # Delete and redefine as configurable
+                    delete window.ethereum;
+                    Object.defineProperty(window, 'ethereum', {
+                        value: ethereumValue,
+                        writable: true,
+                        enumerable: true,
+                        configurable: true // # Allow extensions to redefine it
+                    });
+                } catch (e) {
+                    // # Silently handle if we can't modify the property
+                }
+            }
+            
+            // # Also suppress the specific console error from evmAsk.js
+            const originalError = console.error;
+            console.error = function(...args) {
+                // # Filter out the evmAsk.js ethereum redefinition error
+                const errorMsg = args.length > 0 ? String(args[0]) : '';
+                if (errorMsg.includes('Cannot redefine property: ethereum') || 
+                    errorMsg.includes('evmAsk.js')) {
+                    return; // # Silently ignore this specific harmless error
+                }
+                // # Call original console.error for all other errors
+                originalError.apply(console, args);
+            };
+        })();
+    </script>
 </head>
 <body>
+    <!-- # ============================================ -->
+    <!-- # HEADER SECTION - Navigation and Logo -->
+    <!-- # ============================================ -->
     <header class="header">
         <div class="header-container">
+            <!-- # Company logo/branding -->
             <div class="logo">
                 <h1>Opessocius</h1>
             </div>
+            <!-- # Main navigation menu with dropdowns -->
             <nav class="navigation">
+                <!-- # Solutions dropdown menu -->
                 <div class="nav-item">
                     <a href="#" class="nav-link">Solutions</a>
                     <div class="dropdown-menu">
+                        <!-- # Preview images that change on hover (handled by script.js) -->
                         <div class="dropdown-preview">
                             <img src="images/InvestmentCalculator.png" alt="Investment Calculator" class="preview-image active" data-item="item-0" />
                             <img src="images/CrudeOilStrategy.png" alt="Crude Oil Strategy" class="preview-image" data-item="item-1" />
@@ -23,6 +72,7 @@
                             <img src="images/RiskManagement.png" alt="Risk Management" class="preview-image" data-item="item-3" />
                             <img src="images/Technology&Execution.png" alt="Technology & Execution" class="preview-image" data-item="item-4" />
                         </div>
+                        <!-- # Navigation links for Solutions section -->
                         <div class="dropdown-items">
                             <a href="investment-calculator.html" class="dropdown-item" data-preview="item-0">
                                 <span class="dropdown-text">Investment Calculator</span>
@@ -42,9 +92,11 @@
                         </div>
                     </div>
                 </div>
+                <!-- # Resources dropdown menu -->
                 <div class="nav-item">
                     <a href="#" class="nav-link">Resources</a>
                     <div class="dropdown-menu">
+                        <!-- # Preview images for Resources section -->
                         <div class="dropdown-preview">
                             <img src="images/Trading101.png" alt="Trading 101" class="preview-image active" data-item="item-0" />
                             <img src="images/OilMarketfundamentals.png" alt="Oil Market Fundamentals" class="preview-image" data-item="item-1" />
@@ -52,6 +104,7 @@
                             <img src="images/TechnicalAnalysisLibrary.png" alt="Technical Analysis Library" class="preview-image" data-item="item-3" />
                             <img src="images/Risk&ExpectationsGuide.png" alt="Risk & Expectations Guide" class="preview-image" data-item="item-4" />
                         </div>
+                        <!-- # Navigation links for Resources section -->
                         <div class="dropdown-items">
                             <a href="learn.html" class="dropdown-item" data-preview="item-0">
                                 <span class="dropdown-text">Learn</span>
@@ -71,9 +124,11 @@
                         </div>
                     </div>
                 </div>
+                <!-- # Consultations dropdown menu -->
                 <div class="nav-item">
                     <a href="#" class="nav-link">Consultations</a>
                     <div class="dropdown-menu">
+                        <!-- # Preview images for Consultations section -->
                         <div class="dropdown-preview">
                             <img src="images/AboutUs.png" alt="About Us" class="preview-image active" data-item="item-0" />
                             <img src="images/Pricing&Plans.png" alt="Pricing & Plans" class="preview-image" data-item="item-1" />
@@ -81,6 +136,7 @@
                             <img src="images/Compliance&Disclaimers.png" alt="Compliance & Disclaimers" class="preview-image" data-item="item-3" />
                             <img src="images/OnboardingProcess.png" alt="Onboarding Process" class="preview-image" data-item="item-4" />
                         </div>
+                        <!-- # Navigation links for Consultations section -->
                         <div class="dropdown-items">
                             <a href="about-us.html" class="dropdown-item" data-preview="item-0">
                                 <span class="dropdown-text">About Us</span>
@@ -100,12 +156,21 @@
                         </div>
                     </div>
                 </div>
+                <!-- # Login link (no dropdown) -->
                 <a href="login.html" class="nav-link">Log in</a>
             </nav>
         </div>
     </header>
+
+    <!-- # ============================================ -->
+    <!-- # MAIN CONTENT AREA -->
+    <!-- # ============================================ -->
     <main class="main-content">
+        <!-- # ============================================ -->
+        <!-- # HERO SECTION - Main landing area with video -->
+        <!-- # ============================================ -->
         <section class="hero">
+            <!-- # Hero text content -->
             <div class="hero-container">
                 <h2 class="hero-title">
                     Building the Backbone of<br>Specialized Market Investing
@@ -114,6 +179,7 @@
                     Opessocius provides investors with structured, risk-controlled access to opaque, <br> expert-driven markets, reinforced by secure infrastructure and institutional-grade <br> operational standards.
                 </p>
             </div>
+            <!-- # Key statistics display -->
             <div class="hero-stats">
                 <div class="stat-item">
                     <div class="stat-value">€800,000</div>
@@ -128,42 +194,52 @@
                     <div class="stat-label">Strategy Development</div>
                 </div>
             </div>
+            <!-- # Hero video background/feature -->
             <div class="hero-media">
-                <video id="hero-video" src="images/Documentary.mp4" class="hero-media-placeholder" controls loop playsinline autoplay muted>
+                <video id="hero-video" src="images/Documentary.mp4" class="hero-media-placeholder" controls loop playsinline muted>
                     Your browser does not support the video tag.
                 </video>
             </div>
         </section>
         
+        <!-- # ============================================ -->
+        <!-- # PARTNERS SECTION - Partner logos -->
+        <!-- # ============================================ -->
         <section class="content-section partners-section fade-in-section">
             <div class="section-container">
                 <div class="partner-grid">
-                    <a href="https://www.trading212.com" target="_blank" class="partner-logo">
+                    <a href="https://www.trading212.com" target="_blank" rel="noopener noreferrer" class="partner-logo">
                         <img src="images/Partner1.png" alt="Partner 1" />
                     </a>
-                    <a href="https://www.bafin.de" target="_blank" class="partner-logo">
+                    <a href="https://www.bafin.de" target="_blank" rel="noopener noreferrer" class="partner-logo">
                         <img src="images/Partner2.png" alt="Partner 2" />
                     </a>
-                    <a href="https://edb-banken.de" target="_blank" class="partner-logo">
+                    <a href="https://edb-banken.de" target="_blank" rel="noopener noreferrer" class="partner-logo">
                         <img src="images/Partner3.png" alt="Partner 3" />
                     </a>
-                    <a href="https://www.e-d-w.de" target="_blank" class="partner-logo">
+                    <a href="https://www.e-d-w.de" target="_blank" rel="noopener noreferrer" class="partner-logo">
                         <img src="images/Partner4.png" alt="Partner 4" />
                     </a>
                 </div>
             </div>
         </section>
         
+        <!-- # ============================================ -->
+        <!-- # FEATURE TABS SECTION - Interactive feature showcase -->
+        <!-- # ============================================ -->
         <section class="feature-tabs-section fade-in-section">
             <div class="section-container">
+                <!-- # Tab buttons to switch between features -->
                 <div class="feature-tabs" role="tablist">
                     <button class="feature-tab active" data-tab="investor" role="tab">Investor Calculator</button>
                     <button class="feature-tab" data-tab="transfer" role="tab">Crude Oil Strategy</button>
                     <button class="feature-tab" data-tab="fund" role="tab">Portfolio Models</button>
                     <button class="feature-tab" data-tab="treasury" role="tab">Risk Management</button>
-                    <button class="feature-tab" data-tab="compliance" role="tab">Technology &amp; Execution</button>
+                    <button class="feature-tab" data-tab="compliance" role="tab">Technology & Execution</button>
                 </div>
+                <!-- # Feature content panels (shown/hidden based on active tab) -->
                 <div class="feature-panels">
+                    <!-- # Investor Calculator panel -->
                     <div class="feature-panel active" id="investor">
                         <div class="feature-panel__content">
                             <h3>Quantify Your Capital Trajectory</h3>
@@ -178,6 +254,7 @@
                             <img src="images/consult.png" alt="Investor portal preview" />
                         </div>
                     </div>
+                    <!-- # Crude Oil Strategy panel -->
                     <div class="feature-panel" id="transfer">
                         <div class="feature-panel__content">
                             <h3>Institutional strategy execution</h3>
@@ -192,6 +269,7 @@
                             <img src="images/floor.jpeg" alt="Transfer agency preview" />
                         </div>
                     </div>
+                    <!-- # Portfolio Models panel -->
                     <div class="feature-panel" id="fund">
                         <div class="feature-panel__content">
                             <h3>Real-time adaptive portfolio models</h3>
@@ -206,6 +284,7 @@
                             <img src="images/exchnage.jpeg" alt="Fund accounting preview" />
                         </div>
                     </div>
+                    <!-- # Risk Management panel -->
                     <div class="feature-panel" id="treasury">
                         <div class="feature-panel__content">
                             <h3>Integrated Treasury Safeguarding</h3>
@@ -220,6 +299,7 @@
                             <img src="images/man1.jpeg" alt="Treasury preview" />
                         </div>
                     </div>
+                    <!-- # Technology & Execution panel -->
                     <div class="feature-panel" id="compliance">
                         <div class="feature-panel__content">
                             <h3>Innovation Through Automation</h3>
@@ -238,6 +318,9 @@
             </div>
         </section>
         
+        <!-- # ============================================ -->
+        <!-- # ACHIEVEMENTS SECTION - Company milestones -->
+        <!-- # ============================================ -->
         <section class="achievements-section fade-in-section">
             <div class="section-container">
                 <div class="achievements-header">
@@ -246,6 +329,7 @@
                         Discover the milestones and successes that define our journey. We are more than an investment platform; we are a community committed to excellence, innovation, and delivering exceptional results for our clients.
                     </p>
                 </div>
+                <!-- # Achievement cards grid -->
                 <div class="achievements-grid">
                     <a href="compliance-disclaimers.html" class="achievement-card">
                         <img src="images/opec1.png" alt="Compliance & Disclaimers" class="achievement-image" />
@@ -264,7 +348,7 @@
                     <a href="macro-geopolitical-insights.html#geopolitics-shipping" class="achievement-card">
                         <img src="images/tanker1.jpeg" alt="Global Trade & Logistics" class="achievement-image" />
                         <div class="achievement-content">
-                            <h3 class="achievement-title">Global Trade &amp; Logistics</h3>
+                            <h3 class="achievement-title">Global Trade & Logistics</h3>
                             <p class="achievement-location">Maritime routes, transport cycles, shaping real-time pricing and liquidity.</p>
                         </div>
                     </a>
@@ -279,10 +363,15 @@
             </div>
         </section>
         
+        <!-- # ============================================ -->
+        <!-- # SERVICES SHOWCASE SECTION - Carousel slider -->
+        <!-- # ============================================ -->
         <section class="services-showcase fade-in-section">
             <div class="section-container">
                 <div class="services-slider">
+                    <!-- # Service cards track (duplicated cards for seamless infinite scroll) -->
                     <div class="services-track">
+                        <!-- # Original set of service cards -->
                         <article class="service-card">
                             <img src="images/stockexchange4.jpeg" alt="Learn" class="service-card__image" />
                             <div class="service-card__body">
@@ -300,7 +389,7 @@
                         <article class="service-card">
                             <img src="images/Macro&GeopoliticalInsights.png" alt="Macro & Geopolitical Insights" class="service-card__image" />
                             <div class="service-card__body">
-                                <h3>Macro &amp; Geopolitical Insights</h3>
+                                <h3>Macro & Geopolitical Insights</h3>
                                 <p>Analyzes global growth trends, interest-rate regimes, currency shifts, and geopolitical risks—including sanctions, conflicts, and policy interventions—that directly alter energy pricing and volatility.</p>
                             </div>
                         </article>
@@ -314,11 +403,12 @@
                         <article class="service-card">
                             <img src="images/RiskManagement.png" alt="Risk & Expectations Guide" class="service-card__image" />
                             <div class="service-card__body">
-                                <h3>Risk &amp; Expectations Guide</h3>
+                                <h3>Risk & Expectations Guide</h3>
                                 <p>Outlines practical frameworks for scenario planning, position sizing, leverage calibration, and expectation management under uncertainty—aimed at preventing overconfidence and aligning decisions with actual market conditions.</p>
                             </div>
                         </article>
-                        <!-- Duplicated cards for seamless loop -->
+                        <!-- # Duplicated cards for seamless infinite loop carousel effect -->
+                        <!-- # NOTE: These duplicates are necessary for the carousel to loop smoothly without gaps -->
                         <article class="service-card">
                             <img src="images/stockexchange4.jpeg" alt="Learn" class="service-card__image" />
                             <div class="service-card__body">
@@ -336,7 +426,7 @@
                         <article class="service-card">
                             <img src="images/Macro&GeopoliticalInsights.png" alt="Macro & Geopolitical Insights" class="service-card__image" />
                             <div class="service-card__body">
-                                <h3>Macro &amp; Geopolitical Insights</h3>
+                                <h3>Macro & Geopolitical Insights</h3>
                                 <p>Analyzes global growth trends, interest-rate regimes, currency shifts, and geopolitical risks—including sanctions, conflicts, and policy interventions—that directly alter energy pricing and volatility.</p>
                             </div>
                         </article>
@@ -350,11 +440,12 @@
                         <article class="service-card">
                             <img src="images/RiskManagement.png" alt="Risk & Expectations Guide" class="service-card__image" />
                             <div class="service-card__body">
-                                <h3>Risk &amp; Expectations Guide</h3>
+                                <h3>Risk & Expectations Guide</h3>
                                 <p>Outlines practical frameworks for scenario planning, position sizing, leverage calibration, and expectation management under uncertainty—aimed at preventing overconfidence and aligning decisions with actual market conditions.</p>
                             </div>
                         </article>
                     </div>
+                    <!-- # Carousel navigation controls -->
                     <div class="services-controls">
                         <button class="service-arrow service-arrow--prev" aria-label="Previous services">&larr;</button>
                         <button class="service-arrow service-arrow--next" aria-label="Next services">&rarr;</button>
@@ -363,16 +454,22 @@
             </div>
         </section>
 
+        <!-- # ============================================ -->
+        <!-- # CONSULTATION SECTION - Booking widget -->
+        <!-- # ============================================ -->
         <section id="consultation-section" class="content-section consultation-section fade-in-section">
             <div class="section-container">
                 <div class="consultation-widget">
-                            <div class="consultation-header">
+                    <!-- # Consultation header -->
+                    <div class="consultation-header">
                         <p class="consultation-subtitle">Schedule Your <span class="highlight-blue">Appointment Now</span></p>
                         <p class="consultation-note">Reserve your slot and receive an email confirmation shortly</p>
                     </div>
                     <div class="consultation-content">
+                        <!-- # Left side: Advisor information and services -->
                         <div class="consultation-left" id="consultation-left">
                             <div class="advisor-info">
+                                <!-- # Advisor profile card -->
                                 <div class="advisor-profile">
                                     <img src="images/diegorequena.jpg" alt="Diego Requena" class="advisor-avatar" />
                                     <div class="advisor-details">
@@ -389,6 +486,7 @@
                                     </div>
                                 </div>
                                 <h4 class="advisor-heading">Speak to a financial advisor</h4>
+                                <!-- # Service steps list -->
                                 <div class="advisor-services">
                                     <div class="service-item">
                                         <h5 class="service-title"><span class="service-number">1.</span> Investment Consultation</h5>
@@ -409,16 +507,19 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- # Right side: Calendar and booking form -->
                         <div class="consultation-right">
-                            <!-- Date Selection View -->
+                            <!-- # Date Selection View - Initial calendar display -->
                             <div class="booking-view" id="date-selection-view">
                                 <h4 class="calendar-heading">Select a Date & Time</h4>
                                 <div class="calendar-widget">
+                                    <!-- # Calendar navigation header -->
                                     <div class="calendar-header">
                                         <button class="calendar-nav" id="prev-month">‹</button>
                                         <h5 class="calendar-month" id="current-month">November 2025</h5>
                                         <button class="calendar-nav" id="next-month">›</button>
                                     </div>
+                                    <!-- # Weekday labels -->
                                     <div class="calendar-weekdays">
                                         <div class="weekday">SUN</div>
                                         <div class="weekday">MON</div>
@@ -428,9 +529,11 @@
                                         <div class="weekday">FRI</div>
                                         <div class="weekday">SAT</div>
                                     </div>
+                                    <!-- # Calendar days grid (populated by JavaScript) -->
                                     <div class="calendar-days" id="calendar-days">
                                         <!-- Calendar days will be generated by JavaScript -->
                                     </div>
+                                    <!-- # Timezone and duration info -->
                                     <div class="timezone-info">
                                         <span class="globe-icon">◉</span>
                                         <span>Central European Summer Time (CEST)</span>
@@ -442,16 +545,19 @@
                                 </div>
                             </div>
                             
-                            <!-- Time Selection & Booking Form View -->
+                            <!-- # Time Selection & Booking Form View - Shown after date selection -->
                             <div class="booking-view" id="booking-form-view" style="display: none;">
                                 <button class="back-arrow-btn" id="back-to-calendar-arrow" aria-label="Back to calendar">‹</button>
                                 <div class="booking-form-content">
+                                    <!-- # Time slot selection -->
                                     <div class="time-slots-section">
                                         <h4 class="form-section-heading">Select a Time</h4>
                                         <p class="selected-date-display" id="selected-date-display"></p>
+                                        <!-- # Time slots grid (populated by JavaScript) -->
                                         <div class="time-slots-grid" id="time-slots-grid">
                                             <!-- Time slots will be generated by JavaScript -->
                                         </div>
+                                        <!-- # Consultation topic selection -->
                                         <div class="consultation-topic-section">
                                             <h5 class="topic-heading">Consultation Topic</h5>
                                             <div class="topic-options">
@@ -474,6 +580,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- # User information form -->
                                     <div class="booking-form-section">
                                         <h4 class="form-section-heading">Your Information</h4>
                                         <form class="booking-form" id="booking-form">
@@ -514,23 +621,28 @@
             </div>
         </section>
         
+        <!-- # ============================================ -->
+        <!-- # TESTIMONIALS SECTION - Platform benefits -->
+        <!-- # ============================================ -->
         <section class="testimonials-section fade-in-section">
             <div class="section-container">
                 <div class="testimonials-content">
+                    <!-- # Image gallery -->
                     <div class="testimonials-images">
                         <div class="testimonial-image-card">
                             <img src="images/stockexchnage5.jpeg" alt="Stock Exchange Floor" class="testimonial-image" />
                         </div>
                         <div class="testimonial-image-card">
-                        <img src="images/stockexchnage6.jpeg" alt="High-Tech Trading Floor" class="testimonial-image" />
+                            <img src="images/stockexchnage6.jpeg" alt="High-Tech Trading Floor" class="testimonial-image" />
                         </div>
                         <div class="testimonial-image-card">
-                        <img src="images/stockexchange.jpeg" alt="Trading Desk" class="testimonial-image" />
+                            <img src="images/stockexchange.jpeg" alt="Trading Desk" class="testimonial-image" />
                         </div>
                         <div class="testimonial-image-card">
                             <img src="images/opec3.png" alt="OPEC Summit" class="testimonial-image" />
                         </div>
                     </div>
+                    <!-- # Text content -->
                     <div class="testimonials-text">
                         <h2 class="testimonials-title">ENHANCE YOUR SKILLS WITH MODERN INVESTMENT PLATFORM</h2>
                         <p class="testimonials-description">
@@ -546,9 +658,14 @@
                 </div>
             </div>
         </section>
+
+        <!-- # ============================================ -->
+        <!-- # JOBS SECTION - Career opportunities -->
+        <!-- # ============================================ -->
         <section class="jobs-section fade-in-section">
             <div class="section-container jobs-container">
                 <h2 class="jobs-section-title">Careers</h2>
+                <!-- # Job search panel -->
                 <div class="jobs-search-panel">
                     <div class="jobs-search-input">
                         <label for="job-search">Find jobs / Internship</label>
@@ -565,6 +682,7 @@
                     <button class="job-search-btn">Search</button>
                 </div>
 
+                <!-- # Job filter bar -->
                 <div class="jobs-filter-bar">
                     <span class="jobs-openings">43 open positions</span>
                     <div class="jobs-filters">
@@ -575,7 +693,9 @@
                     </div>
                 </div>
 
+                <!-- # Job listings grid -->
                 <div class="jobs-grid">
+                    <!-- # Job Card 1: Manager of Software Engineering -->
                     <article class="job-card job-card--listing" data-job-id="1" data-job-title="Manager of Software Engineering" data-job-location="Bengaluru, Karnataka · India">
                         <div class="job-card__top">
                             <div class="job-card__header">
@@ -609,6 +729,7 @@
                         <span class="job-posted">Posted 2 days ago</span>
                     </article>
 
+                    <!-- # Job Card 2: Reference Data Specialist -->
                     <article class="job-card job-card--listing" data-job-id="2" data-job-title="Reference Data Specialist / Analyst" data-job-location="Hyderabad, Telangana · India + Remote">
                         <div class="job-card__top">
                             <div class="job-card__header">
@@ -642,6 +763,7 @@
                         <span class="job-posted">Posted 5 days ago</span>
                     </article>
 
+                    <!-- # Job Card 3: Commercial & Investment Bank Summer Analyst -->
                     <article class="job-card job-card--listing" data-job-id="3" data-job-title="Commercial & Investment Bank Summer Analyst" data-job-location="Tokyo-to, Japan">
                         <div class="job-card__top">
                             <div class="job-card__header">
@@ -667,14 +789,15 @@
                                 </button>
                             </div>
                         </div>
-                        <h3 class="job-title">Commercial &amp; Investment Bank Summer Analyst</h3>
+                        <h3 class="job-title">Commercial & Investment Bank Summer Analyst</h3>
                         <p class="job-description">
                             Join the investment banking program, contribute to strategy execution, and
                             work across deal teams delivering value to institutional clients.
-                         </p>
+                        </p>
                         <span class="job-posted">Posted 1 week ago</span>
                     </article>
 
+                    <!-- # Job Card 4: Investment Strategy Internship -->
                     <article class="job-card job-card--listing" data-job-id="4" data-job-title="Investment Strategy Internship Program" data-job-location="Global · Hybrid">
                         <div class="job-card__top">
                             <div class="job-card__header">
@@ -708,6 +831,7 @@
                         <span class="job-posted">Seasonal intake</span>
                     </article>
 
+                    <!-- # Job Card 5: Senior Risk Management Specialist -->
                     <article class="job-card job-card--listing" data-job-id="5" data-job-title="Senior Risk Management Specialist" data-job-location="London, United Kingdom">
                         <div class="job-card__top">
                             <div class="job-card__header">
@@ -741,6 +865,7 @@
                         <span class="job-posted">Now hiring</span>
                     </article>
 
+                    <!-- # Join Network CTA Card -->
                     <article class="job-card job-card--cta">
                         <h3>Join our talent network</h3>
                         <p>Didn't find the perfect role? Create a profile so we can reach out the moment something opens.</p>
@@ -750,17 +875,21 @@
             </div>
         </section>
 
-        <!-- Job Application Modal -->
+        <!-- # ============================================ -->
+        <!-- # JOB APPLICATION MODAL - Popup for job details -->
+        <!-- # ============================================ -->
         <div id="job-modal" class="job-modal">
             <div class="job-modal-overlay"></div>
             <div class="job-modal-container">
                 <button class="job-modal-close" aria-label="Close modal">&times;</button>
                 <div class="job-modal-content">
+                    <!-- # Modal header with job title and location -->
                     <div class="job-modal-header">
                         <h2 class="job-modal-title" id="modal-job-title">Job Title</h2>
                         <p class="job-modal-location" id="modal-job-location">Location</p>
                     </div>
                     <div class="job-modal-body">
+                        <!-- # Job details section -->
                         <div class="job-details-section">
                             <h3>Job Description</h3>
                             <div class="job-full-description" id="modal-job-description">
@@ -775,6 +904,7 @@
                                 </ul>
                             </div>
                         </div>
+                        <!-- # Application form section -->
                         <div class="job-application-section">
                             <h3>Apply for this Position</h3>
                             <form class="job-application-form" id="job-application-form">
@@ -817,7 +947,9 @@
             </div>
         </div>
 
-        <!-- Join Network Modal -->
+        <!-- # ============================================ -->
+        <!-- # JOIN NETWORK MODAL - Talent network signup -->
+        <!-- # ============================================ -->
         <div id="join-network-modal" class="job-modal">
             <div class="job-modal-overlay"></div>
             <div class="job-modal-container">
@@ -877,26 +1009,33 @@
             </div>
         </div>
 
+        <!-- # ============================================ -->
+        <!-- # FOOTER SECTION - Site links and legal info -->
+        <!-- # ============================================ -->
         <footer class="footer">
             <div class="footer-container">
+                <!-- # Office locations -->
                 <div class="footer-column">
                     <h3>Our Offices</h3>
                     <p><strong>Spain</strong><br>Madrid. Castellana, 81<br>Tetuán, 28046</p>
                     <p><strong>United Arab Emirates</strong><br>Dubai, The Bay Gate<br>Business Bay</p>
                 </div>
+                <!-- # Legal links -->
                 <div class="footer-column">
                     <h3>Legal</h3>
-                    <a href="terms-conditions.html#terms-conditions">Terms &amp; Conditions</a>
+                    <a href="terms-conditions.html#terms-conditions">Terms & Conditions</a>
                     <a href="terms-conditions.html#privacy-policy">Privacy Policy</a>
                     <a href="terms-conditions.html#legal-notice">Legal Notice</a>
                     <a href="terms-conditions.html#cookie-settings">Cookie Settings</a>
                 </div>
+                <!-- # Company links -->
                 <div class="footer-column">
                     <h3>Company</h3>
                     <a href="about-us.html">About</a>
                     <a href="book-a-call.html">Join us</a>
                     <a href="https://www.linkedin.com/in/opessocius" target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 </div>
+                <!-- # Certifications -->
                 <div class="footer-column footer-certificates">
                     <h3>Accreditations</h3>
                     <div class="certificate-row">
@@ -909,6 +1048,7 @@
                     </div>
                 </div>
             </div>
+            <!-- # Legal disclaimer -->
             <div class="footer-disclaimer">
                 <p>© 2025 Opessocius Technology</p>
                 <p><strong>Disclaimer:</strong></p>
@@ -918,11 +1058,22 @@
             </div>
         </footer>
     </main>
+
+    <!-- # ============================================ -->
+    <!-- # JAVASCRIPT FILES -->
+    <!-- # ============================================ -->
+    <!-- # Main site JavaScript (navigation, animations, etc.) -->
     <script src="script.js"></script>
+    
+    <!-- # ============================================ -->
+    <!-- # JOB MODAL FUNCTIONALITY - Inline script -->
+    <!-- # ============================================ -->
     <script>
-        // Job modal functionality
+        // # Initialize job modal functionality when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            // # Get all job listing cards
             const jobCards = document.querySelectorAll('.job-card--listing');
+            // # Get modal elements
             const jobModal = document.getElementById('job-modal');
             const modalClose = document.querySelector('.job-modal-close');
             const modalOverlay = document.querySelector('.job-modal-overlay');
@@ -931,7 +1082,7 @@
             const modalDescription = document.getElementById('modal-job-description');
             const jobApplicationForm = document.getElementById('job-application-form');
 
-            // Job descriptions data
+            // # Job descriptions data - Full descriptions and requirements for each job
             const jobDescriptions = {
                 1: {
                     fullDescription: "<p>As Manager of Software Engineering, you will lead multiple teams and manage day-to-day implementation activities while setting overall guidance for team output, practices, and collaboration. You'll be responsible for architecting scalable solutions, mentoring engineering talent, and driving technical excellence across our technology platform.</p><p>This role requires deep technical expertise combined with strong leadership skills to build and maintain high-performing engineering teams that deliver innovative solutions for our trading infrastructure and investment management systems.</p>",
@@ -985,6 +1136,7 @@
                 }
             };
 
+            // # Function to open job modal and populate with job data
             function openJobModal(jobCard) {
                 const jobId = jobCard.getAttribute('data-job-id');
                 const jobTitle = jobCard.getAttribute('data-job-title');
@@ -992,10 +1144,12 @@
                 const jobData = jobDescriptions[jobId];
 
                 if (jobData) {
+                    // # Populate modal with job information
                     modalTitle.textContent = jobTitle;
                     modalLocation.textContent = jobLocation;
                     modalDescription.innerHTML = jobData.fullDescription;
                     
+                    // # Populate requirements list
                     const requirementsList = document.getElementById('modal-job-requirements');
                     requirementsList.innerHTML = '';
                     jobData.requirements.forEach(req => {
@@ -1005,29 +1159,32 @@
                     });
                 }
 
+                // # Show modal and prevent body scroll
                 jobModal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
 
+            // # Function to close job modal
             function closeJobModal() {
                 jobModal.classList.remove('active');
                 document.body.style.overflow = '';
+                // # Reset form when closing
                 if (jobApplicationForm) {
                     jobApplicationForm.reset();
                 }
             }
 
-            // Add click handlers to job cards (excluding action buttons)
+            // # Add click handlers to job cards (excluding action buttons)
             jobCards.forEach(card => {
                 card.addEventListener('click', function(e) {
-                    // Don't open modal if clicking on action buttons
+                    // # Don't open modal if clicking on action buttons
                     if (!e.target.closest('.job-card__actions')) {
                         openJobModal(card);
                     }
                 });
             });
 
-            // Close modal handlers
+            // # Close modal handlers
             if (modalClose) {
                 modalClose.addEventListener('click', closeJobModal);
             }
@@ -1036,17 +1193,17 @@
                 modalOverlay.addEventListener('click', closeJobModal);
             }
 
-            // Form submission
+            // # Form submission handler
             if (jobApplicationForm) {
                 jobApplicationForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    // Here you would normally submit the form data
+                    // # TODO: Here you would normally submit the form data to a server
                     alert('Application submitted successfully! We will review your application and get back to you soon.');
                     closeJobModal();
                 });
             }
 
-            // Close modal on Escape key
+            // # Close modal on Escape key press
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && jobModal && jobModal.classList.contains('active')) {
                     closeJobModal();
@@ -1056,13 +1213,16 @@
                 }
             });
 
-            // Join Network Modal functionality
+            // # ============================================ -->
+            // # JOIN NETWORK MODAL FUNCTIONALITY -->
+            // # ============================================ -->
             const joinNetworkBtn = document.getElementById('join-network-btn');
             const joinNetworkModal = document.getElementById('join-network-modal');
             const joinNetworkClose = document.querySelector('.join-network-close');
             const joinNetworkOverlay = joinNetworkModal ? joinNetworkModal.querySelector('.job-modal-overlay') : null;
             const joinNetworkForm = document.getElementById('join-network-form');
 
+            // # Function to open join network modal
             function openJoinNetworkModal() {
                 if (joinNetworkModal) {
                     joinNetworkModal.classList.add('active');
@@ -1070,17 +1230,19 @@
                 }
             }
 
+            // # Function to close join network modal
             function closeJoinNetworkModal() {
                 if (joinNetworkModal) {
                     joinNetworkModal.classList.remove('active');
                     document.body.style.overflow = '';
+                    // # Reset form when closing
                     if (joinNetworkForm) {
                         joinNetworkForm.reset();
                     }
                 }
             }
 
-            // Add click handler to Join Network button
+            // # Add click handler to Join Network button
             if (joinNetworkBtn) {
                 joinNetworkBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -1088,7 +1250,7 @@
                 });
             }
 
-            // Close modal handlers
+            // # Close modal handlers for join network modal
             if (joinNetworkClose) {
                 joinNetworkClose.addEventListener('click', closeJoinNetworkModal);
             }
@@ -1097,22 +1259,27 @@
                 joinNetworkOverlay.addEventListener('click', closeJoinNetworkModal);
             }
 
-            // Form submission
+            // # Form submission handler for join network form
             if (joinNetworkForm) {
                 joinNetworkForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    // Here you would normally submit the form data
+                    // # TODO: Here you would normally submit the form data to a server
                     alert('Thank you for joining our talent network! We will review your profile and reach out when we have opportunities that match your skills.');
                     closeJoinNetworkModal();
                 });
             }
         });
     </script>
+
+    <!-- # ============================================ -->
+    <!-- # FIREBASE INTEGRATION - Database and auth -->
+    <!-- # ============================================ -->
+    <!-- # Firebase SDK scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script>
-        // Firebase configuration
+        // # Firebase configuration object
         const firebaseConfig = {
             apiKey: "AIzaSyD9DvEzXUxUppgsp71H5d3abPKWkjkea6A",
             authDomain: "opessocius-17ab9.firebaseapp.com",
@@ -1123,15 +1290,14 @@
             measurementId: "G-44CX9N3E3J"
         };
         
-        // Initialize Firebase
+        // # Initialize Firebase if available
         if (typeof firebase !== 'undefined') {
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
+            // # Make Firebase database and instance available globally
             window.firebaseDb = db;
             window.firebase = firebase;
         }
     </script>
-    <script src="script.js"></script>
 </body>
 </html>
-

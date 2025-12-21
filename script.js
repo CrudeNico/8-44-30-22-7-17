@@ -548,12 +548,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 // Save to Firestore
+                let consultationDocRef = null;
                 try {
                     if (window.firebaseDb) {
                         // Format date for storage
                         const dateString = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
                         
-                        await window.firebaseDb.collection('consultations').add({
+                        // Format date for email display
+                        const formattedDate = selectedDate.toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                        
+                        // Save consultation to Firestore
+                        consultationDocRef = await window.firebaseDb.collection('consultations').add({
                             date: dateString,
                             time: selectedTime,
                             consultationTopic: consultationTopic,
@@ -565,12 +575,68 @@ document.addEventListener('DOMContentLoaded', function() {
                             company: bookingData.company,
                             notes: bookingData.notes,
                             status: 'pending',
+                            confirmationEmailSent: false, // # Track if confirmation email has been sent
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
                         
                         // Booking saved successfully
                         console.log('Booking confirmed successfully');
+                        
+                        // # Send confirmation email immediately after saving
+                        try {
+                            const emailSubject = `Consultation Booking Confirmed - ${bookingData.consultationTopicDisplay}`;
+                            const emailMessage = `Dear ${bookingData.fullName},\n\n` +
+                                `You have confirmed a booking at this date and time:\n\n` +
+                                `Date: ${formattedDate}\n` +
+                                `Time: ${selectedTime}\n` +
+                                `Topic: ${bookingData.consultationTopicDisplay}\n\n` +
+                                `5 minutes before the consultation, we will send you the link to join.\n\n` +
+                                `We look forward to speaking with you.\n\n` +
+                                `Best regards,\nOpessocius Wealth Partners`;
+                            
+                            // # Use environment-aware API URL (HTTPS in production, localhost in dev)
+                            // # Email server runs on port 3000, regardless of the web server port
+                            const apiBaseUrl = window.location.protocol === 'https:' 
+                                ? window.location.origin 
+                                : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                                    ? 'http://localhost:3000'  // # Email server always on port 3000
+                                    : window.location.origin);
+                            
+                            const formData = new FormData();
+                            formData.append('recipients', JSON.stringify([bookingData.email.trim()]));
+                            formData.append('subject', emailSubject);
+                            formData.append('message', emailMessage);
+                            
+                            const emailResponse = await fetch(`${apiBaseUrl}/api/send-email`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            // # Check if response is ok before parsing JSON
+                            if (!emailResponse.ok) {
+                                throw new Error(`Email API returned ${emailResponse.status}: ${emailResponse.statusText}`);
+                            }
+                            
+                            const emailResult = await emailResponse.json();
+                            
+                            if (emailResult.success && consultationDocRef) {
+                                // # Mark confirmation email as sent in Firestore
+                                await window.firebaseDb.collection('consultations').doc(consultationDocRef.id).update({
+                                    confirmationEmailSent: true,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                                console.log('✅ Confirmation email sent successfully to:', bookingData.email);
+                            } else {
+                                console.warn('⚠️ Email API returned success=false:', emailResult.error || 'Unknown error');
+                                // # Don't block the user flow if email fails, but log it
+                            }
+                        } catch (emailError) {
+                            console.error('❌ Error sending confirmation email:', emailError.message || emailError);
+                            console.warn('⚠️ Email will be sent later via admin portal. Consultation saved successfully.');
+                            // # Don't block the user flow if email fails, but log it
+                            // # The admin portal will retry sending emails for consultations with confirmationEmailSent: false
+                        }
                     } else {
                         // Fallback if Firebase not loaded
                         console.log('Booking data:', bookingData);
@@ -583,7 +649,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Reset form
+                // # Reset form (email confirmation happens silently in background)
+                // # No popup - booking is confirmed silently
                 bookingForm.reset();
                 showDateSelection();
                 selectedDate = null;
@@ -1854,8 +1921,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>If you have any questions, please contact us at <a href="mailto:relations@opessocius.support" style="color: #2563eb; text-decoration: none;">relations@opessocius.support</a>.</p>
                 `;
                 
-                // Send email
-                const response = await fetch('http://localhost:3000/api/send-email', {
+                // Send email - Use environment-aware API URL (HTTPS in production, localhost in dev)
+                const apiBaseUrl = window.location.protocol === 'https:' 
+                    ? window.location.origin 
+                    : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                        ? `http://localhost:${window.location.port || '3000'}`
+                        : window.location.origin);
+                const response = await fetch(`${apiBaseUrl}/api/send-email`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

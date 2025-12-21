@@ -2878,7 +2878,13 @@
                     formData.append('subject', subject);
                     formData.append('message', message);
                     
-                    const response = await fetch('http://localhost:3000/api/send-email', {
+                    // Use environment-aware API URL (HTTPS in production, localhost in dev)
+                    const apiBaseUrl = window.location.protocol === 'https:' 
+                        ? window.location.origin 
+                        : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                            ? `http://localhost:${window.location.port || '3000'}`
+                            : window.location.origin);
+                    const response = await fetch(`${apiBaseUrl}/api/send-email`, {
                         method: 'POST',
                         body: formData
                     });
