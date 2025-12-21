@@ -9375,13 +9375,15 @@ table tbody tr:last-child td {
 
 .login-form input {
     padding: 1rem;
-    background: #ffffff;
+    background: #ffffff !important;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    color: #1f2937;
+    color: #1f2937 !important;
     font-size: 1rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     transition: all 0.3s ease;
+    opacity: 1 !important;
+    -webkit-text-fill-color: #1f2937 !important;
 }
 
 .login-form input::placeholder {
@@ -9392,6 +9394,31 @@ table tbody tr:last-child td {
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* Override browser autofill faded appearance */
+.login-form input:-webkit-autofill,
+.login-form input:-webkit-autofill:hover,
+.login-form input:-webkit-autofill:focus,
+.login-form input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+    -webkit-text-fill-color: #1f2937 !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.login-form input:autofill,
+.login-form input:autofill:hover,
+.login-form input:autofill:focus,
+.login-form input:autofill:active {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    opacity: 1 !important;
 }
 
 .login-submit-btn {
@@ -10569,6 +10596,202 @@ body.dashboard-active {
     .sidebar-nav-item.active {
         border-left: none;
         border-bottom-color: #2563eb;
+    }
+}
+
+/* Payment Link Modal Styles */
+.payment-link-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.payment-link-modal.active {
+    display: flex;
+}
+
+.payment-link-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.payment-link-modal-content {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: paymentModalSlideUp 0.3s ease;
+    z-index: 10001;
+}
+
+@keyframes paymentModalSlideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.payment-link-modal-header {
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.payment-link-modal-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-modal-body {
+    padding: 2rem;
+}
+
+.payment-link-modal-body .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.payment-link-modal-body .form-group label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-modal-body .form-group input {
+    width: 100%;
+    padding: 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1f2937;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-link-modal-body .form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.payment-link-submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-submit-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.payment-link-submit-btn:active {
+    transform: translateY(0);
+}
+
+.payment-link-submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.payment-link-success {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.success-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    background: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.payment-link-success h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-success p {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0 0 2rem 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-close-btn {
+    padding: 0.875rem 2rem;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-link-close-btn:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+    .payment-link-modal {
+        padding: 1rem;
+    }
+    
+    .payment-link-modal-content {
+        max-width: 100%;
+    }
+    
+    .payment-link-modal-header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+    
+    .payment-link-modal-body {
+        padding: 1.5rem;
     }
 }
 

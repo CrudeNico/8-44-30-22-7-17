@@ -524,7 +524,7 @@
                                     </div>
                                 </li>
                             </ul>
-                            <button class="pricing-button">Get Started</button>
+                            <button class="pricing-button" data-plan="Essential" data-plan-id="essential">Get Started</button>
                         </div>
 
                         <div class="pricing-card">
@@ -628,7 +628,7 @@
                                     </div>
                                 </li>
                             </ul>
-                            <button class="pricing-button">Get Started</button>
+                            <button class="pricing-button" data-plan="Professional" data-plan-id="professional">Get Started</button>
                         </div>
 
                         <div class="pricing-card pricing-card-best-deal">
@@ -742,7 +742,7 @@
                                     </div>
                                 </li>
                             </ul>
-                            <button class="pricing-button pricing-button-primary">Get Started</button>
+                            <button class="pricing-button pricing-button-primary" data-plan="Mastery" data-plan-id="mastery">Get Started</button>
                         </div>
                     </div>
                     <div class="pricing-disclaimer">
@@ -806,6 +806,41 @@
             <div class="feature-side-panel-body">
                 <h2 id="feature-side-panel-title"></h2>
                 <div id="feature-side-panel-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Link Request Modal -->
+    <div class="payment-link-modal" id="payment-link-modal">
+        <div class="payment-link-modal-overlay"></div>
+        <div class="payment-link-modal-content">
+            <div class="payment-link-modal-header">
+                <h2>Get Your Secure Payment Link</h2>
+            </div>
+            <div class="payment-link-modal-body" id="payment-link-form-container">
+                <form id="payment-link-form">
+                    <div class="form-group">
+                        <label for="payment-name">Name *</label>
+                        <input type="text" id="payment-name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-email">Email Address *</label>
+                        <input type="email" id="payment-email" name="email" required placeholder="Enter your email address">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="payment-link-submit-btn" id="payment-link-submit-btn">
+                            Request Payment Link
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="payment-link-modal-body" id="payment-link-success-container" style="display: none;">
+                <div class="payment-link-success">
+                    <div class="success-icon">✓</div>
+                    <h3>Payment Link Requested</h3>
+                    <p>Within five minutes, you will receive an email with the secure payment link.</p>
+                    <button type="button" class="payment-link-close-btn" id="payment-link-close-btn">Close</button>
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Opessocius</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .success-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .success-message {
+            color: #6b7280;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            margin-bottom: 2rem;
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .loading {
+            display: none;
+        }
+        
+        .loading.active {
+            display: block;
+            color: #6b7280;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-message">
+                Thank you for your subscription. Your payment has been processed successfully and your account has been activated.
+            </p>
+            <p class="success-message" style="font-size: 0.875rem; margin-top: -1.5rem;">
+                You will receive a confirmation email shortly with your subscription details.
+            </p>
+            <div class="success-actions">
+                <a href="learnportal.html" class="btn btn-primary">Go to Learning Portal</a>
+                <a href="learn.html" class="btn btn-secondary">Back to Plans</a>
+            </div>
+            <div class="loading" id="loading">
+                Verifying payment...
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Verify payment session if session_id is in URL
+        (async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            
+            if (sessionId) {
+                const loadingEl = document.getElementById('loading');
+                loadingEl.classList.add('active');
+                
+                try {
+                    // Optionally verify the session with backend
+                    // This is handled by webhook, but we can show confirmation here
+                    const response = await fetch(`/api/stripe/verify-session?session_id=${sessionId}`);
+                    
+                    if (response.ok) {
+                        console.log('Payment verified');
+                    }
+                } catch (error) {
+                    console.error('Error verifying payment:', error);
+                    // Don't show error to user - webhook will handle it
+                } finally {
+                    loadingEl.classList.remove('active');
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
+

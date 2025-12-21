@@ -1670,6 +1670,232 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Payment Link Modal functionality
+    const paymentLinkModal = document.getElementById('payment-link-modal');
+    const paymentLinkForm = document.getElementById('payment-link-form');
+    const paymentLinkFormContainer = document.getElementById('payment-link-form-container');
+    const paymentLinkSuccessContainer = document.getElementById('payment-link-success-container');
+    const paymentLinkCloseBtn = document.getElementById('payment-link-close-btn');
+    const paymentLinkSubmitBtn = document.getElementById('payment-link-submit-btn');
+    const pricingButtons = document.querySelectorAll('.pricing-button');
+    
+    let selectedPlan = '';
+    let selectedPlanId = '';
+    let selectedBilling = 'annually'; // Default to annually
+    
+    // Function to reset modal state
+    const resetModalState = function() {
+        // Reset form
+        if (paymentLinkForm) {
+            paymentLinkForm.reset();
+        }
+        // Reset submit button state
+        if (paymentLinkSubmitBtn) {
+            paymentLinkSubmitBtn.disabled = false;
+            paymentLinkSubmitBtn.textContent = 'Request Payment Link';
+        }
+        // Show form, hide success message
+        if (paymentLinkFormContainer) {
+            paymentLinkFormContainer.style.display = 'block';
+        }
+        if (paymentLinkSuccessContainer) {
+            paymentLinkSuccessContainer.style.display = 'none';
+        }
+    };
+    
+    // Open modal when Get Started button is clicked
+    if (pricingButtons.length > 0 && paymentLinkModal) {
+        pricingButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectedPlan = this.getAttribute('data-plan') || '';
+                selectedPlanId = this.getAttribute('data-plan-id') || '';
+                
+                // Get current billing selection
+                const checkedBilling = document.querySelector('input[name="billing"]:checked');
+                selectedBilling = checkedBilling ? checkedBilling.value : 'annually';
+                
+                // Reset modal state
+                resetModalState();
+                
+                // Show modal
+                paymentLinkModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+    }
+    
+    // Close modal when clicking overlay
+    if (paymentLinkModal) {
+        const overlay = paymentLinkModal.querySelector('.payment-link-modal-overlay');
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                paymentLinkModal.classList.remove('active');
+                document.body.style.overflow = '';
+                resetModalState();
+            });
+        }
+    }
+    
+    // Close modal when clicking close button
+    if (paymentLinkCloseBtn) {
+        paymentLinkCloseBtn.addEventListener('click', function() {
+            paymentLinkModal.classList.remove('active');
+            document.body.style.overflow = '';
+            resetModalState();
+        });
+    }
+    
+    // Handle form submission
+    if (paymentLinkForm) {
+        paymentLinkForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nameInput = document.getElementById('payment-name');
+            const emailInput = document.getElementById('payment-email');
+            
+            if (!nameInput || !emailInput) {
+                alert('Form fields not found');
+                return;
+            }
+            
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            
+            if (!name || !email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            // Disable submit button
+            if (paymentLinkSubmitBtn) {
+                paymentLinkSubmitBtn.disabled = true;
+                paymentLinkSubmitBtn.textContent = 'Sending...';
+            }
+            
+            try {
+                // Re-check billing selection at submission time (in case user changed it)
+                const checkedBilling = document.querySelector('input[name="billing"]:checked');
+                const currentBilling = checkedBilling ? checkedBilling.value : 'annually';
+                
+                // Get price information
+                const planCard = document.querySelector(`[data-plan-id="${selectedPlanId}"]`)?.closest('.pricing-card');
+                let priceText = '';
+                if (planCard) {
+                    const priceElement = currentBilling === 'annually' 
+                        ? planCard.querySelector('.annually-price')
+                        : planCard.querySelector('.monthly-price');
+                    if (priceElement) {
+                        priceText = priceElement.textContent.trim();
+                    }
+                }
+                
+                // Payment link mapping - Annual links
+                const paymentLinks = {
+                    'Essential': {
+                        'annually': 'https://buy.stripe.com/test_aFadR8dwLfkfblWfQo7g401',
+                        'monthly': 'https://buy.stripe.com/test_8x2bJ064jb3Z61CcEc7g402'
+                    },
+                    'Professional': {
+                        'annually': 'https://buy.stripe.com/test_28EfZgfETdc7fCc1Zy7g405',
+                        'monthly': 'https://buy.stripe.com/test_aFa9ASboDegb1LmgUs7g406'
+                    },
+                    'Mastery': {
+                        'annually': 'https://buy.stripe.com/test_28E8wOakzc8361C0Vu7g403',
+                        'monthly': 'https://buy.stripe.com/test_cNibJ064j5JF4Xy5bK7g404'
+                    }
+                };
+                
+                // Get the payment link for selected plan and billing
+                const paymentLink = paymentLinks[selectedPlan]?.[currentBilling] || '';
+                
+                // Debug log
+                console.log('Payment Link Selection:', {
+                    plan: selectedPlan,
+                    billing: currentBilling,
+                    link: paymentLink
+                });
+                
+                if (!paymentLink) {
+                    throw new Error(`No payment link found for plan: ${selectedPlan}, billing: ${currentBilling}`);
+                }
+                
+                // Create email content
+                const emailSubject = `Secure Payment Link - ${selectedPlan} Plan`;
+                const billingPeriod = currentBilling === 'annually' ? 'Annually' : 'Monthly';
+                
+                // Plain text version
+                const emailMessageText = `Dear ${name},\n\nThank you for your interest in our ${selectedPlan} Plan with ${billingPeriod} billing.\n\nYour secure payment link is ready. Click the link below to complete your subscription:\n\n${paymentLink}\n\nPlan Details:\n- Plan: ${selectedPlan}\n- Billing Period: ${billingPeriod}\n- Price: €${priceText}/month\n\nThe payment link will be valid for 24 hours.\n\nIf you have any questions, please contact us at relations@opessocius.support.\n\nBest regards,\nOpessocius Team`;
+                
+                // HTML version with clickable link
+                const emailMessageHtml = `
+                    <p>Dear ${name},</p>
+                    <p>Thank you for your interest in our <strong>${selectedPlan} Plan</strong> with <strong>${billingPeriod} billing</strong>.</p>
+                    <p>Your secure payment link is ready. Click the button below to complete your subscription:</p>
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <a href="${paymentLink}" style="display: inline-block; padding: 1rem 2rem; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1rem; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Complete Payment</a>
+                    </div>
+                    <p style="margin-top: 1.5rem;">Or copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all; color: #2563eb; font-size: 14px; background-color: #f3f4f6; padding: 0.75rem; border-radius: 6px; margin: 1rem 0;">${paymentLink}</p>
+                    <p><strong>Plan Details:</strong></p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>Plan: ${selectedPlan}</li>
+                        <li>Billing Period: ${billingPeriod}</li>
+                        <li>Price: €${priceText}/month</li>
+                    </ul>
+                    <p style="color: #6b7280; font-size: 14px;">The payment link will be valid for 24 hours.</p>
+                    <p>If you have any questions, please contact us at <a href="mailto:relations@opessocius.support" style="color: #2563eb; text-decoration: none;">relations@opessocius.support</a>.</p>
+                `;
+                
+                // Send email
+                const response = await fetch('http://localhost:3000/api/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        recipients: [email],
+                        subject: emailSubject,
+                        message: emailMessageText,
+                        html: emailMessageHtml,
+                        fromEmail: 'relations@opessocius.support',
+                        fromName: 'Opessocius'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    if (paymentLinkFormContainer) {
+                        paymentLinkFormContainer.style.display = 'none';
+                    }
+                    if (paymentLinkSuccessContainer) {
+                        paymentLinkSuccessContainer.style.display = 'block';
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to send email');
+                }
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Failed to send email. Please try again later or contact support.');
+                
+                // Re-enable submit button
+                if (paymentLinkSubmitBtn) {
+                    paymentLinkSubmitBtn.disabled = false;
+                    paymentLinkSubmitBtn.textContent = 'Request Payment Link';
+                }
+            }
+        });
+    }
+    
     // Crude Oil Tabs functionality - scroll to sections
     const crudeTabs = document.querySelectorAll('.crude-tab');
     

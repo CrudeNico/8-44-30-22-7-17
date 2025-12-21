@@ -31,7 +31,7 @@ app.get('/api/health', (req, res) => {
 // Email sending endpoint
 app.post('/api/send-email', upload.array('attachments', 10), async (req, res) => {
     try {
-        let { recipients, subject, message, fromEmail, fromName } = req.body;
+        let { recipients, subject, message, html, fromEmail, fromName } = req.body;
 
         // Parse recipients if it's a JSON string (from FormData)
         if (typeof recipients === 'string') {
@@ -59,10 +59,10 @@ app.post('/api/send-email', upload.array('attachments', 10), async (req, res) =>
         // Filter out empty emails
         recipients = recipients.filter(r => r && r.trim() !== '');
 
-        if (!subject || !message) {
+        if (!subject || (!message && !html)) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Subject and message are required' 
+                error: 'Subject and message (or html) are required' 
             });
         }
 
@@ -77,7 +77,8 @@ app.post('/api/send-email', upload.array('attachments', 10), async (req, res) =>
         const result = await sendEmail({
             to: recipients,
             subject: subject,
-            text: message, // Plain text version - template will wrap this
+            text: message, // Plain text version
+            html: html, // HTML version (optional)
             attachments: attachments,
             fromEmail: fromEmail,
             fromName: fromName
