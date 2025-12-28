@@ -7489,18 +7489,54 @@ table tbody tr:last-child td {
 }
 
 @media (max-width: 768px) {
-    .portfolio-option-selector {
-        flex-direction: column;
-        align-items: stretch;
+    .portfolio-selection-section {
+        padding: 3rem 0 1.5rem;
     }
     
-    .portfolio-option-card {
-        max-width: 100%;
-        min-width: 100%;
+    .portfolio-selection-content {
+        padding: 0 1.5rem;
     }
     
     .portfolio-selection-title {
-        font-size: 2rem;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .portfolio-selection-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .portfolio-option-selector {
+        flex-direction: row;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+    
+    .portfolio-option-card {
+        flex: 1;
+        min-width: 0;
+        padding: 1rem 0.75rem;
+    }
+    
+    .portfolio-option-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 0.75rem;
+    }
+    
+    .portfolio-option-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .portfolio-option-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .portfolio-option-description {
+        font-size: 0.75rem;
     }
     
     .result-header {
@@ -7701,24 +7737,45 @@ table tbody tr:last-child td {
 
 @media (max-width: 768px) {
     .calculator-cta-section {
-        padding: 4rem 0;
+        padding: 2rem 0;
     }
     
     .calculator-cta-content {
         padding: 0 1.5rem;
-        gap: 2rem;
+        gap: 0;
+        grid-template-columns: 1fr;
+    }
+    
+    .calculator-cta-right {
+        display: none;
+    }
+    
+    .calculator-cta-left {
+        grid-column: 1 / -1;
     }
     
     .calculator-cta-card {
-        padding: 2rem;
+        padding: 1.5rem;
     }
     
     .cta-title {
-        font-size: 1.75rem;
+        font-size: 1.1rem;
+        line-height: 1.3;
     }
     
     .cta-description {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+    
+    .cta-button {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .cta-button svg {
+        width: 18px;
+        height: 18px;
     }
 }
 
@@ -7809,21 +7866,30 @@ table tbody tr:last-child td {
 
 @media (max-width: 768px) {
     .portfolio-faq-section {
-        padding: 4rem 0;
+        padding: 2rem 0;
+    }
+    
+    .portfolio-faq-section .section-container {
+        padding: 0 1.5rem;
     }
     
     .portfolio-faq-heading {
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
     }
     
     .portfolio-faq-section .accordion-header {
-        font-size: 1.1rem;
-        padding: 1.25rem 0;
+        font-size: 0.9rem;
+        padding: 1rem 0;
+    }
+    
+    .portfolio-faq-section .accordion-plus {
+        font-size: 1.2rem;
     }
     
     .portfolio-faq-section .accordion-content p {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.6;
     }
 }
 
@@ -7967,23 +8033,88 @@ table tbody tr:last-child td {
 @media (max-width: 768px) {
     .financial-advice-section,
     .initiate-investment-section {
-        padding: 3rem 0;
+        padding: 2rem 0;
+    }
+    
+    .financial-advice-content,
+    .initiate-investment-content {
+        padding: 0 1.5rem;
     }
     
     .financial-advice-title,
     .initiate-investment-title {
-        font-size: 2rem;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
     }
     
     .financial-advice-description,
     .initiate-investment-description {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
     }
     
     .financial-advice-button,
     .initiate-investment-button {
-        font-size: 1rem;
-        padding: 0.875rem 1.5rem;
+        font-size: 0.85rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .financial-advice-button svg,
+    .initiate-investment-button svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .invest-people-section {
+        padding: 2rem 0;
+    }
+    
+    .invest-people-grid {
+        padding: 0 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .invest-people-heading {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 0 1.5rem;
+    }
+    
+    .invest-people-title {
+        font-size: 1.1rem;
+    }
+    
+    .invest-people-text {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+    
+    .blog-highlights-section {
+        padding: 2rem 0 3rem;
+    }
+    
+    .blog-grid {
+        padding: 0 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .blog-card {
+        padding: 1rem;
+    }
+    
+    .blog-title {
+        font-size: 0.95rem;
+    }
+    
+    .blog-category {
+        font-size: 0.7rem;
+    }
+    
+    .blog-date {
+        font-size: 0.75rem;
     }
 }
 
