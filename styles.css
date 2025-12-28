@@ -233,6 +233,17 @@ body {
     margin-bottom: 2rem;
 }
 
+/* Desktop: Show desktop versions, hide mobile versions */
+.hero-title-desktop,
+.hero-description-desktop {
+    display: block;
+}
+
+.hero-title-mobile,
+.hero-description-mobile {
+    display: none;
+}
+
 .hero-description {
     font-size: 1.15rem;
     font-weight: 300;
@@ -10973,6 +10984,79 @@ body.dashboard-active {
     
     .mobile-nav {
         display: block;
+    }
+    
+    /* ============================================ */
+    /* MOBILE-ONLY HERO SECTION STYLES */
+    /* ============================================ */
+    /* Hero section mobile adjustments */
+    .hero {
+        padding: 6rem 0 3rem 0;
+    }
+    
+    .hero-container {
+        padding: 0 1.5rem;
+    }
+    
+    /* Show mobile versions, hide desktop versions on mobile */
+    .hero-title-desktop,
+    .hero-description-desktop {
+        display: none;
+    }
+    
+    .hero-title-mobile,
+    .hero-description-mobile {
+        display: block;
+    }
+    
+    /* Mobile-specific title styling */
+    .hero-title {
+        font-size: 2rem;
+        line-height: 1.3;
+        margin-bottom: 2.5rem;
+    }
+    
+    /* Mobile-specific description styling */
+    .hero-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 3.5rem;
+        max-width: 100%;
+    }
+    
+    /* Mobile stats - side by side layout (not stacked) */
+    .hero-stats {
+        margin: 3.5rem auto 0;
+        padding: 0 1.5rem;
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+    }
+    
+    .stat-item {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+    
+    /* Add more space between sections on mobile */
+    .content-section {
+        padding: 4rem 0;
+    }
+    
+    .hero-media {
+        margin-top: 12rem;
     }
 }
 
