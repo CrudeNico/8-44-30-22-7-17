@@ -1570,6 +1570,60 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Mobile styles for achievements section */
+@media (max-width: 768px) {
+    .achievements-section {
+        padding: 4rem 0;
+        margin: 2rem 0;
+    }
+    
+    .achievements-header {
+        margin-bottom: 2rem;
+        padding: 0 1.5rem;
+    }
+    
+    .achievements-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .achievements-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        padding: 0 0.5rem;
+        max-width: 100%;
+    }
+    
+    .achievement-card {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .achievement-image {
+        height: 140px;
+    }
+    
+    .achievement-content {
+        padding: 1rem;
+    }
+    
+    .achievement-title {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .achievement-location {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+}
+
 /* Jobs Section */
 .jobs-section {
     padding: 6rem 0;
