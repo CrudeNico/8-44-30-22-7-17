@@ -10795,3 +10795,184 @@ body.dashboard-active {
     }
 }
 
+/* ============================================ */
+/* MOBILE HAMBURGER MENU - Mobile Only */
+/* ============================================ */
+
+/* Hamburger button - Hidden on desktop, visible on mobile */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    position: relative;
+}
+
+.mobile-menu-toggle span {
+    width: 100%;
+    height: 2px;
+    background-color: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(3px, 3px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    transform: rotate(-45deg) translate(3px, -3px);
+}
+
+/* Mobile navigation overlay */
+.mobile-nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+}
+
+/* Mobile navigation menu */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    max-width: 85%;
+    height: 100vh;
+    background: linear-gradient(to bottom, 
+        rgba(13, 28, 57, 0.98) 0%,
+        rgb(13, 28, 57) 100%);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    padding: 5rem 0 2rem 0;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-nav.active {
+    right: 0;
+}
+
+.mobile-nav-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-dropdown-toggle {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 300;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-dropdown-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-dropdown-toggle::after {
+    content: '';
+}
+
+.mobile-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.mobile-dropdown.active {
+    max-height: 500px;
+}
+
+.mobile-dropdown-item {
+    display: block;
+    padding: 1rem 1.5rem 1rem 2.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 300;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mobile-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-link {
+    display: block;
+    padding: 1.25rem 1.5rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 300;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile styles - Show hamburger, hide desktop nav */
+@media (max-width: 768px) {
+    /* Adjust header padding on mobile */
+    .header-container {
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Make logo smaller on mobile */
+    .logo h1 {
+        font-size: 1.25rem;
+    }
+    
+    /* Show hamburger button */
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
+    /* Hide desktop navigation */
+    .navigation {
+        display: none;
+    }
+    
+    /* Show mobile navigation elements */
+    .mobile-nav-overlay {
+        display: block;
+    }
+    
+    .mobile-nav {
+        display: block;
+    }
+}
+

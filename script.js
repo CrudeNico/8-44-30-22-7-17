@@ -2924,4 +2924,126 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// ============================================ */
+// MOBILE HAMBURGER MENU FUNCTIONALITY
+// ============================================ */
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+    const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
+    const body = document.body;
+
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+        if (mobileMenuToggle && mobileNav && mobileNavOverlay) {
+            const isActive = mobileNav.classList.contains('active');
+            
+            if (isActive) {
+                // Close menu
+                mobileNav.classList.remove('active');
+                mobileNavOverlay.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+                body.style.overflow = '';
+            } else {
+                // Open menu
+                mobileNav.classList.add('active');
+                mobileNavOverlay.classList.add('active');
+                mobileMenuToggle.classList.add('active');
+                body.style.overflow = 'hidden';
+            }
+        }
+    }
+
+    // Close mobile menu
+    function closeMobileMenu() {
+        if (mobileNav && mobileNavOverlay && mobileMenuToggle) {
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.classList.remove('active');
+            mobileMenuToggle.classList.remove('active');
+            body.style.overflow = '';
+            
+            // Close all dropdowns
+            mobileDropdownToggles.forEach(toggle => {
+                toggle.classList.remove('active');
+                const dropdown = toggle.nextElementSibling;
+                if (dropdown && dropdown.classList.contains('mobile-dropdown')) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    // Toggle dropdown menus
+    function toggleDropdown(toggle) {
+        const dropdown = toggle.nextElementSibling;
+        if (dropdown && dropdown.classList.contains('mobile-dropdown')) {
+            const isActive = toggle.classList.contains('active');
+            
+            // Close all other dropdowns
+            mobileDropdownToggles.forEach(otherToggle => {
+                if (otherToggle !== toggle) {
+                    otherToggle.classList.remove('active');
+                    const otherDropdown = otherToggle.nextElementSibling;
+                    if (otherDropdown && otherDropdown.classList.contains('mobile-dropdown')) {
+                        otherDropdown.classList.remove('active');
+                    }
+                }
+            });
+            
+            // Toggle current dropdown
+            if (isActive) {
+                toggle.classList.remove('active');
+                dropdown.classList.remove('active');
+            } else {
+                toggle.classList.add('active');
+                dropdown.classList.add('active');
+            }
+        }
+    }
+
+    // Event listeners
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+    }
+
+    if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Handle dropdown toggles
+    mobileDropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleDropdown(toggle);
+        });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (mobileNav && mobileNav.classList.contains('active')) {
+            if (!mobileNav.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                closeMobileMenu();
+            }
+        }
+    });
+
+    // Close menu on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNav && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+
+    // Close menu when window is resized to desktop size
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileNav && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+});
+
 
