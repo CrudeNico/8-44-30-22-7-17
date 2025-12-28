@@ -11001,6 +11001,7 @@ body.dashboard-active {
     
     .hero-container {
         padding: 0 1.5rem;
+        margin-top: -15rem; /* Move text content up without affecting bottom padding */
     }
     
     /* Show mobile versions, hide desktop versions on mobile */
@@ -11031,7 +11032,7 @@ body.dashboard-active {
     
     /* Mobile stats - side by side layout (not stacked) */
     .hero-stats {
-        margin: 3.5rem auto 0;
+        margin: 3.5rem auto 15rem;
         padding: 0 1.5rem;
         display: flex;
         flex-direction: row;
