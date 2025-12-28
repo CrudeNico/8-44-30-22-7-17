@@ -10991,7 +10991,12 @@ body.dashboard-active {
     /* ============================================ */
     /* Hero section mobile adjustments */
     .hero {
-        padding: 6rem 0 3rem 0;
+        padding: 22rem 0 3rem 0; /* Increased top padding to show more background image */
+    }
+    
+    /* Extend background image to full height on mobile */
+    .hero::before {
+        bottom: 0; /* Full height background on mobile */
     }
     
     .hero-container {
@@ -11055,8 +11060,16 @@ body.dashboard-active {
         padding: 4rem 0;
     }
     
+    /* Completely remove video section on mobile - no space taken */
     .hero-media {
-        margin-top: 12rem;
+        display: none; /* Hide video on mobile/phone view */
+        margin: 0; /* Remove all margins */
+        padding: 0; /* Remove all padding */
+        height: 0; /* Remove height */
+    }
+    
+    #hero-video {
+        display: none; /* Hide video element on mobile/phone view */
     }
 }
 
