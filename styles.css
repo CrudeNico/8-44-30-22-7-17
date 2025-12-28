@@ -867,6 +867,65 @@ body {
     margin-bottom: 0.75rem;
 }
 
+/* Mobile styles for footer - make everything super small */
+@media (max-width: 768px) {
+    .footer {
+        padding: 2rem 0;
+    }
+    
+    .footer-container {
+        padding: 0 1rem;
+        gap: 1rem;
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .footer-certificates {
+        grid-column: 1 / -1;
+        margin-top: 0.5rem;
+    }
+    
+    .footer-certificates .certificate-row {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+    
+    .footer-column h3 {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-column p,
+    .footer-column a {
+        font-size: 0.65rem;
+        line-height: 1.4;
+        margin-bottom: 0.35rem;
+    }
+    
+    .certificate-item {
+        flex: 0 0 auto;
+        min-width: 50px;
+        width: 50px;
+        height: 40px;
+    }
+    
+    .certificate-item img {
+        max-width: 50px;
+        max-height: 40px;
+    }
+    
+    .footer-disclaimer {
+        margin: 1.5rem auto 0;
+        padding: 0 1rem;
+    }
+    
+    .footer-disclaimer p {
+        font-size: 0.5rem;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+    }
+}
+
 /* Scroll fade-in animations */
 .fade-in-section {
     opacity: 0;
