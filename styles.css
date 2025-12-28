@@ -738,6 +738,39 @@ body {
     flex: 1;
 }
 
+/* Mobile styles for services showcase */
+@media (max-width: 768px) {
+    .services-showcase {
+        padding: 4rem 0;
+    }
+    
+    .services-track {
+        gap: 1rem;
+    }
+    
+    .service-card {
+        min-width: 260px;
+    }
+    
+    .service-card__image {
+        height: 160px;
+    }
+    
+    .service-card__body {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+    
+    .service-card__body h3 {
+        font-size: 1rem;
+    }
+    
+    .service-card__body p {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}
+
 .services-controls {
     position: absolute;
     right: 0;
