@@ -5826,6 +5826,209 @@ table tbody tr:last-child td {
     margin: 0;
 }
 
+/* Risk Management Mobile Styles */
+@media (max-width: 768px) {
+    .risk-overview-section {
+        padding: 2rem 0; /* Reduced padding */
+    }
+    
+    .risk-overview-wrapper {
+        padding: 0 1.5rem; /* Adjusted padding */
+        gap: 2rem; /* Reduced gap */
+    }
+    
+    .risk-overview-header h2 {
+        font-size: 1.5rem; /* Smaller heading */
+        margin-bottom: 0.75rem; /* Reduced margin */
+    }
+    
+    .risk-disclaimer {
+        font-size: 0.75rem; /* Smaller disclaimer */
+        line-height: 1.5; /* Adjusted line height */
+    }
+    
+    .risk-content-block {
+        gap: 0.75rem; /* Reduced gap */
+    }
+    
+    .risk-content-block h3 {
+        font-size: 1.1rem; /* Smaller title */
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .risk-content-block p {
+        font-size: 0.85rem; /* Smaller text */
+        line-height: 1.5; /* Adjusted line height */
+    }
+    
+    .risk-benefits-list {
+        gap: 0.5rem; /* Reduced gap */
+    }
+    
+    .risk-benefits-list li {
+        font-size: 0.85rem; /* Smaller list items */
+        line-height: 1.5; /* Adjusted line height */
+        padding-left: 1rem; /* Reduced padding */
+    }
+    
+    .risk-benefits-list li::before {
+        font-size: 1rem; /* Smaller bullet */
+    }
+    
+    .risk-types-list {
+        gap: 1rem; /* Reduced gap */
+    }
+    
+    .risk-type-item {
+        gap: 0.5rem; /* Reduced gap */
+    }
+    
+    .risk-type-item h4 {
+        font-size: 0.95rem; /* Smaller heading */
+    }
+    
+    .risk-type-item p {
+        font-size: 0.8rem; /* Smaller text */
+        line-height: 1.5; /* Adjusted line height */
+    }
+    
+    .risk-overview-right {
+        gap: 1.5rem; /* Reduced gap */
+    }
+    
+    .risk-details-block {
+        gap: 0.75rem; /* Reduced gap */
+    }
+    
+    .risk-details-block h3 {
+        font-size: 1.1rem; /* Smaller title */
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .risk-note {
+        font-size: 0.75rem; /* Smaller note */
+    }
+    
+    .risk-metrics-grid {
+        gap: 0.75rem; /* Reduced gap */
+    }
+    
+    .risk-metric-item {
+        padding: 0.75rem; /* Reduced padding */
+    }
+    
+    .risk-metric-label {
+        font-size: 0.8rem; /* Smaller label */
+    }
+    
+    .risk-metric-value {
+        font-size: 1.2rem; /* Smaller value */
+    }
+    
+    .risk-metric-date {
+        font-size: 0.75rem; /* Smaller date */
+    }
+    
+    .risk-managers {
+        gap: 1rem; /* Reduced gap */
+    }
+    
+    .risk-manager-item {
+        gap: 0.75rem; /* Reduced gap */
+    }
+    
+    .risk-manager-photo {
+        width: 50px; /* Smaller photo */
+        height: 50px; /* Smaller photo */
+    }
+    
+    .risk-manager-info h4 {
+        font-size: 0.9rem; /* Smaller name */
+    }
+    
+    .risk-manager-info p {
+        font-size: 0.8rem; /* Smaller text */
+    }
+    
+    .risk-key-info-section {
+        padding: 2rem 0; /* Reduced padding */
+    }
+    
+    .risk-key-info-title {
+        font-size: 1.25rem; /* Smaller title */
+        margin-bottom: 1.5rem; /* Reduced margin */
+        padding: 0 1.5rem; /* Added padding */
+    }
+    
+    .risk-key-info-grid {
+        padding: 0 1.5rem; /* Added padding */
+        gap: 1rem; /* Reduced gap */
+    }
+    
+    .risk-key-info-item {
+        padding: 1rem; /* Reduced padding */
+        gap: 0.5rem; /* Reduced gap */
+    }
+    
+    .risk-key-info-label {
+        font-size: 0.8rem; /* Smaller label */
+    }
+    
+    .risk-key-info-value {
+        font-size: 0.95rem; /* Smaller value */
+    }
+    
+    .risk-faq-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .risk-faq-container {
+        padding: 0 1.5rem; /* Adjusted padding */
+    }
+    
+    .risk-faq-heading {
+        font-size: 1.5rem; /* Smaller heading */
+        margin-bottom: 2rem; /* Reduced margin */
+    }
+    
+    .risk-faq-section .accordion-header {
+        font-size: 0.9rem; /* Smaller header */
+        padding: 1rem 0; /* Reduced padding */
+    }
+    
+    .risk-faq-section .accordion-plus {
+        font-size: 1.2rem; /* Smaller plus */
+        margin-left: 0.75rem; /* Reduced margin */
+    }
+    
+    .risk-faq-section .accordion-item.active .accordion-content {
+        padding: 0 0 1rem 0; /* Reduced padding */
+    }
+    
+    .risk-faq-section .accordion-content p {
+        font-size: 0.85rem; /* Smaller content */
+        line-height: 1.5; /* Adjusted line height */
+    }
+    
+    .learn-more-cta-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .learn-more-cta-content {
+        gap: 1.5rem; /* Reduced gap */
+        padding: 0 1.5rem; /* Added padding */
+    }
+    
+    .learn-more-title {
+        font-size: 1.25rem; /* Smaller title */
+    }
+    
+    .learn-more-button {
+        font-size: 0.9rem; /* Smaller button */
+        padding: 0.6rem 1.25rem; /* Adjusted padding */
+    }
+}
+
 .learn-approach-section {
     padding: 6rem 0;
     width: 100%;
