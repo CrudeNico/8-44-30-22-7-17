@@ -118,14 +118,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Tab click handlers
+        // Tab click handlers - works on both desktop and mobile
         featureTabs.forEach((tab, index) => {
-            tab.addEventListener('click', function() {
-                switchTab(index);
-                // Reset auto-rotate timer
+            function handleTabSwitch(e) {
+                // Stop auto-rotate when user interacts
                 clearInterval(autoRotateInterval);
-                startAutoRotate();
-            });
+                
+                // Switch to the selected tab
+                switchTab(index);
+                
+                // Restart auto-rotate after a delay
+                setTimeout(() => {
+                    startAutoRotate();
+                }, 5000);
+            }
+            
+            // Use click event (works on both desktop and mobile touch devices)
+            tab.addEventListener('click', handleTabSwitch);
+            
+            // Also handle touch events for better mobile responsiveness
+            let touchStartTime = 0;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            
+            tab.addEventListener('touchstart', function(e) {
+                const touch = e.touches[0];
+                touchStartTime = Date.now();
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+            }, { passive: true });
+            
+            tab.addEventListener('touchend', function(e) {
+                const touch = e.changedTouches[0];
+                const touchEndTime = Date.now();
+                const touchEndX = touch.clientX;
+                const touchEndY = touch.clientY;
+                const deltaTime = touchEndTime - touchStartTime;
+                const deltaX = Math.abs(touchEndX - touchStartX);
+                const deltaY = Math.abs(touchEndY - touchStartY);
+                
+                // If it's a quick tap (not a scroll), trigger the switch
+                if (deltaTime < 300 && deltaX < 10 && deltaY < 10) {
+                    e.preventDefault();
+                    handleTabSwitch(e);
+                }
+            }, { passive: false });
         });
         
         // Auto-rotate function

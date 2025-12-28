@@ -541,6 +541,146 @@ body {
     display: block;
 }
 
+/* Mobile styles for feature tabs and panels */
+@media (max-width: 768px) {
+    .feature-tabs {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-tab {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+        z-index: 1;
+        position: relative;
+    }
+    
+    /* First 3 tabs: each takes 2 columns (3 tabs × 2 = 6 columns) */
+    .feature-tab:nth-child(1),
+    .feature-tab:nth-child(2),
+    .feature-tab:nth-child(3) {
+        grid-column: span 2;
+    }
+    
+    /* Last 2 tabs: each takes 3 columns, centered in second row */
+    .feature-tab:nth-child(4) {
+        grid-column: 1 / span 3;
+    }
+    
+    .feature-tab:nth-child(5) {
+        grid-column: 4 / span 3;
+    }
+    
+    .feature-panels {
+        min-height: 400px;
+        position: relative;
+        z-index: 0;
+    }
+    
+    .feature-panel {
+        flex-direction: column;
+        pointer-events: auto;
+        position: relative;
+    }
+    
+    .feature-panel__content {
+        max-width: 100%;
+        padding: 1.5rem;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        pointer-events: auto;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .feature-panel__content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-panel__content li {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        padding-left: 1.2rem;
+    }
+    
+    .feature-panel__content ul {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Hide buttons in mobile view */
+    .feature-link {
+        display: none;
+    }
+    
+    .feature-panel__media {
+        max-width: 100%;
+        height: 250px;
+        border-radius: 0 0 12px 12px;
+        pointer-events: none;
+    }
+    
+    .feature-panel__media img {
+        pointer-events: none;
+    }
+    
+    /* Change tab titles in mobile view */
+    .feature-tab:nth-child(1) {
+        text-indent: -9999px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .feature-tab:nth-child(1)::after {
+        content: "Calculator";
+        text-indent: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.65rem;
+        white-space: nowrap;
+        pointer-events: none;
+        font-weight: 300;
+        letter-spacing: 0.02em;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .feature-tab:nth-child(2) {
+        text-indent: -9999px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .feature-tab:nth-child(2)::after {
+        content: "Strategy";
+        text-indent: 0;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.65rem;
+        white-space: nowrap;
+        pointer-events: none;
+        font-weight: 300;
+        letter-spacing: 0.02em;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Portfolio Models, Risk Management, and Technology & Execution stay the same */
+}
+
 .header.fade {
     opacity: 0.7;
 }
