@@ -3789,6 +3789,657 @@ table tbody tr:last-child td {
     }
 }
 
+/* Crude Oil Fundamentals Mobile Styles */
+@media (max-width: 768px) {
+    /* Main section adjustments */
+    .risk-guide-section {
+        padding: 3rem 0 2rem !important; /* Reduced padding */
+        min-height: auto !important; /* Remove min-height */
+    }
+    
+    .risk-guide-header {
+        margin-bottom: 2rem !important; /* Reduced margin */
+        padding: 0 1.5rem !important; /* Equal padding on both sides */
+    }
+    
+    .risk-guide-title {
+        font-size: 1.4rem !important; /* Slightly smaller title */
+        margin-bottom: 0.75rem !important; /* Reduced margin */
+    }
+    
+    .risk-guide-subtitle {
+        font-size: 0.95rem !important; /* Slightly smaller subtitle */
+        margin-bottom: 1rem !important; /* Reduced margin */
+    }
+    
+    .risk-guide-content {
+        padding: 0 1.5rem !important; /* Equal padding on both sides */
+    }
+    
+    .section-container {
+        padding: 0 1.5rem !important; /* Ensure equal padding on both sides */
+        max-width: 100% !important; /* Ensure no overflow */
+        box-sizing: border-box !important; /* Include padding in width */
+        overflow-x: hidden !important; /* Prevent horizontal overflow */
+    }
+    
+    /* Ensure all content respects padding */
+    .risk-guide-content,
+    .crude-oil-header-section,
+    .crude-oil-main-content,
+    .crude-oil-content-sections,
+    .content-section,
+    .tab-panel-section,
+    .background-data-container,
+    .documents-container {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important; /* Prevent horizontal overflow */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Prevent body/html overflow */
+    body,
+    html {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    .main-content {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    .crude-oil-header-section {
+        margin-top: 1.5rem !important; /* Reduced margin */
+        gap: 1.5rem !important; /* Reduced gap */
+    }
+    
+    .crude-oil-main-content {
+        gap: 1rem !important; /* Reduced gap */
+    }
+    
+    .crude-oil-info-row {
+        gap: 0.75rem !important; /* Reduced gap */
+        padding: 0.75rem 0 !important; /* Reduced padding */
+        flex-direction: column !important; /* Stack items vertically */
+    }
+    
+    .info-item {
+        flex-direction: column !important; /* Stack label and value */
+        align-items: flex-start !important;
+        gap: 0.25rem !important; /* Reduced gap */
+    }
+    
+    .info-label {
+        font-size: 0.7rem !important; /* Smaller label */
+    }
+    
+    .info-value {
+        font-size: 0.8rem !important; /* Smaller value */
+    }
+    
+    .crude-oil-tabs {
+        overflow-x: auto !important; /* Allow horizontal scrolling */
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .crude-tab {
+        padding: 0.5rem 0.65rem !important; /* Even smaller padding */
+        font-size: 0.7rem !important; /* Even smaller font */
+        white-space: nowrap !important; /* Keep text on one line */
+    }
+    
+    .content-section {
+        margin-bottom: 1.5rem !important; /* Reduced margin */
+    }
+    
+    .tab-panel-title {
+        font-size: 1.15rem !important; /* Smaller title */
+        margin-bottom: 1.25rem !important; /* Reduced margin */
+    }
+    
+    .tab-panel-section {
+        margin-bottom: 1rem !important; /* Reduced margin */
+    }
+    
+    /* Overview section - put widget above text on mobile */
+    #overview-section .tab-panel-section:first-child {
+        display: flex !important;
+        flex-direction: column !important; /* Stack content vertically */
+        gap: 0 !important; /* NO gap - text directly below widget */
+        align-items: stretch !important;
+    }
+    
+    /* Override inline gap style */
+    #overview-section .tab-panel-section:first-child[style*="gap"] {
+        gap: 0 !important;
+    }
+    
+    /* Put widget first (above text) - target the div containing tradingview widget */
+    #overview-section .tab-panel-section:first-child > div[style*="flex: 0 0 350px"],
+    #overview-section .tab-panel-section:first-child > div:last-child {
+        order: -1 !important; /* Move widget to top */
+        flex: 1 1 100% !important; /* Full width for widget */
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important; /* Override inline flex: 0 0 350px */
+    }
+    
+    /* Remove margin from TradingView widget container in overview */
+    #overview-section .tab-panel-section:first-child > div:last-child .tradingview-widget-container {
+        margin: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Put text below widget - target the div containing text */
+    #overview-section .tab-panel-section:first-child > div[style*="flex: 1"],
+    #overview-section .tab-panel-section:first-child > div:first-child {
+        order: 1 !important; /* Move text below widget */
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+        padding-top: 0 !important;
+    }
+    
+    /* Reduce top padding of Overview text paragraph */
+    #overview-section .tab-panel-section:first-child > div:first-child p.tab-section-text,
+    #overview-section .tab-panel-section:first-child p.tab-section-text {
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+        padding-top: 0 !important;
+    }
+    
+    .tab-section-text {
+        font-size: 0.8rem !important; /* Smaller text */
+        line-height: 1.6 !important; /* Adjusted line height */
+        word-wrap: break-word !important; /* Break long words */
+        overflow-wrap: break-word !important; /* Break long words */
+        max-width: 100% !important; /* Prevent overflow */
+        box-sizing: border-box !important;
+    }
+    
+    /* Ensure all text elements respect width */
+    p, span, div, h1, h2, h3, h4, h5, h6 {
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    .tab-section-heading {
+        font-size: 0.95rem !important; /* Smaller heading */
+        margin-bottom: 0.75rem !important; /* Reduced margin */
+    }
+    
+    /* Hide "Risk Profile" heading in mobile view */
+    #overview-section .tab-section-heading {
+        display: none !important; /* Hide the Risk Profile title */
+    }
+    
+    /* Reduce padding/margin before Fundamentals title */
+    #fundamentals-section {
+        margin-top: 0.5rem !important; /* Reduced margin */
+        padding-top: 0 !important;
+    }
+    
+    #fundamentals-section .tab-panel-title {
+        margin-bottom: 0.75rem !important; /* Reduced margin below Fundamentals title */
+    }
+    
+    /* Risk Profile Section */
+    .risk-profile-container {
+        margin-top: 1.5rem !important; /* Reduced margin */
+        padding: 0.85rem !important; /* Reduced padding */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    .risk-profile-header {
+        gap: 0.75rem !important; /* Reduced gap */
+        margin-bottom: 0.85rem !important; /* Reduced margin */
+        flex-direction: column !important; /* Stack vertically */
+        align-items: flex-start !important;
+    }
+    
+    .risk-profile-label {
+        font-size: 0.85rem !important; /* Smaller label */
+    }
+    
+    .risk-indicator {
+        gap: 0.65rem !important; /* Reduced gap */
+        width: 100% !important; /* Full width */
+    }
+    
+    .risk-level {
+        font-size: 0.8rem !important; /* Smaller level */
+        min-width: 35px !important; /* Smaller min-width */
+    }
+    
+    .risk-bars {
+        gap: 0.2rem !important; /* Reduced gap */
+    }
+    
+    .risk-bar {
+        width: 5px !important; /* Smaller bar */
+        height: 25px !important; /* Smaller height */
+    }
+    
+    .risk-legend {
+        gap: 0.75rem !important; /* Reduced gap */
+        margin-bottom: 0.85rem !important; /* Reduced margin */
+        flex-direction: column !important; /* Stack vertically */
+    }
+    
+    .risk-legend span {
+        font-size: 0.7rem !important; /* Smaller text */
+    }
+    
+    .risk-description {
+        font-size: 0.75rem !important; /* Smaller description */
+        line-height: 1.6 !important; /* Adjusted line height */
+    }
+    
+    /* Quick Statistics */
+    .quick-statistics {
+        margin-bottom: 1.5rem !important; /* Reduced margin */
+    }
+    
+    .data-section-title {
+        font-size: 0.95rem !important; /* Smaller title */
+        margin-bottom: 0.85rem !important; /* Reduced margin */
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Two columns */
+        gap: 0.65rem !important; /* Reduced gap */
+    }
+    
+    .stat-card {
+        padding: 0.85rem !important; /* Reduced padding */
+        gap: 0.4rem !important; /* Reduced gap */
+    }
+    
+    .stat-label {
+        font-size: 0.7rem !important; /* Smaller label */
+    }
+    
+    .stat-value {
+        font-size: 1rem !important; /* Smaller value */
+    }
+    
+    .stat-date {
+        font-size: 0.65rem !important; /* Smaller date */
+    }
+    
+    /* Key Data Table */
+    .key-data {
+        margin-top: 1.25rem !important; /* Reduced margin */
+    }
+    
+    .key-data-table {
+        border-radius: 6px !important; /* Smaller border radius */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    .key-data-row {
+        grid-template-columns: 1fr !important; /* Single column */
+        padding: 0.65rem 0.85rem !important; /* Reduced padding */
+        gap: 0.4rem !important; /* Added gap */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        word-wrap: break-word !important;
+    }
+    
+    .key-data-label {
+        font-size: 0.75rem !important; /* Smaller label */
+    }
+    
+    .key-data-value {
+        font-size: 0.8rem !important; /* Smaller value */
+    }
+    
+    /* Analysis Section - stack content vertically */
+    #analysis-section .tab-panel-section > div {
+        flex-direction: column !important; /* Stack vertically */
+        gap: 0 !important; /* NO gap - text directly below widget */
+        align-items: stretch !important;
+    }
+    
+    /* Override inline gap style */
+    #analysis-section .tab-panel-section > div[style*="gap"] {
+        gap: 0 !important;
+    }
+    
+    /* Remove text justification in analysis section - override inline styles */
+    #analysis-section .tab-section-text,
+    #analysis-section p.tab-section-text,
+    #analysis-section .tab-panel-section p[style*="text-align: justify"] {
+        text-align: left !important; /* Remove justification */
+    }
+    
+    /* Widget container - first child */
+    #analysis-section .tab-panel-section > div > div:first-child {
+        flex: 1 1 100% !important; /* Full width */
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important; /* Override inline flex: 0 0 450px */
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+    }
+    
+    /* Remove margin from TradingView widget container in analysis */
+    #analysis-section .tab-panel-section > div > div:first-child .tradingview-widget-container {
+        margin: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Text container - last child */
+    #analysis-section .tab-panel-section > div > div:last-child {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+        padding-top: 0 !important;
+    }
+    
+    /* Reduce top padding of Analysis text paragraphs */
+    #analysis-section .tab-panel-section > div > div:last-child p.tab-section-text,
+    #analysis-section .tab-panel-section p.tab-section-text,
+    #analysis-section p[style*="margin-top"] {
+        margin: 0 !important; /* Remove all margins - override inline styles */
+        margin-top: 0 !important;
+        padding: 0 !important; /* Remove all padding */
+        padding-top: 0 !important;
+    }
+    
+    /* Specifically target the second paragraph in analysis section - small margin between paragraphs only */
+    #analysis-section .tab-panel-section p.tab-section-text + p.tab-section-text {
+        margin-top: 0.75rem !important; /* Small margin between paragraphs only */
+    }
+    
+    /* Documents Section */
+    .documents-container {
+        margin-top: 1rem !important; /* Reduced margin */
+        padding: 0 !important; /* Remove extra padding */
+    }
+    
+    .documents-category {
+        margin-bottom: 0.85rem !important; /* Reduced margin */
+    }
+    
+    .documents-category-title {
+        font-size: 0.95rem !important; /* Smaller title */
+        margin-bottom: 0.65rem !important; /* Reduced margin */
+    }
+    
+    .documents-list {
+        gap: 0.5rem !important; /* Reduced gap */
+    }
+    
+    .document-item {
+        display: flex !important; /* Change to flex row layout */
+        flex-direction: row !important; /* Horizontal layout */
+        align-items: center !important;
+        gap: 0.4rem !important; /* Smaller gap between elements */
+        padding: 0.75rem 0 !important; /* Reduced padding */
+        font-size: 0.75rem !important; /* Smaller font */
+        flex-wrap: wrap !important; /* Allow wrapping if needed */
+        grid-template-columns: none !important; /* Remove grid layout */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; /* Keep border */
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    .document-checkbox {
+        flex-shrink: 0 !important; /* Don't shrink checkbox */
+        margin-right: 0.5rem !important; /* Space after checkbox */
+    }
+    
+    .document-name {
+        font-size: 0.8rem !important; /* Smaller name */
+        margin-right: 0.4rem !important; /* Space after name */
+        white-space: nowrap !important; /* Keep name on one line */
+        flex-shrink: 1 !important; /* Allow shrinking if needed */
+        min-width: 0 !important;
+    }
+    
+    .document-date {
+        font-size: 0.65rem !important; /* Smaller date */
+        margin-right: 0.2rem !important; /* Space after date */
+        text-align: left !important; /* Left align */
+        min-width: auto !important; /* Remove min-width */
+        white-space: nowrap !important; /* Keep on one line */
+        flex-shrink: 0 !important;
+    }
+    
+    .document-lang {
+        font-size: 0.65rem !important; /* Smaller lang */
+        margin-right: 0.2rem !important; /* Space after lang */
+        text-align: left !important; /* Left align */
+        min-width: auto !important; /* Remove min-width */
+        white-space: nowrap !important; /* Keep on one line */
+        flex-shrink: 0 !important;
+    }
+    
+    .document-format {
+        font-size: 0.65rem !important; /* Smaller format */
+        margin-right: 0.4rem !important; /* Space after format */
+        text-align: left !important; /* Left align */
+        min-width: auto !important; /* Remove min-width */
+        white-space: nowrap !important; /* Keep on one line */
+        flex-shrink: 0 !important;
+    }
+    
+    .document-link {
+        margin-left: auto !important; /* Push link to the right */
+        flex-shrink: 0 !important; /* Don't shrink link */
+        min-width: auto !important; /* Remove min-width */
+        padding-left: 0.5rem !important; /* Add some space */
+    }
+    
+    /* Download button - ensure it fits */
+    .download-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .documents-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    /* TradingView widgets - make much smaller for mobile */
+    .tradingview-widget-container {
+        margin: 0 !important; /* Remove all margins */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important; /* Prevent overflow */
+        box-sizing: border-box !important;
+        padding: 0 !important;
+    }
+    
+    /* Mini symbol overview widget in Overview section */
+    #overview-section .tradingview-widget-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #overview-section .tradingview-widget-container__widget,
+    #overview-section .tradingview-widget-container iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 400px !important; /* Much taller height for mobile */
+        min-height: 400px !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Chart widget in Graph section */
+    #tv_cl_chart {
+        height: 300px !important; /* Much smaller height */
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+    
+    #trading-section .tradingview-widget-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #trading-section .tradingview-widget-container iframe,
+    #trading-section .tradingview-widget-container > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 300px !important; /* Much smaller height */
+        box-sizing: border-box !important;
+    }
+    
+    /* Technical analysis widget in Analysis section */
+    #analysis-section .tradingview-widget-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    #analysis-section .tradingview-widget-container__widget,
+    #analysis-section .tradingview-widget-container iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 500px !important; /* Much taller height for mobile */
+        min-height: 500px !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ensure all TradingView iframes are constrained */
+    .tradingview-widget-container iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Prevent specific elements from exceeding viewport width */
+    .tab-panel-section > div,
+    .tab-panel-section > div > div,
+    .background-data-container > div,
+    .quick-statistics,
+    .key-data,
+    .risk-profile-container,
+    .documents-container,
+    .documents-category,
+    .documents-list {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Ensure media elements don't overflow */
+    img, video, iframe, embed, object {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* Prevent text overflow */
+    .tab-section-text,
+    .risk-description,
+    .key-data-value,
+    .stat-label,
+    .stat-value,
+    .stat-date {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+    }
+    
+    /* Show more button */
+    .show-more-btn {
+        font-size: 0.8rem !important; /* Smaller button */
+        padding: 0.4rem 0 !important; /* Reduced padding */
+    }
+    
+    /* Override inline styles in overview section - more specific selectors */
+    #overview-section .tab-panel-section {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        align-items: flex-start !important;
+    }
+    
+    /* Target div with flex: 1 (text container) */
+    #overview-section .tab-panel-section > div[style*="flex: 1"],
+    #overview-section .tab-panel-section > div:first-child {
+        order: 1 !important;
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Target div with flex: 0 0 350px (widget container) */
+    #overview-section .tab-panel-section > div[style*="flex: 0 0 350px"],
+    #overview-section .tab-panel-section > div:last-child {
+        order: -1 !important;
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        margin-top: 0 !important;
+        min-width: 0 !important;
+    }
+    
+    /* Override inline styles in analysis section */
+    #analysis-section .tab-panel-section > div[style*="display: flex"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        align-items: flex-start !important;
+    }
+    
+    #analysis-section .tab-panel-section > div[style*="display: flex"] > div[style*="flex: 0 0 450px"] {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+    
+    #analysis-section .tab-panel-section > div[style*="display: flex"] > div[style*="flex: 1"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+}
+
 /* Profitability Section */
 .profitability-container {
     margin-top: 2rem;
@@ -7321,6 +7972,314 @@ table tbody tr:last-child td {
     
     .learn-hero-subtitle {
         font-size: 0.9rem;
+    }
+    
+    /* Learn Approach Section - Hide in mobile */
+    .learn-approach-section {
+        display: none; /* Hide entire section */
+    }
+    
+    /* Learn Offer Features Section */
+    .learn-offer-features-section {
+        padding: 2rem 0 0 0; /* Reduced padding */
+    }
+    
+    .offer-features-content {
+        padding: 0 1.5rem; /* Added padding */
+    }
+    
+    .offer-features-grid {
+        grid-template-columns: repeat(2, 1fr); /* Two columns - 2x2 grid */
+        gap: 0.75rem; /* Reduced gap */
+    }
+    
+    .offer-feature-card {
+        padding: 0.75rem; /* Reduced padding */
+    }
+    
+    .offer-feature-icon {
+        width: 28px; /* Smaller icon */
+        height: 28px;
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .offer-feature-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .offer-feature-header {
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .offer-feature-title {
+        font-size: 0.8rem; /* Smaller title */
+        margin-bottom: 0;
+    }
+    
+    .offer-feature-description {
+        font-size: 0.7rem; /* Smaller description */
+        line-height: 1.3; /* Adjusted line height */
+    }
+    
+    /* Hide question mark buttons in mobile */
+    .offer-feature-info-btn {
+        display: none; /* Hide question marks */
+    }
+    
+    /* Learn Features Section */
+    .learn-features-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .learn-features-section .section-container {
+        padding: 0 1.5rem; /* Adjusted padding */
+    }
+    
+    .learn-features-grid {
+        grid-template-columns: repeat(3, 1fr); /* Three columns */
+        gap: 0.75rem; /* Reduced gap */
+        margin-top: 2rem; /* Reduced margin */
+        perspective: none; /* Disable 3D effects on mobile */
+    }
+    
+    .learn-features-grid:hover .learn-feature-widget:not(:hover) {
+        transform: none; /* Disable hover scale effects */
+        opacity: 1;
+        filter: none;
+    }
+    
+    .learn-feature-widget {
+        padding: 0.75rem; /* Reduced padding */
+    }
+    
+    .learn-feature-widget:hover {
+        transform: none; /* Disable hover transform */
+    }
+    
+    .learn-feature-widget:hover .learn-feature-image-container {
+        height: 0; /* Keep image hidden on mobile */
+        opacity: 0;
+    }
+    
+    .learn-feature-title {
+        font-size: 0.75rem; /* Super small title */
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .learn-feature-list li {
+        font-size: 0.65rem; /* Super small list items */
+        line-height: 1.4; /* Adjusted line height */
+        margin-bottom: 0.25rem; /* Reduced margin */
+        padding-left: 0; /* Remove padding for bullet points */
+        list-style: none; /* Remove bullet points */
+    }
+    
+    .learn-feature-list li::before {
+        display: none; /* Hide bullet points */
+    }
+    
+    /* Learn Accordion Section */
+    .learn-accordion-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .learn-accordion-section .how-organized-content {
+        padding: 0 1.5rem; /* Adjusted padding */
+    }
+    
+    .learn-accordion-section .how-organized-heading {
+        font-size: 1.5rem; /* Smaller heading */
+        margin-bottom: 2rem; /* Reduced margin */
+    }
+    
+    .learn-accordion-section .accordion-header {
+        font-size: 0.9rem; /* Smaller header */
+        padding: 1rem 0; /* Reduced padding */
+    }
+    
+    .learn-accordion-section .accordion-plus {
+        font-size: 1.2rem; /* Smaller plus */
+    }
+    
+    .learn-accordion-section .accordion-item.active .accordion-content {
+        padding: 0 0 1rem 0; /* Reduced padding */
+    }
+    
+    .learn-accordion-section .accordion-content p {
+        font-size: 0.85rem; /* Smaller content */
+        line-height: 1.5; /* Adjusted line height */
+    }
+    
+    /* Learn Quote Section */
+    .learn-quote-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .learn-quote-section .section-container {
+        padding: 0 1.5rem; /* Adjusted padding */
+    }
+    
+    .quote-content {
+        grid-template-columns: 1fr; /* Single column */
+        gap: 2rem; /* Reduced gap */
+    }
+    
+    .quote-image {
+        order: 2; /* Move image below text */
+    }
+    
+    .quote-text {
+        order: 1; /* Move text above image */
+    }
+    
+    .quote-main {
+        font-size: 1.1rem; /* Smaller quote */
+        line-height: 1.6; /* Adjusted line height */
+    }
+    
+    .quote-author {
+        font-size: 0.85rem; /* Smaller author */
+    }
+    
+    /* Learn Content Section */
+    .learn-content-section {
+        padding: 2rem 0; /* Reduced padding */
+    }
+    
+    .learn-content-section .section-container {
+        padding: 0 1.5rem; /* Adjusted padding */
+    }
+    
+    .what-we-do-heading {
+        font-size: 1.25rem; /* Smaller heading */
+        margin-bottom: 1rem; /* Reduced margin */
+    }
+    
+    .what-we-do-intro {
+        font-size: 0.8rem; /* Smaller intro */
+        line-height: 1.5; /* Adjusted line height */
+        margin-bottom: 0.75rem; /* Reduced margin */
+    }
+    
+    .strategic-objectives {
+        gap: 0.5rem; /* Reduced gap */
+    }
+    
+    .strategic-objectives li {
+        font-size: 0.75rem; /* Smaller list items */
+        line-height: 1.5; /* Adjusted line height */
+        padding-left: 1.25rem; /* Adjusted padding */
+    }
+    
+    /* Learn Pricing Section */
+    .learn-pricing-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+    
+    .pricing-content {
+        padding: 0 1rem; /* Reduced side padding for better symmetry */
+    }
+    
+    .pricing-heading {
+        font-size: 1.25rem; /* Smaller heading */
+        margin-bottom: 1.5rem; /* Reduced margin */
+    }
+    
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr); /* Three columns */
+        gap: 0.5rem; /* Reduced gap */
+        perspective: none; /* Disable 3D effects on mobile */
+    }
+    
+    .pricing-grid:hover .pricing-card:not(:hover) {
+        transform: none; /* Disable hover scale effects */
+        opacity: 1;
+        filter: none;
+    }
+    
+    .pricing-card {
+        padding: 0.5rem; /* Even smaller padding */
+    }
+    
+    .pricing-card:hover {
+        transform: none; /* Disable hover transform */
+    }
+    
+    /* Make Best Deal badge much smaller */
+    .best-deal-badge {
+        top: 0.25rem; /* Smaller top position */
+        right: 0.25rem; /* Smaller right position */
+        padding: 0.15rem 0.35rem; /* Much smaller padding */
+        font-size: 0.5rem; /* Much smaller font */
+        border-radius: 8px; /* Smaller border radius */
+    }
+    
+    .pricing-card-header {
+        margin-bottom: 0.5rem; /* Reduced margin */
+    }
+    
+    .pricing-plan-name {
+        font-size: 0.7rem; /* Smaller plan name */
+        margin-bottom: 0.25rem; /* Reduced margin */
+    }
+    
+    .price-amount {
+        font-size: 0.95rem; /* Smaller price */
+    }
+    
+    .price-period {
+        font-size: 0.6rem; /* Smaller period */
+    }
+    
+    .price-original-small {
+        display: none !important; /* Hide dashed original price (179.95) in mobile */
+    }
+    
+    /* Make save text and bonus text much smaller */
+    .price-savings {
+        margin-top: 0.25rem; /* Reduced margin */
+        gap: 0.15rem; /* Reduced gap */
+    }
+    
+    .savings-text {
+        font-size: 0.55rem; /* Much smaller save text */
+    }
+    
+    .bonus-text {
+        font-size: 0.5rem; /* Much smaller bonus text */
+    }
+    
+    /* Hide the entire pricing features list */
+    .pricing-features {
+        display: none !important; /* Hide feature list completely */
+    }
+    
+    /* Make all Get Started buttons smaller and consistent - make text wrap like others */
+    .pricing-button {
+        padding: 0.4rem 0.6rem !important; /* Even smaller button - consistent for all */
+        font-size: 0.6rem !important; /* Smaller font - consistent for all */
+        margin-top: 0.5rem; /* Reduced margin */
+        width: 100%; /* Full width to allow text wrapping */
+        white-space: normal; /* Allow text to wrap */
+        line-height: 1.2; /* Tighter line height for wrapped text */
+        min-height: auto; /* Remove any min-height constraints */
+    }
+    
+    .pricing-card-best-deal .pricing-button {
+        padding: 0.4rem 0.6rem !important; /* Same size for best deal button */
+        font-size: 0.6rem !important; /* Same font size */
+        width: 100% !important; /* Full width like others */
+        white-space: normal !important; /* Allow text wrapping like others */
+        line-height: 1.2 !important; /* Same line height */
+    }
+    
+    .pricing-button-primary {
+        padding: 0.4rem 0.6rem !important; /* Same size for primary button */
+        font-size: 0.6rem !important; /* Same font size */
+        width: 100% !important; /* Full width like others */
+        white-space: normal !important; /* Allow text wrapping like others - make it "chunky" */
+        line-height: 1.2 !important; /* Same line height */
     }
 }
 
