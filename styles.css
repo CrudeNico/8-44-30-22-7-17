@@ -5959,6 +5959,73 @@ table tbody tr:last-child td {
     
     .approach-text-button {
         grid-template-columns: 1fr;
+        gap: 1.5rem !important; /* Reduced gap */
+    }
+    
+    /* Capital Protection Section - reduce text size */
+    .approach-heading {
+        font-size: 1.5rem !important; /* Smaller heading */
+        margin-bottom: 1rem !important;
+    }
+    
+    .approach-text {
+        font-size: 0.85rem !important; /* Smaller text */
+        line-height: 1.6 !important;
+    }
+    
+    /* Make image fit correctly in widget */
+    .approach-image-box {
+        width: 100% !important; /* Full width */
+        max-width: 100% !important;
+        height: auto !important; /* Auto height */
+        min-height: 150px !important;
+        max-height: 200px !important;
+        margin: 0 auto !important; /* Center it */
+    }
+    
+    .approach-image-box img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important; /* Fit image properly */
+    }
+    
+    /* How We Organize Section - reduce all text sizes */
+    .how-organized-content {
+        padding: 0 1.5rem !important; /* Adjusted padding */
+        margin-top: 2rem !important; /* Reduced margin */
+    }
+    
+    .how-organized-heading {
+        font-size: 1.5rem !important; /* Smaller heading */
+        margin-bottom: 1.5rem !important; /* Reduced margin */
+    }
+    
+    .accordion-header {
+        font-size: 0.9rem !important; /* Smaller header */
+        padding: 1rem 0 !important; /* Reduced padding */
+    }
+    
+    .accordion-plus {
+        font-size: 1.2rem !important; /* Smaller plus */
+    }
+    
+    .accordion-item.active .accordion-content {
+        padding: 0 0 1rem 0 !important; /* Reduced padding */
+    }
+    
+    .accordion-content p {
+        font-size: 0.85rem !important; /* Smaller content */
+        line-height: 1.5 !important; /* Adjusted line height */
+    }
+    
+    /* Investor Responsibility Section - move closer to image above */
+    .risk-guide-investor-responsibilities {
+        margin-top: 1rem !important; /* Reduced margin to bring closer to image */
+        padding-top: 0 !important; /* Remove padding */
+    }
+    
+    .what-we-do-section {
+        padding-top: 1.5rem !important; /* Reduced top padding */
     }
     
     .quote-content {
@@ -6662,21 +6729,22 @@ table tbody tr:last-child td {
     }
     
     .learn-more-cta-section {
-        padding: 3rem 0; /* Reduced padding */
+        padding: 2rem 0 !important; /* Much smaller padding */
     }
     
     .learn-more-cta-content {
-        gap: 1.5rem; /* Reduced gap */
-        padding: 0 1.5rem; /* Added padding */
+        gap: 1rem !important; /* Reduced gap */
+        padding: 0 1.5rem !important; /* Added padding */
     }
     
     .learn-more-title {
-        font-size: 1.25rem; /* Smaller title */
+        font-size: 1rem !important; /* Much smaller title */
+        line-height: 1.4 !important;
     }
     
     .learn-more-button {
-        font-size: 0.9rem; /* Smaller button */
-        padding: 0.6rem 1.25rem; /* Adjusted padding */
+        font-size: 0.75rem !important; /* Much smaller button */
+        padding: 0.5rem 1rem !important; /* Smaller padding */
     }
 }
 
@@ -9328,12 +9396,17 @@ table tbody tr:last-child td {
     }
     
     .macro-insights-title {
-        font-size: 2.25rem;
-        margin-bottom: 2rem;
+        font-size: 1.5rem !important; /* Smaller title */
+        margin-bottom: 1.5rem !important;
     }
     
     .macro-insights-text {
-        font-size: 1.05rem;
+        font-size: 0.85rem !important; /* Smaller text */
+    }
+    
+    .macro-insights-text p {
+        font-size: 0.85rem !important;
+        margin-bottom: 1rem !important;
     }
 }
 
@@ -9422,11 +9495,16 @@ table tbody tr:last-child td {
     }
     
     .macro-insights-section-title {
-        font-size: 2.25rem;
+        font-size: 1.5rem !important; /* Smaller section title */
     }
     
     .macro-insights-section-text {
-        font-size: 1.05rem;
+        font-size: 0.85rem !important; /* Smaller section text */
+    }
+    
+    .macro-insights-section-text p {
+        font-size: 0.85rem !important;
+        margin-bottom: 1rem !important;
     }
 }
 
@@ -9557,17 +9635,55 @@ table tbody tr:last-child td {
 
 @media (max-width: 768px) {
     .team-leadership-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+        grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid */
+        gap: 1rem !important; /* Much smaller gap */
     }
     
     .team-leadership-title {
-        font-size: 2.25rem;
-        margin-bottom: 3rem;
+        font-size: 1.5rem !important; /* Smaller title */
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .team-member-card {
+        padding: 0.5rem !important; /* Reduced padding */
     }
     
     .team-member-image {
-        height: 250px;
+        height: 100px !important; /* Much smaller images */
+        width: 100% !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .team-member-image img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    
+    .team-member-info {
+        padding: 0.25rem !important; /* Reduced padding */
+        gap: 0.25rem !important;
+    }
+    
+    .team-member-name {
+        font-size: 0.75rem !important; /* Much smaller name */
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .team-member-description {
+        font-size: 0.65rem !important; /* Much smaller description */
+        line-height: 1.3 !important;
+    }
+    
+    /* Reduce text below leadership */
+    .team-leadership-text {
+        margin-top: 1.5rem !important; /* Reduced margin */
+    }
+    
+    .team-leadership-text .text-content p {
+        font-size: 0.85rem !important; /* Smaller text */
+        line-height: 1.5 !important;
+        margin-bottom: 1rem !important;
     }
 }
 
@@ -9667,6 +9783,11 @@ table tbody tr:last-child td {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Hide mobile labels on desktop */
+.office-label-mobile {
+    display: none;
+}
+
 .offices-text {
     margin-top: 2rem;
     padding-top: 2rem;
@@ -9711,8 +9832,174 @@ table tbody tr:last-child td {
 }
 
 @media (max-width: 768px) {
+    .offices-grid {
+        grid-template-columns: 1fr !important; /* Stacked - one above the other */
+        gap: 1rem !important; /* Reduced gap */
+    }
+    
+    .office-card {
+        padding: 0 !important; /* Remove padding - full width images */
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Hide office info text in mobile */
+    .office-info {
+        display: none !important; /* Hide location and country text */
+    }
+    
+    .office-image-container {
+        height: 200px !important; /* Larger images */
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    .office-image-slide {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .office-image-slide img {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        object-fit: cover !important; /* Ensure images fit within container */
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Add label overlay on images - show on mobile */
+    .office-label-mobile {
+        display: block !important; /* Show labels on mobile */
+        position: absolute !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        color: #ffffff !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 6px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        z-index: 10 !important;
+    }
+    
     .offices-text .text-content p {
-        font-size: 1.05rem;
+        font-size: 0.85rem !important; /* Smaller text */
+    }
+    
+    /* Career section - same as index.html mobile styles */
+    .jobs-section {
+        padding: 3rem 0 !important;
+    }
+    
+    .jobs-container {
+        padding: 0 1rem !important;
+    }
+    
+    .jobs-section-title {
+        font-size: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .jobs-search-panel {
+        padding: 1rem !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .jobs-search-input label {
+        font-size: 0.75rem !important;
+    }
+    
+    .jobs-input-wrapper input {
+        padding: 0.65rem 2rem 0.65rem 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .job-search-btn {
+        font-size: 0.9rem !important;
+        padding: 0.65rem 1rem !important;
+    }
+    
+    .jobs-filter-bar {
+        margin-bottom: 1.5rem !important;
+        gap: 0.75rem !important;
+    }
+    
+    .jobs-openings {
+        font-size: 0.85rem !important;
+    }
+    
+    .jobs-filter-btn,
+    .jobs-sort-btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .jobs-grid {
+        gap: 1rem !important;
+    }
+    
+    .job-card {
+        padding: 1rem !important;
+        min-height: 220px !important;
+        gap: 0.5rem !important;
+    }
+    
+    .job-title {
+        font-size: 1rem !important;
+    }
+    
+    .job-location {
+        font-size: 0.85rem !important;
+    }
+    
+    .job-description {
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    .job-tags span {
+        font-size: 0.75rem !important;
+        padding: 0.2rem 0.6rem !important;
+    }
+    
+    .job-posted {
+        font-size: 0.75rem !important;
+    }
+    
+    .job-apply-btn {
+        padding: 0.5rem 1.25rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .job-card--cta h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .job-card--cta p {
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    .job-action-btn {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .job-action-btn svg {
+        width: 16px !important;
+        height: 16px !important;
     }
 }
 
@@ -9820,22 +10107,43 @@ table tbody tr:last-child td {
     }
     
     .geopolitics-shipping-title {
-        font-size: 2.25rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.5rem !important; /* Smaller title */
+        margin-bottom: 1rem !important;
     }
     
     .marinetraffic-intro-text,
     .marinetraffic-outro-text {
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem !important;
     }
     
     .marinetraffic-intro-text p,
     .marinetraffic-outro-text p {
-        font-size: 1.05rem;
+        font-size: 0.85rem !important; /* Smaller text */
+        line-height: 1.6 !important;
     }
     
     .marinetraffic-embed-wrapper {
         min-height: 500px;
+    }
+    
+    /* Make map widget container same size as map */
+    .marinetraffic-map-container {
+        padding: 0.5rem !important; /* Reduced padding */
+    }
+    
+    .marinetraffic-embed-wrapper {
+        width: 100% !important;
+        min-height: 500px !important;
+        max-height: 500px !important; /* Match min-height */
+        overflow: hidden !important;
+    }
+    
+    /* Ensure map iframe/widget matches container */
+    .marinetraffic-embed-wrapper iframe,
+    .marinetraffic-embed-wrapper > div {
+        width: 100% !important;
+        height: 500px !important;
+        max-height: 500px !important;
     }
 }
 
@@ -9944,20 +10252,57 @@ table tbody tr:last-child td {
     }
     
     .oil-outlooks-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr !important; /* Side by side in mobile */
+        gap: 1rem !important; /* Reduced gap */
     }
     
-    .outlook-image-wrapper {
-        height: 200px;
+    .oil-outlook-widget {
+        padding: 0.75rem !important; /* Reduced padding */
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+    }
+    
+    .outlook-widget-link {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        padding: 0.75rem !important; /* Reduced padding */
+    }
+    
+    /* Text section on top (50%) */
+    .outlook-subtitle,
+    .outlook-description {
+        order: -1 !important; /* Move text to top */
     }
     
     .outlook-subtitle {
-        font-size: 1.35rem;
+        font-size: 0.8rem !important; /* Smaller subtitle */
+        margin-bottom: 0.5rem !important;
+        margin-top: 0 !important;
     }
     
     .outlook-description {
-        font-size: 1rem;
+        font-size: 0.7rem !important; /* Smaller description */
+        line-height: 1.4 !important;
+        margin-bottom: 0.75rem !important;
+        flex: 1 !important; /* Take available space */
+    }
+    
+    /* Image section on bottom (50%) */
+    .outlook-image-wrapper {
+        order: 1 !important; /* Move image to bottom */
+        height: 50% !important; /* Half of widget */
+        min-height: 80px !important;
+        max-height: 100px !important;
+        margin-bottom: 0 !important;
+        margin-top: auto !important; /* Push to bottom */
+        flex-shrink: 0 !important;
+    }
+    
+    .outlook-image {
+        height: 100% !important;
+        object-fit: contain !important;
     }
 }
 

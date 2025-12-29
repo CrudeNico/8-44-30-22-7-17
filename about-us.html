@@ -14,6 +14,11 @@
                     <h1>Opessocius</h1>
                 </a>
             </div>
+            <!-- # Mobile menu toggle button -->
+            <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                <span></span>
+                <span></span>
+            </button>
             <nav class="navigation">
                 <div class="nav-item">
                     <a href="#" class="nav-link">Solutions</a>
@@ -105,6 +110,44 @@
                 <a href="login.html" class="nav-link">Log in</a>
             </nav>
         </div>
+        <!-- # Mobile Navigation Overlay -->
+        <div class="mobile-nav-overlay"></div>
+        <!-- # Mobile Navigation Menu -->
+        <nav class="mobile-nav">
+            <div class="mobile-nav-item">
+                <button class="mobile-dropdown-toggle">Solutions</button>
+                <div class="mobile-dropdown">
+                    <a href="investment-calculator.html" class="mobile-dropdown-item">Investment Calculator</a>
+                    <a href="crude-oil-strategy.html" class="mobile-dropdown-item">Crude Oil Strategy</a>
+                    <a href="portfolio-models.html" class="mobile-dropdown-item">Portfolio Models</a>
+                    <a href="risk-management.html" class="mobile-dropdown-item">Risk Management</a>
+                    <a href="technology-execution.html" class="mobile-dropdown-item">Technology & Execution</a>
+                </div>
+            </div>
+            <div class="mobile-nav-item">
+                <button class="mobile-dropdown-toggle">Resources</button>
+                <div class="mobile-dropdown">
+                    <a href="learn.html" class="mobile-dropdown-item">Learn</a>
+                    <a href="crude-oil-fundamentals.html" class="mobile-dropdown-item">Crude Oil Fundamentals</a>
+                    <a href="macro-geopolitical-insights.html" class="mobile-dropdown-item">Macro & Geopolitical Insights</a>
+                    <a href="technical-analysis-library.html" class="mobile-dropdown-item">Technical Analysis Library</a>
+                    <a href="risk-expectations-guide.html" class="mobile-dropdown-item">Risk & Expectations Guide</a>
+                </div>
+            </div>
+            <div class="mobile-nav-item">
+                <button class="mobile-dropdown-toggle">Consultations</button>
+                <div class="mobile-dropdown">
+                    <a href="about-us.html" class="mobile-dropdown-item">About Us</a>
+                    <a href="pricing-plans.html" class="mobile-dropdown-item">Pricing & Plans</a>
+                    <a href="book-a-call.html" class="mobile-dropdown-item">Book a Call</a>
+                    <a href="compliance-disclaimers.html" class="mobile-dropdown-item">Compliance & Disclaimers</a>
+                    <a href="onboarding-procedure.html" class="mobile-dropdown-item">Onboarding Process</a>
+                </div>
+            </div>
+            <div class="mobile-nav-item">
+                <a href="login.html" class="mobile-nav-link">Log in</a>
+            </div>
+        </nav>
     </header>
     <main class="main-content">
         <section class="learn-hero-section">
@@ -112,7 +155,10 @@
                 <div class="learn-hero-overlay"></div>
                 <div class="learn-hero-content">
                     <h2 class="learn-hero-title">About Us</h2>
-                    <p class="learn-hero-subtitle">Opessocius is a specialized investment management firm focused on energy markets and commodity trading. With over 8 years of strategy development, we provide structured, risk-controlled access to opaque, expert-driven markets through secure infrastructure and institutional-grade operational standards.</p>
+                    <p class="learn-hero-subtitle">
+                        <span class="learn-hero-subtitle-desktop">Opessocius is a specialized investment management firm focused on energy markets and commodity trading. With over 8 years of strategy development, we provide structured, risk-controlled access to opaque, expert-driven markets through secure infrastructure and institutional-grade operational standards.</span>
+                        <span class="learn-hero-subtitle-mobile">Specialized investment firm focused on commodity trading.</span>
+                    </p>
                 </div>
             </div>
         </section>
@@ -213,6 +259,7 @@
                             <div class="office-image-slide">
                                 <img src="images/building5.png" alt="Madrid Office" />
                             </div>
+                            <span class="office-label-mobile">Madrid</span>
                         </div>
                         <div class="office-info">
                             <h3 class="office-location">Madrid</h3>
@@ -233,6 +280,7 @@
                             <div class="office-image-slide">
                                 <img src="images/2building1.png" alt="Dubai Office" />
                             </div>
+                            <span class="office-label-mobile">Dubai</span>
                         </div>
                         <div class="office-info">
                             <h3 class="office-location">Dubai</h3>
