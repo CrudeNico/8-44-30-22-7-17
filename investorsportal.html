@@ -66,6 +66,12 @@
 </head>
 <body class="dashboard-active">
     <section class="user-dashboard" id="user-dashboard">
+        <!-- Mobile Hamburger Menu Button -->
+        <button class="investor-portal-mobile-menu-toggle" aria-label="Toggle user menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
         <div class="dashboard-sidebar">
             <div class="sidebar-profile">
                 <div class="sidebar-profile-image-container" id="profile-picture-container" style="position: relative; cursor: pointer; width: 80px; height: 80px; margin: 0 auto;">
@@ -128,7 +134,7 @@
                             <h3 class="dashboard-widget-title">Crude Oil Price</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
+                            <div class="tradingview-widget-container-dashboard tradingview-widget-oil">
                                 <div class="tradingview-widget-container__widget"></div>
                                 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
                                 {
@@ -253,12 +259,12 @@
                     </div>
                     
                     <!-- Top Stories -->
-                    <div class="dashboard-widget">
+                    <div class="dashboard-widget dashboard-widget-stories">
                         <div class="dashboard-widget-header">
                             <h3 class="dashboard-widget-title">Top Stories</h3>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
+                            <div class="tradingview-widget-container-dashboard tradingview-widget-stories">
                                 <div class="tradingview-widget-container__widget"></div>
                                 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
                                 {
@@ -282,7 +288,7 @@
                             <p class="dashboard-widget-subtitle" style="font-size: 0.75rem; color: #6b7280; margin: 0;">Keep track of key economic events</p>
                         </div>
                         <div class="dashboard-widget-content">
-                            <div class="tradingview-widget-container-dashboard">
+                            <div class="tradingview-widget-container-dashboard tradingview-widget-calendar">
                                 <div class="tradingview-widget-container__widget"></div>
                                 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
                                 {
@@ -5143,6 +5149,52 @@
                     }
                 });
             }
+    });
+    
+    // Mobile hamburger menu toggle for investor portal
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.querySelector('.investor-portal-mobile-menu-toggle');
+        const dashboardSidebar = document.querySelector('.dashboard-sidebar');
+        const mobileMenuOverlay = document.createElement('div');
+        mobileMenuOverlay.className = 'investor-portal-mobile-menu-overlay';
+        document.body.appendChild(mobileMenuOverlay);
+        
+        if (mobileMenuToggle && dashboardSidebar) {
+            function toggleMenu() {
+                dashboardSidebar.classList.toggle('mobile-menu-open');
+                mobileMenuOverlay.classList.toggle('active');
+                document.body.style.overflow = dashboardSidebar.classList.contains('mobile-menu-open') ? 'hidden' : '';
+            }
+            
+            mobileMenuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
+            });
+            
+            mobileMenuOverlay.addEventListener('click', function() {
+                toggleMenu();
+            });
+            
+            // Close menu when clicking on sidebar footer items
+            const sidebarFooterItems = document.querySelectorAll('.sidebar-footer-item');
+            sidebarFooterItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+            
+            // Close menu when clicking on sidebar navigation items
+            const sidebarNavItems = document.querySelectorAll('.sidebar-nav-item');
+            sidebarNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+        }
     });
     </script>
     

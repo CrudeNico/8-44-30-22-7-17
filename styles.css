@@ -13144,33 +13144,439 @@ body.dashboard-active {
 }
 
 @media (max-width: 768px) {
-    .dashboard-sidebar {
+    /* Mobile Hamburger Menu Toggle Button */
+    .investor-portal-mobile-menu-toggle {
+        position: fixed;
+        top: 1rem !important; /* Back to top */
+        right: 1rem !important; /* Moved to right */
+        left: auto !important; /* Remove left positioning */
+        z-index: 10001;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .investor-portal-mobile-menu-toggle span {
+        width: 20px;
+        height: 2px;
+        background: #1f2937;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Hide the first span (top line) - only show 2 lines */
+    .investor-portal-mobile-menu-toggle span:first-child {
+        display: none !important;
+    }
+    
+    .investor-portal-mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        height: auto;
-        position: relative;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .investor-portal-mobile-menu-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+    
+    .dashboard-sidebar {
+        width: 280px !important;
+        height: 100vh !important;
+        position: fixed !important;
+        left: -280px !important;
+        top: 0 !important;
+        z-index: 9999 !important;
+        background: #ffffff !important;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
+        transition: left 0.3s ease !important;
+        overflow-y: auto !important;
+    }
+    
+    .dashboard-sidebar.mobile-menu-open {
+        left: 0 !important;
+    }
+    
+    /* Hide profile picture in mobile */
+    .sidebar-profile-image-container,
+    .sidebar-profile-image,
+    .profile-picture-placeholder,
+    .profile-picture-upload-overlay {
+        display: none !important;
+    }
+    
+    .sidebar-profile {
+        padding: 0.75rem 1rem !important; /* Much smaller padding */
+        border-bottom: 1px solid #e5e7eb !important;
+        display: flex !important;
+        flex-direction: row !important; /* Horizontal layout */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0.5rem !important;
+    }
+    
+    .sidebar-profile-name {
+        font-size: 0.75rem !important; /* Much smaller */
+        font-weight: 600 !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
     }
     
     .dashboard-content {
-        margin-left: 0;
-        padding: 1.5rem;
+        margin-left: 0 !important;
+        padding: 0.75rem !important; /* Reduced padding since hamburger is at top right */
     }
     
     .sidebar-navigation {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 1rem;
+        display: flex !important;
+        flex-direction: column !important; /* Vertical stack */
+        flex-wrap: nowrap !important;
+        padding: 0.5rem 0 !important; /* Much smaller padding */
+        gap: 0.25rem !important;
     }
     
     .sidebar-nav-item {
-        flex: 1 1 auto;
-        padding: 0.75rem 1rem;
-        border-left: none;
-        border-bottom: 3px solid transparent;
+        flex: none !important;
+        padding: 0.5rem 0.75rem !important; /* Much smaller padding */
+        border-left: none !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        font-size: 0.7rem !important; /* Much smaller */
+        line-height: 1.3 !important;
     }
     
     .sidebar-nav-item.active {
-        border-left: none;
-        border-bottom-color: #2563eb;
+        border-left: none !important;
+        border-bottom-color: #2563eb !important;
+        background: rgba(37, 99, 235, 0.05) !important;
+    }
+    
+    .sidebar-footer {
+        border-top: 1px solid #e5e7eb !important;
+        padding: 0.5rem 0 !important; /* Much smaller padding */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.25rem !important;
+    }
+    
+    .sidebar-footer-item {
+        padding: 0.5rem 0.75rem !important; /* Much smaller padding */
+        font-size: 0.7rem !important; /* Much smaller */
+        line-height: 1.3 !important;
+    }
+    
+    /* Make all dashboard widgets much smaller */
+    .dashboard-widget {
+        padding: 0.75rem !important; /* Much smaller padding */
+        border-radius: 8px !important;
+        overflow: hidden !important; /* Contain widgets inside */
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    
+    .dashboard-widget-header {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .dashboard-widget-title {
+        font-size: 0.75rem !important; /* Much smaller */
+        margin: 0 !important;
+    }
+    
+    .dashboard-widget-content {
+        font-size: 0.7rem !important; /* Much smaller */
+        overflow: hidden !important; /* Contain widgets inside */
+        width: 100% !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    
+    /* Make Current Balance, Total Gain, 12 Month Projection widgets smaller */
+    .dashboard-widget[style*="grid-column: 2"],
+    .dashboard-widget[style*="grid-column: 3"],
+    .dashboard-widget[style*="grid-column: 4"] {
+        padding: 0.5rem 0.75rem !important; /* Even smaller padding */
+        min-height: auto !important;
+    }
+    
+    /* Hide TradingView widgets in mobile view */
+    .dashboard-widget-oil,
+    .dashboard-widget-wide,
+    .dashboard-widget-stories {
+        display: none !important;
+    }
+    
+    /* Make Current Balance and Total Gain match 12 Month Projection size in mobile */
+    .dashboard-main-metric {
+        font-size: 1.75rem !important; /* Match projection value size */
+        line-height: 1.1 !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .dashboard-projection-value {
+        font-size: 1.75rem !important; /* Keep same size */
+        line-height: 1.1 !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .dashboard-sub-metric {
+        font-size: 0.6rem !important; /* Much smaller */
+        margin-top: 0.25rem !important;
+    }
+    
+    /* Fix Crude Oil Price widget - ensure content is inside */
+    .dashboard-widget-oil .dashboard-widget-content {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .dashboard-widget-oil .tradingview-widget-container-dashboard {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .dashboard-widgets-grid {
+        display: flex !important; /* Use flexbox instead of grid */
+        flex-direction: column !important; /* Stack vertically */
+        gap: 0.75rem !important; /* Much smaller gap */
+        grid-template-columns: none !important; /* Remove grid */
+    }
+    
+    /* Override any grid positioning to ensure widgets stack vertically */
+    .dashboard-widget {
+        grid-column: unset !important; /* Remove grid-column */
+        grid-row: unset !important; /* Remove grid-row */
+        width: 100% !important; /* Full width */
+        order: 0 !important; /* Natural order */
+    }
+    
+    /* Ensure widgets appear in document order */
+    .dashboard-widget[style*="grid-column"],
+    .dashboard-widget[style*="grid-row"] {
+        grid-column: unset !important;
+        grid-row: unset !important;
+    }
+    
+    /* Crude Oil Price Widget - Mobile */
+    .tradingview-widget-oil {
+        height: 180px !important;
+        min-height: 180px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .tradingview-widget-oil iframe,
+    .tradingview-widget-oil .tradingview-widget-container__widget {
+        height: 180px !important;
+        min-height: 180px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+    
+    /* Top Stories Widget - Mobile */
+    .tradingview-widget-stories {
+        height: 250px !important;
+        min-height: 250px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .tradingview-widget-stories iframe,
+    .tradingview-widget-stories .tradingview-widget-container__widget {
+        height: 250px !important;
+        min-height: 250px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+    
+    /* Economic Calendar Widget - Mobile */
+    .tradingview-widget-calendar {
+        height: 300px !important;
+        min-height: 300px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .tradingview-widget-calendar iframe,
+    .tradingview-widget-calendar .tradingview-widget-container__widget {
+        height: 300px !important;
+        min-height: 300px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+    
+    /* General TradingView Widget Container - Mobile */
+    .tradingview-widget-container-dashboard {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Fix all TradingView widgets to stay inside their containers */
+    .dashboard-widget .tradingview-widget-container-dashboard,
+    .dashboard-widget .tradingview-widget-container__widget {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+    }
+    
+    /* Ensure widget content containers properly contain TradingView widgets */
+    .dashboard-widget .dashboard-widget-content {
+        overflow: hidden !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        position: relative !important;
+    }
+    
+    /* Fix Top Stories widget specifically */
+    .dashboard-widget .dashboard-widget-content .tradingview-widget-container-dashboard {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        margin: 0 !important;
+    }
+    
+    /* Fix Economic Calendar widget (wide widget) */
+    .dashboard-widget-wide {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .dashboard-widget-wide .dashboard-widget-content {
+        width: 100% !important;
+        overflow: hidden !important; /* Contain widgets */
+        position: relative !important;
+    }
+    
+    /* Specific fix for Crude Oil Price widget */
+    .dashboard-widget-oil .dashboard-widget-content {
+        overflow: hidden !important;
+        position: relative !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .dashboard-widget-oil .tradingview-widget-container-dashboard {
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Ensure TradingView widgets are properly contained within their parent widgets */
+    .dashboard-widget .dashboard-widget-content > .tradingview-widget-container-dashboard {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Additional fixes for widget containers to prevent overflow */
+    .dashboard-widget-wide .dashboard-widget-content {
+        width: 100% !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    .dashboard-widget-wide .tradingview-widget-container-dashboard {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* Ensure all TradingView iframes are properly sized on mobile */
+    .tradingview-widget-container-dashboard iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /* Fix for widget container divs */
+    .tradingview-widget-container__widget {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        visibility: visible !important;
     }
 }
 
