@@ -165,14 +165,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }, { passive: false });
         });
         
-        // Auto-rotate function
+        // Auto-rotate function - switches to next tab every 5 seconds
         function startAutoRotate() {
             autoRotateInterval = setInterval(function() {
                 if (featureTabs.length > 0) {
                     currentTabIndex = (currentTabIndex + 1) % featureTabs.length;
                     switchTab(currentTabIndex);
                 }
-            }, 5000); // 5 seconds
+            }, 5000); // 5000ms = 5 seconds delay between each widget
         }
         
         // Start auto-rotate
