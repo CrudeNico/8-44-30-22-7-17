@@ -570,13 +570,13 @@
                                 </div>
                                 <div style="display: flex; gap: 0.5rem; align-items: flex-end;">
                                     <textarea id="community-chat-message-input" placeholder="Type your message..." style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; border-radius: 6px; resize: none; font-family: inherit; font-size: 0.875rem; min-height: 40px; max-height: 80px;" rows="1"></textarea>
-                                    <label for="community-chat-image-input" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
+                                    <label for="community-chat-image-input" class="community-chat-image-label" style="cursor: pointer; padding: 0.5rem 1rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; color: #374151; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content;">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                             <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                             <polyline points="21 15 16 10 5 21"></polyline>
                                         </svg>
-                                        Add Image
+                                        <span class="community-chat-image-text">Add Image</span>
                                     </label>
                                     <input type="file" id="community-chat-image-input" accept="image/*" multiple style="display: none;">
                                     <button type="button" id="community-chat-send-btn" style="cursor: pointer; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; height: fit-content; transition: background 0.2s;">
@@ -1332,8 +1332,13 @@
                 // Clear canvas
                 ctx.clearRect(0, 0, width, height);
                 
-                // Chart configuration
-                const padding = { top: 40, right: 40, bottom: 60, left: 80 };
+                // Check if mobile view (viewport width <= 768px)
+                const isMobile = window.innerWidth <= 768;
+                
+                // Chart configuration - reduce padding on mobile since axes are hidden
+                const padding = isMobile 
+                    ? { top: 20, right: 20, bottom: 20, left: 20 }
+                    : { top: 40, right: 40, bottom: 60, left: 80 };
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
@@ -1630,26 +1635,30 @@
                         }
                     }
                     
-                    // Draw Y-axis labels with proper formatting
-                    ctx.fillStyle = '#6b7280';
-                    ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                    ctx.textAlign = 'right';
-                    ctx.textBaseline = 'middle';
-                    for (let i = 0; i <= 5; i++) {
-                        const value = minValue + (valueRange / 5) * (5 - i);
-                        const y = padding.top + (chartHeight / 5) * i;
-                        const formattedValue = formatCurrencyAxis(value);
-                        ctx.fillText(formattedValue, padding.left - 10, y);
+                    // Draw Y-axis labels with proper formatting (skip on mobile)
+                    if (!isMobile) {
+                        ctx.fillStyle = '#6b7280';
+                        ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                        ctx.textAlign = 'right';
+                        ctx.textBaseline = 'middle';
+                        for (let i = 0; i <= 5; i++) {
+                            const value = minValue + (valueRange / 5) * (5 - i);
+                            const y = padding.top + (chartHeight / 5) * i;
+                            const formattedValue = formatCurrencyAxis(value);
+                            ctx.fillText(formattedValue, padding.left - 10, y);
+                        }
                     }
                     
-                    // Draw X-axis labels with actual month names
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'top';
-                    const labelInterval = Math.max(1, Math.floor(totalDataPoints / Math.min(12, totalDataPoints)));
-                    for (let i = 0; i < totalDataPoints; i += labelInterval) {
-                        const x = padding.left + dataPointWidth * i + dataPointWidth / 2;
-                        const label = allLabels[i] || `M${i + 1}`;
-                        ctx.fillText(label, x, height - padding.bottom + 10);
+                    // Draw X-axis labels with actual month names (skip on mobile)
+                    if (!isMobile) {
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'top';
+                        const labelInterval = Math.max(1, Math.floor(totalDataPoints / Math.min(12, totalDataPoints)));
+                        for (let i = 0; i < totalDataPoints; i += labelInterval) {
+                            const x = padding.left + dataPointWidth * i + dataPointWidth / 2;
+                            const label = allLabels[i] || `M${i + 1}`;
+                            ctx.fillText(label, x, height - padding.bottom + 10);
+                        }
                     }
                 } catch (error) {
                     console.error('Error drawing portfolio chart:', error);
@@ -1814,8 +1823,13 @@
                 // Clear canvas
                 ctx.clearRect(0, 0, width, height);
                 
-                // Chart configuration
-                const padding = { top: 80, right: 40, bottom: 60, left: 80 };
+                // Check if mobile view (viewport width <= 768px)
+                const isMobile = window.innerWidth <= 768;
+                
+                // Chart configuration - reduce padding on mobile since axes are hidden
+                const padding = isMobile 
+                    ? { top: 20, right: 20, bottom: 20, left: 20 }
+                    : { top: 80, right: 40, bottom: 60, left: 80 };
                 const chartWidth = width - padding.left - padding.right;
                 const chartHeight = height - padding.top - padding.bottom;
                 
@@ -2313,30 +2327,34 @@
                     }
                 }
                 
-                // Draw Y-axis labels (in euros)
-                ctx.fillStyle = '#6b7280';
-                ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
-                for (let i = 0; i <= 5; i++) {
-                    const value = minValue + (valueRange / 5) * (5 - i);
-                    const y = padding.top + (chartHeight / 5) * i;
-                    const formattedValue = formatCurrencyAxis(value);
-                    ctx.fillText(formattedValue, padding.left - 10, y);
+                // Draw Y-axis labels (in euros) - skip on mobile
+                if (!isMobile) {
+                    ctx.fillStyle = '#6b7280';
+                    ctx.font = '12px Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    for (let i = 0; i <= 5; i++) {
+                        const value = minValue + (valueRange / 5) * (5 - i);
+                        const y = padding.top + (chartHeight / 5) * i;
+                        const formattedValue = formatCurrencyAxis(value);
+                        ctx.fillText(formattedValue, padding.left - 10, y);
+                    }
                 }
                 
-                // Draw X-axis labels (dynamic based on transaction count)
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                const labelInterval = Math.max(1, Math.floor(totalMonths / 8)); // Show about 8 labels
-                for (let i = 0; i < totalMonths; i += labelInterval) {
-                    const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
-                    ctx.fillText(months[i] || `M${i}`, x, height - padding.bottom + 10);
-                }
-                // Always show the last label
-                if (totalMonths > 1 && (totalMonths - 1) % labelInterval !== 0) {
-                    const lastX = padding.left + (chartWidth / totalMonths) * (totalMonths - 1) + (chartWidth / totalMonths) / 2;
-                    ctx.fillText(months[totalMonths - 1] || `M${totalMonths - 1}`, lastX, height - padding.bottom + 10);
+                // Draw X-axis labels (dynamic based on transaction count) - skip on mobile
+                if (!isMobile) {
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    const labelInterval = Math.max(1, Math.floor(totalMonths / 8)); // Show about 8 labels
+                    for (let i = 0; i < totalMonths; i += labelInterval) {
+                        const x = padding.left + (chartWidth / totalMonths) * i + (chartWidth / totalMonths) / 2;
+                        ctx.fillText(months[i] || `M${i}`, x, height - padding.bottom + 10);
+                    }
+                    // Always show the last label
+                    if (totalMonths > 1 && (totalMonths - 1) % labelInterval !== 0) {
+                        const lastX = padding.left + (chartWidth / totalMonths) * (totalMonths - 1) + (chartWidth / totalMonths) / 2;
+                        ctx.fillText(months[totalMonths - 1] || `M${totalMonths - 1}`, lastX, height - padding.bottom + 10);
+                    }
                 }
                 
                 // Draw legend at the top
@@ -4396,6 +4414,7 @@
                 
                 // Weekly Report Header - with left and right sections
                 const reportHeader = document.createElement('div');
+                reportHeader.className = 'weekly-report-header';
                 reportHeader.style.gridColumn = '1 / -1';
                 reportHeader.style.background = 'white';
                 reportHeader.style.padding = '1.5rem';
@@ -4436,6 +4455,7 @@
                 
                 // Middle section: PDF Report section (moved more to the left)
                 const middleSection = document.createElement('div');
+                middleSection.className = 'weekly-report-pdf-section';
                 middleSection.style.flex = '1';
                 middleSection.style.display = 'flex';
                 middleSection.style.flexDirection = 'column';
@@ -4517,6 +4537,7 @@
                 
                 // Right section: Weekly Video section (always show)
                 const rightSection = document.createElement('div');
+                rightSection.className = 'weekly-report-video-section';
                 rightSection.style.flex = '1';
                 rightSection.style.display = 'flex';
                 rightSection.style.flexDirection = 'column';
@@ -4629,51 +4650,68 @@
                     return;
                 }
                 
-                // Position modal aligned with the weekly report widget, appearing higher up
-                const weeklyReportsWidget = document.getElementById('weekly-reports-display')?.closest('.dashboard-widget');
+                // Check if mobile view
+                const isMobile = window.innerWidth <= 768;
                 
-                if (weeklyReportsWidget) {
-                    const widgetRect = weeklyReportsWidget.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-                    
-                    // Position to start from widget's top, appearing much higher (2x higher)
-                    const topPosition = widgetRect.top + scrollTop - 600;
-                    
-                    // Align to widget's left edge and match its width
-                    const widgetWidth = widgetRect.width;
-                    const widgetLeft = widgetRect.left + scrollLeft;
-                    
-                    container.style.top = topPosition + 'px';
-                    container.style.left = widgetLeft + 'px';
-                    container.style.width = widgetWidth + 'px';
-                    container.style.maxWidth = widgetWidth + 'px';
-                    container.style.transform = 'none';
-                    container.style.margin = '0';
-                    container.style.position = 'absolute'; // Use absolute positioning so it scrolls with page
-                    container.style.pointerEvents = 'auto'; // Allow interaction with modal content
-                    container.style.zIndex = '10001'; // Above overlay
-                } else if (viewButton) {
-                    // Fallback: position above button, appearing higher
-                    const buttonRect = viewButton.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    
-                    // Position above the button
-                    const topPosition = buttonRect.top + scrollTop - 300; // Appear 300px above button
-                    
-                    container.style.top = topPosition + 'px';
-                    container.style.left = '50%';
-                    container.style.transform = 'translateX(-50%)';
-                    container.style.margin = '0';
-                    container.style.position = 'absolute';
-                    container.style.pointerEvents = 'auto';
-                    container.style.zIndex = '10001';
-                } else {
-                    // Final fallback: center on screen
+                if (isMobile) {
+                    // Mobile: Center modal on screen
                     container.style.top = '50%';
                     container.style.left = '50%';
                     container.style.transform = 'translate(-50%, -50%)';
                     container.style.position = 'fixed';
+                    container.style.width = '95%';
+                    container.style.maxWidth = '95%';
+                    container.style.maxHeight = '90vh';
+                    container.style.margin = '0';
+                    container.style.pointerEvents = 'auto';
+                    container.style.zIndex = '10001';
+                } else {
+                    // Desktop: Position modal aligned with the weekly report widget
+                    const weeklyReportsWidget = document.getElementById('weekly-reports-display')?.closest('.dashboard-widget');
+                    
+                    if (weeklyReportsWidget) {
+                        const widgetRect = weeklyReportsWidget.getBoundingClientRect();
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                        
+                        // Position to start from widget's top, appearing much higher (2x higher)
+                        const topPosition = widgetRect.top + scrollTop - 600;
+                        
+                        // Align to widget's left edge and match its width
+                        const widgetWidth = widgetRect.width;
+                        const widgetLeft = widgetRect.left + scrollLeft;
+                        
+                        container.style.top = topPosition + 'px';
+                        container.style.left = widgetLeft + 'px';
+                        container.style.width = widgetWidth + 'px';
+                        container.style.maxWidth = widgetWidth + 'px';
+                        container.style.transform = 'none';
+                        container.style.margin = '0';
+                        container.style.position = 'absolute'; // Use absolute positioning so it scrolls with page
+                        container.style.pointerEvents = 'auto'; // Allow interaction with modal content
+                        container.style.zIndex = '10001'; // Above overlay
+                    } else if (viewButton) {
+                        // Fallback: position above button, appearing higher
+                        const buttonRect = viewButton.getBoundingClientRect();
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        
+                        // Position above the button
+                        const topPosition = buttonRect.top + scrollTop - 300; // Appear 300px above button
+                        
+                        container.style.top = topPosition + 'px';
+                        container.style.left = '50%';
+                        container.style.transform = 'translateX(-50%)';
+                        container.style.margin = '0';
+                        container.style.position = 'absolute';
+                        container.style.pointerEvents = 'auto';
+                        container.style.zIndex = '10001';
+                    } else {
+                        // Final fallback: center on screen
+                        container.style.top = '50%';
+                        container.style.left = '50%';
+                        container.style.transform = 'translate(-50%, -50%)';
+                        container.style.position = 'fixed';
+                    }
                 }
                 
                 // Show modal - allow page scrolling

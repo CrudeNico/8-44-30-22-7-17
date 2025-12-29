@@ -13578,6 +13578,685 @@ body.dashboard-active {
         display: block !important;
         visibility: visible !important;
     }
+    
+    /* ============================================
+       PORTFOLIO SECTION - MOBILE VIEW
+       ============================================ */
+    
+    /* Portfolio Balance Cards - Make smaller */
+    .portfolio-balance-cards {
+        gap: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .balance-card {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .balance-label {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .balance-amount {
+        font-size: 1.25rem !important;
+    }
+    
+    /* Portfolio Chart - Make smaller, remove axis labels */
+    .portfolio-chart-container {
+        padding: 0 !important;
+    }
+    
+    .portfolio-chart-card {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .portfolio-chart-title {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    #portfolio-chart {
+        height: 200px !important;
+        width: 100% !important;
+    }
+    
+    .chart-wrapper {
+        position: relative !important;
+        width: 100% !important;
+        height: 200px !important;
+        padding: 0.5rem !important;
+    }
+    
+    /* ============================================
+       TRANSACTIONS SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .transactions-view {
+        padding: 0.5rem !important;
+    }
+    
+    .transactions-table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    .transactions-table {
+        min-width: 600px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .transactions-table th,
+    .transactions-table td {
+        padding: 0.4rem 0.5rem !important;
+        font-size: 0.65rem !important;
+        white-space: nowrap !important;
+    }
+    
+    .transactions-table th {
+        font-weight: 600 !important;
+        font-size: 0.7rem !important;
+    }
+    
+    /* ============================================
+       PERFORMANCE SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .performance-view {
+        padding: 0.5rem !important;
+    }
+    
+    .performance-header {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .performance-subtitle {
+        font-size: 0.875rem !important;
+    }
+    
+    .performance-chart-container {
+        padding: 0 !important;
+    }
+    
+    #performance-chart {
+        height: 250px !important;
+        width: 100% !important;
+    }
+    
+    .performance-chart-container .chart-wrapper {
+        height: 250px !important;
+    }
+    
+    /* ============================================
+       MARKET NEWS SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .market-news-view {
+        padding: 0.5rem !important;
+    }
+    
+    .market-news-content {
+        gap: 1rem !important;
+    }
+    
+    .market-news-chart-section {
+        margin-bottom: 1rem !important;
+    }
+    
+    .market-news-chart-section {
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .market-news-chart {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 600px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .market-news-chart #market_news_chart {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 600px !important;
+    }
+    
+    /* Ensure the chart container fills the widget */
+    .market-news-chart-section {
+        min-height: 600px !important;
+        height: 600px !important;
+    }
+    
+    /* Make TradingView widget iframe fill the entire container */
+    .market-news-chart iframe,
+    .market-news-chart .tradingview-widget-container__widget {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 600px !important;
+    }
+    
+    /* Market News Articles - 2 per row */
+    .market-news-articles-section {
+        margin-top: 1rem !important;
+    }
+    
+    .news-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.75rem !important;
+    }
+    
+    .news-card {
+        padding: 0 !important;
+        border-radius: 8px !important;
+        font-size: 0.7rem !important;
+        min-height: auto !important;
+        height: auto !important;
+    }
+    
+    .news-image-container {
+        width: 100% !important;
+        height: 100px !important;
+        min-height: 100px !important;
+        max-height: 100px !important;
+    }
+    
+    .news-image {
+        width: 100% !important;
+        height: 100px !important;
+        object-fit: cover !important;
+        border-radius: 8px !important;
+    }
+    
+    .news-title {
+        font-size: 0.65rem !important;
+        line-height: 1.3 !important;
+        padding: 0.5rem !important;
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4), transparent) !important;
+        color: white !important;
+    }
+    
+    /* ============================================
+       ACCOUNT SETTINGS SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .account-settings-view {
+        padding: 0.5rem !important;
+    }
+    
+    .account-settings-content {
+        padding: 0.75rem !important;
+    }
+    
+    .account-settings-title {
+        font-size: 1rem !important;
+        margin-bottom: 1rem !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    .account-settings-title:first-child {
+        margin-top: 0 !important;
+    }
+    
+    .account-info-card {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .account-info-row {
+        padding: 0.5rem 0 !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .account-info-label {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .account-info-value {
+        font-size: 0.75rem !important;
+    }
+    
+    .account-settings-note {
+        margin-top: 1.5rem !important;
+        padding: 0.75rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .account-settings-note p {
+        font-size: 0.7rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* ============================================
+       REPORTS SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .reports-view {
+        padding: 0.5rem !important;
+    }
+    
+    .reports-content {
+        padding: 0.75rem !important;
+    }
+    
+    .reports-content h2 {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .reports-content p {
+        font-size: 0.7rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .reports-widgets-container {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+    
+    .report-widget {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .report-widget-title {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .report-widget-date {
+        font-size: 0.65rem !important;
+    }
+    
+    /* ============================================
+       LEARNING SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .learning-view {
+        padding: 0.5rem !important;
+    }
+    
+    .learning-content {
+        padding: 0.75rem !important;
+    }
+    
+    .learning-content h2 {
+        font-size: 1.125rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .learning-content p {
+        font-size: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .modules-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+    
+    .module-card {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .module-card-title {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .module-card-description {
+        font-size: 0.7rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Module Detail View - Mobile */
+    .module-detail-view {
+        padding: 0.5rem !important;
+    }
+    
+    .module-detail-view > div {
+        padding: 0.5rem !important;
+        max-width: 100% !important;
+    }
+    
+    #close-module-btn {
+        position: fixed !important; /* Fixed to viewport */
+        top: 1rem !important; /* Top left corner of page */
+        left: 1rem !important; /* Top left corner of page */
+        right: auto !important;
+        width: 32px !important;
+        z-index: 10001 !important; /* Ensure it's above everything */
+        height: 32px !important;
+        font-size: 1.25rem !important;
+        z-index: 10002 !important;
+    }
+    
+    #module-detail-content {
+        padding: 0.75rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    #module-detail-content h1,
+    #module-detail-content h2,
+    #module-detail-content h3 {
+        font-size: 0.875rem !important;
+        margin-top: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    #module-detail-content h1 {
+        font-size: 1rem !important;
+    }
+    
+    #module-detail-content p {
+        font-size: 0.7rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    #module-detail-content ul,
+    #module-detail-content ol {
+        font-size: 0.7rem !important;
+        padding-left: 1rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    #module-detail-content li {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    #module-detail-content img {
+        max-width: 100% !important;
+        height: auto !important;
+        margin: 0.5rem 0 !important;
+    }
+    
+    #module-detail-content code {
+        font-size: 0.65rem !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+    
+    #module-detail-content pre {
+        font-size: 0.65rem !important;
+        padding: 0.5rem !important;
+        overflow-x: auto !important;
+    }
+    
+    /* ============================================
+       COMMUNITY SECTION - MOBILE VIEW
+       ============================================ */
+    
+    .community-view {
+        padding: 0.5rem !important;
+    }
+    
+    .community-content {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Reorder: Professor message on top, Group chat in middle, Weekly reports on bottom */
+    .community-content > .dashboard-widget:first-child {
+        order: 1 !important; /* Professors' Messages - Top */
+    }
+    
+    .community-content > .dashboard-widget:nth-child(2) {
+        order: 2 !important; /* Group Chat - Middle */
+    }
+    
+    .community-content > .dashboard-widget:last-child {
+        order: 3 !important; /* Weekly Reports - Bottom */
+    }
+    
+    /* Remove double widget styling from Weekly Reports - remove outer widget appearance */
+    .community-content > .dashboard-widget:last-child {
+        background: transparent !important; /* Remove outer widget background */
+        border: none !important; /* Remove outer widget border */
+        border-radius: 0 !important; /* Remove outer widget border-radius */
+        box-shadow: none !important; /* Remove outer widget shadow */
+        padding: 0 !important; /* Remove outer widget padding */
+    }
+    
+    /* Hide outer widget header (Weekly Reports title) since the inner widget has its own header */
+    .community-content > .dashboard-widget:last-child .dashboard-widget-header {
+        display: none !important;
+    }
+    
+    /* Remove padding from outer widget content */
+    .community-content > .dashboard-widget:last-child .dashboard-widget-content {
+        padding: 0 !important;
+    }
+    
+    /* Make community widgets smaller */
+    .community-content .dashboard-widget {
+        height: auto !important;
+        max-height: 400px !important;
+        min-height: 300px !important;
+    }
+    
+    .community-content .dashboard-widget-header {
+        padding: 0.75rem !important;
+    }
+    
+    .community-content .dashboard-widget-title {
+        font-size: 0.875rem !important;
+    }
+    
+    .community-content .dashboard-widget-content {
+        padding: 0 !important;
+    }
+    
+    /* Professors Messages Container */
+    #professors-messages-container {
+        padding: 0.75rem !important;
+        gap: 0.75rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    /* Group Chat Container */
+    #community-chat-messages-container {
+        padding: 0.75rem !important;
+        gap: 0.5rem !important;
+        font-size: 0.6rem !important;
+        background: transparent !important; /* Remove grayish rectangle background */
+    }
+    
+    /* Group Chat Messages - Make text much smaller */
+    #community-chat-messages-container > div {
+        gap: 0.25rem !important;
+    }
+    
+    #community-chat-messages-container > div > div:first-child {
+        font-size: 0.55rem !important; /* Sender name */
+    }
+    
+    #community-chat-messages-container > div > div:nth-child(2) {
+        padding: 0.5rem 0.75rem !important; /* Message bubble */
+    }
+    
+    #community-chat-messages-container > div > div:nth-child(2) > div {
+        font-size: 0.6rem !important; /* Message text */
+        line-height: 1.4 !important;
+    }
+    
+    #community-chat-messages-container > div > div:last-child {
+        font-size: 0.5rem !important; /* Timestamp */
+    }
+    
+    /* Group Chat Input Area - Mobile */
+    /* Remove grayish rectangle background and border */
+    #community-chat-messages-container + div {
+        border-top: none !important;
+        background: transparent !important;
+        padding: 1rem !important;
+    }
+    
+    /* Make input area flex container align items */
+    #community-chat-messages-container + div > div {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Also target the direct parent if it's the input container */
+    #community-chat-message-input,
+    label[for="community-chat-image-input"],
+    #community-chat-send-btn {
+        align-self: center !important;
+    }
+    
+    #community-chat-message-input {
+        font-size: 0.875rem !important;
+        padding: 0.5rem 0.75rem !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        height: 40px !important;
+        flex: 1 !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Add Image Button - Very small, icon only */
+    label[for="community-chat-image-input"],
+    .community-chat-image-label {
+        padding: 0.5rem !important;
+        gap: 0 !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        position: relative !important;
+    }
+    
+    /* Hide "Add Image" text on mobile */
+    .community-chat-image-text {
+        display: none !important;
+    }
+    
+    label[for="community-chat-image-input"] svg,
+    .community-chat-image-label svg {
+        width: 18px !important;
+        height: 18px !important;
+        stroke: #374151 !important;
+    }
+    
+    /* Send Button - Same height as others */
+    #community-chat-send-btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Weekly Reports Display */
+    #weekly-reports-display {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    .weekly-report-item {
+        padding: 0.75rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .weekly-report-item-title {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .weekly-report-item-date {
+        font-size: 0.65rem !important;
+    }
+    
+    /* Weekly Report Header - Mobile: Stack sections vertically */
+    .weekly-report-header {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+    
+    /* Left Section */
+    .weekly-report-header > div:first-child {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .weekly-report-header h3 {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .weekly-report-header div[style*="fontSize"] {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Middle Section (PDF Report) */
+    .weekly-report-pdf-section {
+        width: 100% !important;
+        margin: 0 !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    .weekly-report-pdf-section h4 {
+        font-size: 0.875rem !important;
+    }
+    
+    /* Right Section (Video) - Move below PDF */
+    .weekly-report-video-section {
+        width: 100% !important;
+        margin: 0 !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    .weekly-report-video-section h4 {
+        font-size: 0.875rem !important;
+    }
+    
+    /* Weekly Report Buttons - Make smaller and stack */
+    .weekly-report-header button {
+        padding: 0.4rem 1rem !important;
+        font-size: 0.7rem !important;
+        margin-top: 0.5rem !important;
+        width: 100% !important;
+        max-width: 150px !important;
+    }
+    
+    /* Report Viewer Modal - Fix positioning for mobile */
+    #report-viewer-container {
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        position: fixed !important;
+        width: 95% !important;
+        max-width: 95% !important;
+        max-height: 90vh !important;
+        margin: 0 !important;
+    }
+    
+    #report-viewer-iframe {
+        height: 70vh !important;
+        max-height: 70vh !important;
+    }
 }
 
 /* Payment Link Modal Styles */
